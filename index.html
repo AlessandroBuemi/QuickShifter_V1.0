@@ -39,7 +39,6 @@
             flex-direction: column;
         }
 
-        /* --- IMMERSIVE CONNESSIONE GATE (SOLO HARDWARE REALE) --- */
         #proximity-gate {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
@@ -53,41 +52,19 @@
             text-align: center;
         }
 
-        .radar-container {
-            position: relative;
-            margin-bottom: 30px;
-        }
+        .radar-container { position: relative; margin-bottom: 30px; }
 
         .btn-connect-hardware {
-            background: #ff003c;
-            border: none;
-            color: #000;
-            padding: 20px 40px;
-            font-size: 16px;
-            font-weight: 900;
-            border-radius: 50px;
-            cursor: pointer;
-            box-shadow: 0 0 30px rgba(255, 0, 60, 0.4);
-            letter-spacing: 1px;
-            transition: transform 0.1s, box-shadow 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 12px;
+            background: #ff003c; border: none; color: #000; padding: 20px 40px; font-size: 16px;
+            font-weight: 900; border-radius: 50px; cursor: pointer; box-shadow: 0 0 30px rgba(255, 0, 60, 0.4);
+            letter-spacing: 1px; transition: transform 0.1s; display: flex; align-items: center; gap: 12px;
         }
-        .btn-connect-hardware:active {
-            transform: scale(0.96);
-            box-shadow: 0 0 15px rgba(255, 0, 60, 0.6);
-        }
+        .btn-connect-hardware:active { transform: scale(0.96); }
 
         .pulse-ring {
-            position: absolute;
-            top: 50%; left: 50%;
-            transform: translate(-50%, -50%);
-            width: 105%; height: 105%;
-            border: 2px solid #ff003c;
-            border-radius: 50px;
-            animation: hwpulse 1.8s infinite linear;
-            pointer-events: none;
+            position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+            width: 105%; height: 105%; border: 2px solid #ff003c; border-radius: 50px;
+            animation: hwpulse 1.8s infinite linear; pointer-events: none;
         }
 
         @keyframes hwpulse {
@@ -95,95 +72,32 @@
             100% { opacity: 0; transform: translate(-50%, -50%) scale(1.25); }
         }
 
-        /* --- HEADER --- */
         .header {
-            background: var(--panel);
-            border: 1px solid var(--panel-border);
-            border-left: 5px solid var(--accent);
-            padding: 12px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-radius: 12px;
-            margin-bottom: 15px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
+            background: var(--panel); border: 1px solid var(--panel-border); border-left: 5px solid var(--accent);
+            padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
+            border-radius: 12px; margin-bottom: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); backdrop-filter: blur(10px);
         }
 
-        .header-title { font-weight: 800; font-size: 15px; letter-spacing: 0.5px; color: #fff; }
+        .header-title { font-weight: 800; font-size: 15px; color: #fff; }
         .header-sub { font-size: 9px; color: #707085; font-family: monospace; margin-top: 2px; }
-        
-        .btn-disconnect {
-            background: #240c12;
-            border: 1px solid #ff003c44;
-            color: #ff416c;
-            padding: 6px 12px;
-            font-size: 10px;
-            font-weight: 800;
-            border-radius: 6px;
-            cursor: pointer;
-        }
+        .btn-disconnect { background: #240c12; border: 1px solid #ff003c44; color: #ff416c; padding: 6px 12px; font-size: 10px; font-weight: 800; border-radius: 6px; cursor: pointer; }
 
-        /* --- TELEMETRIA --- */
         .dashboard-arc-box {
-            background: var(--panel);
-            border: 1px solid var(--panel-border);
-            border-radius: 16px;
-            padding: 25px 20px;
-            text-align: center;
-            position: relative;
-            margin-bottom: 15px;
+            background: var(--panel); border: 1px solid var(--panel-border); border-radius: 16px;
+            padding: 25px 20px; text-align: center; position: relative; margin-bottom: 15px;
             box-shadow: 0 12px 32px rgba(0,0,0,0.4), inset 0 0 20px rgba(0,0,0,0.6);
         }
 
-        .arc-contagiri {
-            width: 100%; height: 18px;
-            background: #09090d;
-            border: 1px solid rgba(255,255,255,0.03);
-            border-radius: 30px;
-            overflow: hidden;
-            margin-bottom: 20px;
-            position: relative;
-        }
+        .arc-contagiri { width: 100%; height: 18px; background: #09090d; border: 1px solid rgba(255,255,255,0.03); border-radius: 30px; overflow: hidden; margin-bottom: 20px; position: relative; }
+        .arc-fill { width: 0%; height: 100%; transition: width 0.08s linear; border-radius: 30px; background-size: 8px 100%; background-image: linear-gradient(90deg, transparent 20%, rgba(0,0,0,0.15) 20%), linear-gradient(90deg, #00ff66 45%, #ffaa00 70%, #ff003c 88%); }
+        .speed-heavy { font-size: 96px; font-weight: 900; color: #fff; line-height: 0.85; font-family: Arial, sans-serif; letter-spacing: -3px; }
 
-        .arc-fill {
-            width: 0%; height: 100%;
-            transition: width 0.08s linear;
-            border-radius: 30px;
-            background-size: 8px 100%;
-            background-image: linear-gradient(90deg, transparent 20%, rgba(0,0,0,0.15) 20%), 
-                              linear-gradient(90deg, #00ff66 45%, #ffaa00 70%, #ff003c 88%);
-            box-shadow: 0 0 15px var(--accent);
-        }
-
-        .speed-heavy {
-            font-size: 96px; font-weight: 900; color: #fff; line-height: 0.85;
-            font-family: Arial, sans-serif; letter-spacing: -3px;
-        }
-
-        /* --- PANNELLI --- */
-        .card {
-            background: var(--panel); border: 1px solid var(--panel-border);
-            padding: 18px; border-radius: 16px; margin-bottom: 15px;
-        }
-
-        .card-title {
-            font-size: 11px; color: #808095; letter-spacing: 1.5px;
-            margin-bottom: 16px; text-transform: uppercase; font-weight: 700;
-            border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px;
-        }
-
+        .card { background: var(--panel); border: 1px solid var(--panel-border); padding: 18px; border-radius: 16px; margin-bottom: 15px; }
+        .card-title { font-size: 11px; color: #808095; letter-spacing: 1.5px; margin-bottom: 16px; text-transform: uppercase; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
         .preset-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 12px; margin-bottom: 18px; }
         
-        .btn-action {
-            background: #14141f; border: 1px solid rgba(255,255,255,0.03); color: #a0a0b5;
-            padding: 16px 10px; font-size: 11px; font-weight: 800; border-radius: 10px; cursor: pointer;
-        }
-        .btn-action.active { 
-            background: var(--accent); color: #000; border-color: var(--accent); 
-            box-shadow: 0 0 16px var(--accent);
-        }
+        .btn-action { background: #14141f; border: 1px solid rgba(255,255,255,0.03); color: #a0a0b5; padding: 16px 10px; font-size: 11px; font-weight: 800; border-radius: 10px; cursor: pointer; }
+        .btn-action.active { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 0 16px var(--accent); }
 
         .sec-btn { background: #11141a; border: 1px solid #222b3c; color: #7888a5; }
         .sec-btn.lock-active { background: #2e0811; border-color: #ff003c; color: #ff3366; }
@@ -192,25 +106,15 @@
 
         .slider-container { background: #0d0d14; padding: 12px; border-radius: 10px; }
         input[type=range] { -webkit-appearance: none; width: 100%; background: #1c1c28; height: 8px; border-radius: 4px; }
-        input[type=range]::-webkit-slider-thumb { 
-            -webkit-appearance: none; width: 26px; height: 22px; background: #fff; 
-            border: 3px solid var(--accent); cursor: pointer; border-radius: 8px;
-        }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 22px; background: #fff; border: 3px solid var(--accent); cursor: pointer; border-radius: 8px; }
 
         .tel-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 12px; }
         .tel-box { background: #0d0d14; padding: 14px 5px; text-align: center; border-radius: 10px; }
         .tel-num { font-size: 24px; font-weight: 800; color: #fff; }
         .tel-lbl { font-size: 9px; color: #555566; margin-top: 6px; font-weight: 700; }
-
         .console { background: #07070a; height: 95px; overflow-y: auto; padding: 10px; font-size: 10px; color: #00ff66; border-radius: 10px; font-family: monospace; }
 
-        .bottom-nav {
-            position: fixed; bottom: 12px; left: 12px; right: 12px;
-            background: rgba(12, 12, 18, 0.92); border: 1px solid rgba(255,255,255,0.04);
-            display: grid; grid-template-columns: repeat(5, 1fr); padding: 12px 6px; z-index: 1000;
-            border-radius: 20px;
-        }
-        
+        .bottom-nav { position: fixed; bottom: 12px; left: 12px; right: 12px; background: rgba(12, 12, 18, 0.92); border: 1px solid rgba(255,255,255,0.04); display: grid; grid-template-columns: repeat(5, 1fr); padding: 12px 6px; z-index: 1000; border-radius: 20px; }
         .nav-item { background: transparent; border: none; color: #555566; font-size: 9px; font-weight: 800; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
         .nav-item.active { color: var(--accent); }
         .nav-icon { font-size: 18px; margin-bottom: 4px; }
@@ -225,8 +129,8 @@
                 <div class="pulse-ring"></div>
             </button>
         </div>
-        <h2 style="font-size:18px; font-weight:900; margin-bottom:8px; color:#fff; letter-spacing: 0.5px;">LINK CENTRALINA ARDUINO</h2>
-        <p id="gate-status" style="font-size:12px; color:#707085; max-width:280px; line-height:1.4;">Clicca sul pulsante rosso per aprire la finestra di accoppiamento del browser e stabilire la connessione con l'ESP32 della moto.</p>
+        <h2 style="font-size:18px; font-weight:900; margin-bottom:8px; color:#fff;">LINK CENTRALINA ARDUINO</h2>
+        <p id="gate-status" style="font-size:12px; color:#707085; max-width:280px; line-height:1.4;">Clicca sul pulsante rosso per aprire la finestra di accoppiamento del browser ed eseguire il collegamento stabile con l'ESP32.</p>
     </div>
 
     <div class="header">
@@ -283,10 +187,6 @@
 
         <div class="card">
             <div class="card-title">Analisi Shifter & AI Autotuning</div>
-            <div style="display:flex; gap:12px; margin-bottom:15px;">
-                <button class="btn-action" style="flex:1; padding:12px 0;" onclick="inviaDati('AI_ON'); log('AI: Ottimizzazione attiva.')">🤖 AI LEARN ON</button>
-                <button class="btn-action" style="flex:1; padding:12px 0;" onclick="inviaDati('AI_OFF'); log('AI: Disattivata.')">AI OFF</button>
-            </div>
             <div class="tel-grid">
                 <div class="tel-box"><div class="tel-num" id="cambiate">0</div><div class="tel-lbl">CAMBIATE</div></div>
                 <div class="tel-box"><div class="tel-num" style="color:#00ff66">96%</div><div class="tel-lbl">FLUIDITÀ</div></div>
@@ -294,13 +194,13 @@
             </div>
         </div>
 
-        <div class="card"><div class="card-title">ECU Live Log Terminal</div><div class="console" id="console">SYS: Pronto...</div></div>
+        <div class="card"><div class="card-title">ECU Live Log Terminal</div><div class="console" id="console">SYS: In attesa di link...</div></div>
     </div>
 
     <div id="pane-placeholder" class="sub-pane" style="display:none;">
         <div class="card" style="text-align:center; padding:30px 0; color:#505065;">
-            <div style="font-size:32px; margin-bottom:10px;">🛠️</div>
-            <div style="font-size:12px; font-weight:800;" id="placeholder-title">MODULO IN ATTESA</div>
+            <div style="font-size:32px; margin-bottom:10px;">🛠----</div>
+            <div style="font-size:12px; font-weight:800;" id="placeholder-title">MODULO ATTIVO</div>
         </div>
     </div>
 
@@ -331,118 +231,92 @@
             document.getElementById('liveVal').innerText = savedMs;
             document.getElementById('lastCut').innerText = savedMs;
             document.body.className = savedTheme + '-theme';
-            
-            document.querySelectorAll('.preset-grid .btn-action').forEach(b => {
-                if(b.id === `btn-${savedTheme}`) b.classList.add('active');
-                else b.classList.remove('active');
-            });
         });
 
         function salvaNomeMoto(val) { localStorage.setItem('qs_bike', val); }
-
-        function log(msg) {
-            const c = document.getElementById('console');
-            if(c) { c.innerHTML += `<br>> ${msg}`; c.scrollTop = c.scrollHeight; }
+        
+        function log(msg) { 
+            const c = document.getElementById('console'); 
+            if(c) { c.innerHTML += `<br>> ${msg}`; c.scrollTop = c.scrollHeight; } 
         }
 
         function cambiaTab(id, elemento) {
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
             elemento.classList.add('active');
             localStorage.setItem('qs_last_tab', id);
-
-            const pHome = document.getElementById('pane-home');
-            const pShifter = document.getElementById('pane-shifter');
+            document.getElementById('pane-home').style.display = (id === 'home') ? 'block' : 'none';
+            document.getElementById('pane-shifter').style.display = (id === 'shifter') ? 'block' : 'none';
             const pPlace = document.getElementById('pane-placeholder');
-
-            pHome.style.display = 'none';
-            pShifter.style.display = 'none';
-            pPlace.style.display = 'none';
-
-            if(id === 'home') pHome.style.display = 'block';
-            else if(id === 'shifter') pShifter.style.display = 'block';
-            else {
-                pPlace.style.display = 'block';
-                document.getElementById('placeholder-title').innerText = `MODULO ${id.toUpperCase()} PRE-ALLINEATO`;
+            if(id !== 'home' && id !== 'shifter') { 
+                pPlace.style.display = 'block'; 
+                document.getElementById('placeholder-title').innerText = `MODULO ${id.toUpperCase()} ATTIVO`; 
+            } else { 
+                pPlace.style.display = 'none'; 
             }
         }
 
         function setMode(ms, theme, btn) {
             document.querySelectorAll('.preset-grid .btn-action').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
+            btn.classList.add('active'); 
             document.body.className = theme + '-theme';
-            
-            localStorage.setItem('qs_ms', ms);
+            localStorage.setItem('qs_ms', ms); 
             localStorage.setItem('qs_theme', theme);
-
-            if(ms === 0) {
-                sendCommand({type: "scoppi", value: true});
-                document.getElementById('lastCut').innerText = "POP";
-                log("Mappa attiva: POP & BANG.");
-            } else {
-                sendCommand({type: "scoppi", value: false});
-                sendCommand({type: "slider", value: parseInt(ms)});
-                document.getElementById('slider').value = ms;
-                document.getElementById('liveVal').innerText = ms;
-                document.getElementById('lastCut').innerText = ms;
-                log(`Mappa attiva: ${ms}ms`);
+            if(ms === 0) { 
+                sendCommand({type: "scoppi", value: true}); 
+                document.getElementById('lastCut').innerText = "POP"; 
+            } else { 
+                sendCommand({type: "scoppi", value: false}); 
+                sendCommand({type: "slider", value: parseInt(ms)}); 
+                document.getElementById('slider').value = ms; 
+                document.getElementById('liveVal').innerText = ms; 
+                document.getElementById('lastCut').innerText = ms; 
             }
         }
 
-        function inviaValoreTiming(val) {
-            localStorage.setItem('qs_ms', val);
-            document.querySelectorAll('.preset-grid .btn-action').forEach(b => b.classList.remove('active'));
-            sendCommand({type: "slider", value: parseInt(val)});
-            log(`Fine Tuning: ${val}ms`);
+        function inviaValoreTiming(val) { 
+            localStorage.setItem('qs_ms', val); 
+            sendCommand({type: "slider", value: parseInt(val)}); 
         }
 
         function cambiaStatoMotore(bloccato) {
-            const btnLock = document.getElementById('btn-lock-ecu');
+            const btnLock = document.getElementById('btn-lock-ecu'); 
             const btnUnlock = document.getElementById('btn-unlock-ecu');
-            if(bloccato) {
-                btnLock.classList.add('lock-active');
-                btnUnlock.classList.remove('unlock-active');
-                sendCommand({type: "ecu_state", status: "LOCKED"});
-                log("HARDWARE: Richiesta Blocco Elettronico.");
-            } else {
-                btnLock.classList.remove('lock-active');
-                btnUnlock.classList.add('unlock-active');
-                sendCommand({type: "ecu_state", status: "UNLOCKED"});
-                log("HARDWARE: Richiesta Sblocco Elettronico.");
+            if(bloccato) { 
+                btnLock.classList.add('lock-active'); 
+                btnUnlock.classList.remove('unlock-active'); 
+                sendCommand({type: "ecu_state", status: "LOCKED"}); 
+            } else { 
+                btnLock.classList.remove('lock-active'); 
+                btnUnlock.classList.add('unlock-active'); 
+                sendCommand({type: "ecu_state", status: "UNLOCKED"}); 
             }
         }
 
         function switchSicurezzaProssimita() {
-            const btn = document.getElementById('btn-toggle-prox');
+            const btn = document.getElementById('btn-toggle-prox'); 
             sicurezzaProssimitaAttiva = !sicurezzaProssimitaAttiva;
-            if(sicurezzaProssimitaAttiva) {
-                btn.classList.add('prox-active');
-                btn.innerText = "🛡️ PROSSIMITÀ AUTOMATICA: ATTIVA";
-                sendCommand({type: "proximity_fence", value: true});
-                log("ANTIFURTO: Monitoraggio RSSI inserito.");
-            } else {
-                btn.classList.remove('prox-active');
-                btn.innerText = "🛡️ PROSSIMITÀ AUTOMATICA: DISATTIVATA";
-                sendCommand({type: "proximity_fence", value: false});
-                log("ANTIFURTO: Monitoraggio RSSI disattivato.");
+            if(sicurezzaProssimitaAttiva) { 
+                btn.classList.add('prox-active'); 
+                btn.innerText = "🛡️ PROSSIMITÀ AUTOMATICA: ATTIVA"; 
+                sendCommand({type: "proximity_fence", value: true}); 
+            } else { 
+                btn.classList.remove('prox-active'); 
+                btn.innerText = "🛡️ PROSSIMITÀ AUTOMATICA: DISATTIVATA"; 
+                sendCommand({type: "proximity_fence", value: false}); 
             }
         }
 
-        // --- FUNZIONE DI SCANSIONE BLUETOOTH DIRETTA ---
         async function connettiProssimita() {
-            document.getElementById('gate-status').innerText = "Apertura prompt accoppiamento di sistema...";
+            document.getElementById('gate-status').innerText = "Inizializzazione accoppiamento BLE...";
             try {
-                // Rileva qualunque dispositivo che supporti il servizio seriale dell'ESP32
                 bluetoothDevice = await navigator.bluetooth.requestDevice({
-                    filters: [
-                        { services: [SERVICE_UUID] }
-                    ],
+                    filters: [{ services: [SERVICE_UUID] }],
                     optionalServices: [SERVICE_UUID]
                 });
 
                 bluetoothDevice.addEventListener('gattserverdisconnected', onDisconnected);
                 const srv = await bluetoothDevice.gatt.connect();
                 const service = await srv.getPrimaryService(SERVICE_UUID);
-                
                 rxChar = await service.getCharacteristic(CHARACTERISTIC_RX_UUID);
                 const txChar = await service.getCharacteristic(CHARACTERISTIC_TX_UUID);
 
@@ -451,73 +325,64 @@
 
                 document.getElementById('proximity-gate').style.display = 'none';
                 document.getElementById('disconnetti-rapido').style.display = 'block';
-                document.getElementById('signal-strength').innerText = `CONNESSO ALL'ARDUINO`;
-                log("Link hardware stabilito con successo.");
-
-                const lastTab = localStorage.getItem('qs_last_tab') || 'home';
-                cambiaTab(lastTab, document.getElementById(`nav-${lastTab}`) || document.getElementById('nav-home'));
-
+                document.getElementById('signal-strength').innerText = `HARDWARE CONNESSO`;
+                log("Link stabilito correttamente con l'ESP32.");
             } catch(e) { 
-                document.getElementById('gate-status').innerText = "SCANSIONE ANNULLATA O ERRORE: " + e.message; 
+                document.getElementById('gate-status').innerText = "ERRORE LINK: " + e.message; 
             }
         }
 
-        function dissociaDispositivo() {
+        function dissociaDispositivo() { 
             if (bluetoothDevice && bluetoothDevice.gatt.connected) {
-                bluetoothDevice.gatt.disconnect();
+                bluetoothDevice.gatt.disconnect(); 
             } else {
                 onDisconnected();
             }
         }
 
-        function onDisconnected() {
-            rxChar = null;
-            document.getElementById('disconnetti-rapido').style.display = 'none';
-            document.getElementById('signal-strength').innerText = `CONNESSIONE BLE INATTIVA`;
-            document.getElementById('proximity-gate').style.display = 'flex';
-            document.getElementById('gate-status').innerText = "DISPOSITIVO SCONNESSO. PREMI 'CONNETTI HARDWARE' PER RIVEDERE LA LISTA COMPONENTI...";
+        function onDisconnected() { 
+            rxChar = null; 
+            document.getElementById('disconnetti-rapido').style.display = 'none'; 
+            document.getElementById('signal-strength').innerText = `CONNESSIONE BLE INATTIVA`; 
+            document.getElementById('proximity-gate').style.display = 'flex'; 
+            document.getElementById('gate-status').innerText = "DISPOSITIVO SCONNESSO. PREMI SUL PULSANTE PER RICONNETTERE HARDWARE..."; 
         }
 
         function gestisciDatiInArrivo(event) {
-            let enc = new TextDecoder("utf-8");
+            let enc = new TextDecoder("utf-8"); 
             let valoreRicevuto = enc.decode(event.target.value);
             try {
                 let data = JSON.parse(valoreRicevuto);
-                if(data.cutTime !== undefined) {
-                    document.getElementById('liveVal').innerText = data.cutTime;
-                    document.getElementById('slider').value = data.cutTime;
-                    document.getElementById('lastCut').innerText = data.scoppiActive ? "POP" : data.cutTime;
+                if(data.cutTime !== undefined) { 
+                    document.getElementById('liveVal').innerText = data.cutTime; 
+                    document.getElementById('slider').value = data.cutTime; 
+                    document.getElementById('lastCut').innerText = data.scoppiActive ? "POP" : data.cutTime; 
                 }
                 if(data.contatore !== undefined) {
                     document.getElementById('cambiate').innerText = data.contatore;
                 }
-                if(data.rpm !== undefined) {
-                    let pct = ((data.rpm - 0) / 12000) * 100;
-                    document.getElementById('rpmBar').style.width = pct + '%';
-                    document.getElementById('rpmNum').innerText = data.rpm;
+                if(data.rpm !== undefined) { 
+                    let pct = ((data.rpm - 0) / 12000) * 100; 
+                    document.getElementById('rpmBar').style.width = pct + '%'; 
+                    document.getElementById('rpmNum').innerText = data.rpm; 
                 }
                 if(data.speed !== undefined) {
                     document.getElementById('speedNum').innerText = data.speed;
                 }
-            } catch (e) {
-                if(valoreRicevuto.trim().length > 0) log("ECU: " + valoreRicevuto);
+            } catch (e) { 
+                if(valoreRicevuto.trim().length > 0) log("ECU: " + valoreRicevuto); 
             }
         }
 
-        async function sendCommand(jsonData) {
-            if (!rxChar) return;
-            try {
-                let encoder = new TextEncoder('utf-8');
-                let data = encoder.encode(JSON.stringify(jsonData));
-                await rxChar.writeValue(data);
-            } catch(err) {
-                console.log("Errore trasmissione: ", err);
-            }
-        }
-
-        function inviaDati(azione) {
-            if(azione === 'AI_ON') sendCommand({type: "ai", value: true});
-            if(azione === 'AI_OFF') sendCommand({type: "ai", value: false});
+        async function sendCommand(jsonData) { 
+            if (!rxChar) return; 
+            try { 
+                let encoder = new TextEncoder('utf-8'); 
+                let data = encoder.encode(JSON.stringify(jsonData)); 
+                await rxChar.writeValue(data); 
+            } catch(err) { 
+                console.log("Errore invio: ", err); 
+            } 
         }
     </script>
 </body>
