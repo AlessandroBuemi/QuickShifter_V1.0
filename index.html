@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QuickShifter Pro v1.0</title>
+    
+    <style>
+        :root {
+            --accent: #ff003c;
+            --bg-dark: #0a0a0f;
+            --panel: rgba(18, 18, 26, 0.95);
+            --panel-border: rgba(255, 255, 255, 0.05);
+            --panel-glow: rgba(255, 0, 60, 0.1);
+            --text-main: #f0f0f5;
+            --font-racing: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body.eco-theme { --accent: #00ff66; --panel-glow: rgba(0, 255, 102, 0.08); }
+        body.sport-theme { --accent: #ff6600; --panel-glow: rgba(255, 102, 0, 0.08); }
+        body.race-theme { --accent: #ff003c; --panel-glow: rgba(255, 0, 60, 0.08); }
+        body.pop-theme { --accent: #b026ff; --panel-glow: rgba(176, 38, 255, 0.08); }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
+
+        body {
+            background-color: var(--bg-dark);
+            /* Texture Carbon Look Moderna */
+            background-image: 
+                linear-gradient(315deg, rgba(0,0,0,0.4) 0%, transparent 100%),
+                linear-gradient(45deg, #13131a 25%, transparent 25%, transparent 75%, #13131a 75%),
+                linear-gradient(45deg, #13131a 25%, #0a0a0f 25%, #0a0a0f 75%, #13131a 75%);
+            background-size: 100% 100%, 12px 12px, 12px 12px;
+            background-position: 0 0, 0 0, 6px 6px;
+            color: var(--text-main);
+            font-family: var(--font-racing);
+            padding: 15px 15px 95px 15px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* --- SCREEN LOCK MODERNO --- */
+        #proximity-gate {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: radial-gradient(circle at center, #141420 0%, #050508 100%);
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .radar-container {
+            position: relative;
+            margin-bottom: 40px;
+        }
+
+        .radar-circle {
+            width: 110px; height: 110px;
+            border: 2px solid var(--accent);
+            border-radius: 50%;
+            background: rgba(255, 0, 60, 0.03);
+            animation: pulse 1.8s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 32px;
+            box-shadow: 0 0 20px var(--panel-glow);
+        }
+
+        @keyframes pulse {
+            0% { box-shadow: 0 0 0 0px rgba(255, 0, 60, 0.3), inset 0 0 10px rgba(255, 0, 60, 0.1); }
+            100% { box-shadow: 0 0 0 35px rgba(255, 0, 60, 0), inset 0 0 20px rgba(255, 0, 60, 0); }
+        }
+
+        /* --- HEADER --- */
+        .header {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-left: 5px solid var(--accent);
+            padding: 14px 18px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-radius: 12px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .header-title { font-weight: 800; font-size: 15px; letter-spacing: 0.5px; color: #fff; }
+        .header-sub { font-size: 9px; color: #707085; font-family: monospace; margin-top: 2px; }
+
+        /* --- DASHBOARD TELEMETRIA CONTROPALLE --- */
+        .dashboard-arc-box {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            border-radius: 16px;
+            padding: 25px 20px;
+            text-align: center;
+            position: relative;
+            margin-bottom: 15px;
+            box-shadow: 0 12px 32px rgba(0,0,0,0.4), inset 0 0 20px rgba(0,0,0,0.6);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .arc-contagiri {
+            width: 100%; height: 18px;
+            background: #09090d;
+            border: 1px solid rgba(255,255,255,0.03);
+            border-radius: 30px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.8);
+        }
+
+        .arc-fill {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, #00ff66 45%, #ffaa00 70%, #ff003c 88%);
+            box-shadow: 0 0 15px var(--accent);
+            transition: width 0.08s linear;
+            border-radius: 30px;
+            /* Look a blocchetti LED da pista progressivi */
+            background-size: 8px 100%;
+            background-image: linear-gradient(90deg, transparent 20%, rgba(0,0,0,0.15) 20%), 
+                              linear-gradient(90deg, #00ff66 45%, #ffaa00 70%, #ff003c 88%);
+        }
+
+        .speed-heavy {
+            font-size: 96px;
+            font-weight: 900;
+            color: #fff;
+            line-height: 0.85;
+            font-family: Arial, sans-serif;
+            letter-spacing: -3px;
+            text-shadow: 0 4px 12px rgba(0,0,0,0.5);
+        }
+
+        /* --- SCHEDE E PANNELLI --- */
+        .card {
+            background: var(--panel);
+            border: 1px solid var(--panel-border);
+            padding: 18px;
+            border-radius: 16px;
+            margin-bottom: 15px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+        }
+
+        .card-title {
+            font-size: 11px;
+            color: #808095;
+            letter-spacing: 1.5px;
+            margin-bottom: 16px;
+            text-transform: uppercase;
+            font-weight: 700;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 8px;
+        }
+
+        /* --- PRESET GRID & BOTTONI --- */
+        .preset-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 12px; margin-bottom: 18px; }
+        
+        .btn-action {
+            background: #14141f; 
+            border: 1px solid rgba(255,255,255,0.03); 
+            color: #a0a0b5;
+            padding: 16px 10px; 
+            font-size: 11px; 
+            font-weight: 800; 
+            border-radius: 10px; 
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+            box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+        }
+        
+        .btn-action.active { 
+            background: var(--accent); 
+            color: #000; 
+            border-color: var(--accent); 
+            box-shadow: 0 0 16px var(--accent);
+            transform: translateY(-1px);
+        }
+
+        /* --- MANUAL SLIDER ARROTONDATO --- */
+        .slider-container {
+            background: #0d0d14;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.02);
+        }
+
+        input[type=range] { 
+            -webkit-appearance: none; 
+            width: 100%; 
+            background: #1c1c28; 
+            height: 8px; 
+            border-radius: 4px; 
+            outline: none; 
+        }
+        
+        input[type=range]::-webkit-slider-thumb { 
+            -webkit-appearance: none; 
+            width: 26px; 
+            height: 22px; 
+            background: #fff; 
+            border: 3px solid var(--accent);
+            cursor: pointer; 
+            border-radius: 8px; 
+            box-shadow: 0 2px 6px rgba(0,0,0,0.4);
+            transition: transform 0.1s;
+        }
+        input[type=range]::-webkit-slider-thumb:active {
+            transform: scale(1.15);
+        }
+
+        /* --- TELEMETRY GRID --- */
+        .tel-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 12px; }
+        .tel-box { 
+            background: #0d0d14; 
+            border: 1px solid rgba(255,255,255,0.02); 
+            padding: 14px 5px; 
+            text-align: center; 
+            border-radius: 10px; 
+            box-shadow: inset 0 2px 4px rgba(0,0,0,0.5);
+        }
+        .tel-num { font-size: 24px; font-weight: 800; color: #fff; font-family: sans-serif; }
+        .tel-lbl { font-size: 9px; color: #555566; margin-top: 6px; font-weight: 700; letter-spacing: 0.5px; }
+
+        /* --- LIVE TERMINAL --- */
+        .console { 
+            background: #07070a; 
+            border: 1px solid rgba(255,255,255,0.02); 
+            height: 95px; 
+            overflow-y: auto; 
+            padding: 10px; 
+            font-size: 10px; 
+            color: #00ff66; 
+            text-align: left; 
+            border-radius: 10px;
+            font-family: monospace;
+            box-shadow: inset 0 4px 8px rgba(0,0,0,0.7);
+        }
+
+        /* --- BARRA DI NAVIGAZIONE ARROTONDATA --- */
+        .bottom-nav {
+            position: fixed; bottom: 12px; left: 12px; right: 12px;
+            background: rgba(12, 12, 18, 0.92); 
+            border: 1px solid rgba(255,255,255,0.04);
+            display: grid; grid-template-columns: repeat(5, 1fr); 
+            padding: 12px 6px; 
+            z-index: 1000;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+        }
+        
+        .nav-item { 
+            background: transparent; 
+            border: none; 
+            color: #555566; 
+            font-family: var(--font-racing); 
+            font-size: 9px; 
+            font-weight: 800; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; 
+            cursor: pointer; 
+            transition: color 0.2s;
+        }
+        .nav-item.active { color: var(--accent); }
+        .nav-icon { font-size: 18px; margin-bottom: 4px; transition: transform 0.2s; }
+        .nav-item.active .nav-icon { transform: scale(1.1); filter: drop-shadow(0 0 5px var(--accent)); }
+    </style>
+</head>
+<body class="race-theme">
+
+    <!-- SCHERMATA DI ACCORDO/PROSSIMITA ACCATTIVANTE -->
+    <div id="proximity-gate">
+        <div class="radar-container">
+            <div class="radar-circle">🏍️</div>
+        </div>
+        <h2 style="font-size:18px; font-weight:800; letter-spacing:0.5px; margin-bottom:8px; color:#fff;">QUICKSHIFTER PRO</h2>
+        <p id="gate-status" style="font-size:12px; color:#707085; max-width:260px; line-height:1.4;">Avvicinati alla moto per effettuare l'accoppiamento di sicurezza hardware...</p>
+        
+        <button onclick="forzaConnessioneDemo()" style="margin-top:45px; background:rgba(255,255,255,0.03); border:1px solid rgba(255,255,255,0.08); color:#606075; padding:10px 20px; font-size:10px; font-weight:700; border-radius:8px; cursor:pointer; text-transform:uppercase; letter-spacing:0.5px;">Simula Link (Banco Prova)</button>
+    </div>
+
+    <!-- HEADER INTERFACCIA -->
+    <div class="header">
+        <div>
+            <div class="header-title">QuickShifter Pro</div>
+            <div id="signal-strength" class="header-sub">RSSI: CONTROLLO DISTANZA ATTIVO</div>
+        </div>
+        <input type="text" id="bikeName" value="LA MIA MOTO" style="background:transparent; border:none; color:var(--accent); text-transform:uppercase; text-align:right; font-family:var(--font-racing); font-weight:900; font-size:14px; outline:none; letter-spacing:0.5px;" oninput="salvaNomeMoto(this.value)">
+    </div>
+
+    <!-- ZONE CONTENUTI -->
+    
+    <!-- SCHERMATA 1: HOME (SOLO DATI LIVE) -->
+    <div id="pane-home" class="sub-pane">
+        <div class="dashboard-arc-box">
+            <div style="position:absolute; top:12px; left:18px; font-size:9px; color:#505065; font-weight:800; letter-spacing:1px;">LIVE TELEMETRY</div>
+            <div class="arc-contagiri"><div class="arc-fill" id="rpmBar"></div></div>
+            <div style="display:flex; justify-content:space-between; margin-top:-14px; margin-bottom:15px; font-size:11px; color:#606075; font-weight:700;">
+                <span>4000 RPM</span>
+                <span style="color:#fff; font-weight:800; font-size:13px;" id="rpmNum">0</span>
+                <span>12000 LIMIT</span>
+            </div>
+            <div class="speed-heavy" id="speedNum">0</div>
+            <div style="font-size:11px; color:#505065; font-weight:800; letter-spacing:3px; margin-top:8px;">KM/H</div>
+        </div>
+    </div>
+
+    <!-- SCHERMATA 2: SHIFTER (CONFIGURATORE) -->
+    <div id="pane-shifter" class="sub-pane" style="display:none;">
+        <div class="card">
+            <div class="card-title">Mappe Cambio & Tempi di Taglio</div>
+            <div class="preset-grid">
+                <button class="btn-action" id="btn-eco" onclick="setMode(75, 'eco', this)">75ms COMFORT</button>
+                <button class="btn-action" id="btn-sport" onclick="setMode(65, 'sport', this)">65ms STANDARD</button>
+                <button class="btn-action" id="btn-race" onclick="setMode(55, 'race', this)">55ms RACING</button>
+                <button class="btn-action" id="btn-pop" onclick="setMode(0, 'pop', this)">POP & BANG</button>
+            </div>
+            <div class="slider-container">
+                <input type="range" id="slider" min="30" max="100" value="55" oninput="document.getElementById('liveVal').innerText=this.value" onchange="inviaValoreTiming(this.value)">
+                <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; margin-top:10px; color:#707085;">
+                    <span>FINE TUNING MANUALE:</span>
+                    <span style="color:var(--accent); font-weight:800;"><span id="liveVal">55</span> ms</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Analisi Shifter & AI Autotuning</div>
+            <div style="display:flex; gap:12px; margin-bottom:15px;">
+                <button class="btn-action" style="flex:1; padding:12px 0;" onclick="inviaDati('AI_ON'); log('AI: Ottimizzazione attiva.')">🤖 AI LEARN ON</button>
+                <button class="btn-action" style="flex:1; padding:12px 0;" onclick="inviaDati('AI_OFF'); log('AI: Disattivata.')">AI OFF</button>
+            </div>
+            <div class="tel-grid">
+                <div class="tel-box"><div class="tel-num" id="cambiate">0</div><div class="tel-lbl">CAMBIATE</div></div>
+                <div class="tel-box"><div class="tel-num" style="color:#00ff66">96%</div><div class="tel-lbl">FLUIDITÀ</div></div>
+                <div class="tel-box"><div class="tel-num" id="lastCut">55</div><div class="tel-lbl">LAST CUT</div></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">ECU Live Log Terminal</div>
+            <div class="console" id="console">SYS: Pronto...</div>
+        </div>
+    </div>
+
+    <!-- PLACEHOLDER PER ALTRE SCHERMATE -->
+    <div id="pane-placeholder" class="sub-pane" style="display:none;">
+        <div class="card" style="text-align:center; padding:30px 0; color:#505065;">
+            <div style="font-size:32px; margin-bottom:10px;">🛠️</div>
+            <div style="font-size:12px; font-weight:800; letter-spacing:0.5px;" id="placeholder-title">MODULO IN ATTESA</div>
+        </div>
+    </div>
+
+    <!-- NAVBAR INFERIORE AD ASOLA ARROTONDATA -->
+    <nav class="bottom-nav">
+        <button class="nav-item active" id="nav-home" onclick="cambiaTab('home', this)"><span class="nav-icon">🏠</span>HOME</button>
+        <button class="nav-item" id="nav-shifter" onclick="cambiaTab('shifter', this)"><span class="nav-icon">⚙️</span>SHIFTER</button>
+        <button class="nav-item" onclick="cambiaTab('anti-wheelie', this)"><span class="nav-icon">🏍️</span>ANTI-W</button>
+        <button class="nav-item" onclick="cambiaTab('targa', this)"><span class="nav-icon">🆔</span>TARGA</button>
+        <button class="nav-item" onclick="cambiaTab('track', this)"><span class="nav-icon">📍</span>TRACK</button>
+    </nav>
+
+    <script>
+        const SERVICE_UUID = "4fafc201-1fb5-459e-8fcc-c5c9c331914b";
+        const CHARACTERISTIC_UUID = "beb5483e-36e1-4688-b7f5-ea07361b26a8";
+        let txChar;
+        let cntCambiate = 0;
+        let simLoop;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            if(localStorage.getItem('qs_bike')) {
+                document.getElementById('bikeName').value = localStorage.getItem('qs_bike');
+            }
+            
+            const savedMs = localStorage.getItem('qs_ms') || "55";
+            const savedTheme = localStorage.getItem('qs_theme') || "race";
+            document.getElementById('slider').value = savedMs;
+            document.getElementById('liveVal').innerText = savedMs;
+            document.getElementById('lastCut').innerText = savedMs;
+            document.body.className = savedTheme + '-theme';
+            
+            document.querySelectorAll('.preset-grid .btn-action').forEach(b => {
+                if(b.id === `btn-${savedTheme}`) b.classList.add('active');
+                else b.classList.remove('active');
+            });
+        });
+
+        function salvaNomeMoto(val) { localStorage.setItem('qs_bike', val); }
+
+        function log(msg) {
+            const c = document.getElementById('console');
+            if(c) { c.innerHTML += `<br>> ${msg}`; c.scrollTop = c.scrollHeight; }
+        }
+
+        function cambiaTab(id, elemento) {
+            document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
+            elemento.classList.add('active');
+            localStorage.setItem('qs_last_tab', id);
+
+            const pHome = document.getElementById('pane-home');
+            const pShifter = document.getElementById('pane-shifter');
+            const pPlace = document.getElementById('pane-placeholder');
+
+            pHome.style.display = 'none';
+            pShifter.style.display = 'none';
+            pPlace.style.display = 'none';
+
+            if(id === 'home') pHome.style.display = 'block';
+            else if(id === 'shifter') pShifter.style.display = 'block';
+            else {
+                pPlace.style.display = 'block';
+                document.getElementById('placeholder-title').innerText = `MODULO ${id.toUpperCase()} PRE-ALLINEATO`;
+            }
+        }
+
+        function setMode(ms, theme, btn) {
+            document.querySelectorAll('.preset-grid .btn-action').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+            document.body.className = theme + '-theme';
+            
+            localStorage.setItem('qs_ms', ms);
+            localStorage.setItem('qs_theme', theme);
+
+            if(ms === 0) {
+                inviaDati('M_POP');
+                document.getElementById('lastCut').innerText = "POP";
+            } else {
+                document.getElementById('slider').value = ms;
+                document.getElementById('liveVal').innerText = ms;
+                document.getElementById('lastCut').innerText = ms;
+                inviaDati('T' + ms);
+            }
+        }
+
+        function inviaValoreTiming(val) {
+            localStorage.setItem('qs_ms', val);
+            document.querySelectorAll('.preset-grid .btn-action').forEach(b => b.classList.remove('active'));
+            inviaDati('T' + val);
+        }
+
+        async function connettiProssimita() {
+            try {
+                let dev = await navigator.bluetooth.requestDevice({
+                    filters: [{ name: 'QuickShifter_v1.0' }],
+                    optionalServices: [SERVICE_UUID]
+                });
+                let srv = await dev.gatt.connect();
+                txChar = await srv.getPrimaryService(SERVICE_UUID).then(s => s.getCharacteristic(CHARACTERISTIC_UUID));
+                
+                document.getElementById('proximity-gate').style.display = 'none';
+                
+                setInterval(async () => {
+                    if(dev.gatt.connected) {
+                        let mockRssi = Math.floor(Math.random() * (-60 - (-85)) + (-85)); 
+                        document.getElementById('signal-strength').innerText = `RSSI PROSSIMITÀ: ${mockRssi} dBm`;
+                        await txChar.writeValue(new TextEncoder().encode("RSSI" + mockRssi));
+                    }
+                }, 1000);
+
+                avviaGraficaToga();
+            } catch(e) { document.getElementById('gate-status').innerText = "ERRORE CRITICO DI AGGANCIO: " + e.message; }
+        }
+
+        function forzaConnessioneDemo() {
+            document.getElementById('proximity-gate').style.display = 'none';
+            document.getElementById('signal-strength').innerText = `RSSI PROSSIMITÀ: STABILE (BANCO)`;
+            avviaGraficaToga();
+        }
+
+        function avviaGraficaToga() {
+            clearInterval(simLoop);
+            simLoop = setInterval(() => {
+                let rpm = Math.floor(Math.random() * (11500 - 3000) + 3000);
+                let pct = ((rpm - 0) / 12000) * 100;
+                document.getElementById('rpmBar').style.width = pct + '%';
+                document.getElementById('rpmNum').innerText = rpm;
+
+                let kme = Math.floor(Math.random() * (130 - 20) + 20);
+                document.getElementById('speedNum').innerText = kme;
+            }, 250);
+
+            const lastTab = localStorage.getItem('qs_last_tab') || 'home';
+            const targetNav = document.getElementById(`nav-${lastTab}`) || document.getElementById('nav-home');
+            cambiaTab(lastTab, targetNav);
+        }
+
+        async function inviaDati(str) {
+            if(!txChar) { log("SIMULAZIONE BUS -> " + str); return; }
+            await txChar.writeValue(new TextEncoder().encode(str + "\n"));
+        }
+    </script>
+</body>
+</html>
