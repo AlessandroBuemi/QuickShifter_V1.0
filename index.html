@@ -72,15 +72,19 @@
             100% { opacity: 0; transform: translate(-50%, -50%) scale(1.25); }
         }
 
+        /* HEADER STRUTTURATO PER EVITARE SBOARDAMENTI */
         .header {
             background: var(--panel); border: 1px solid var(--panel-border); border-left: 5px solid var(--accent);
             padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
             border-radius: 12px; margin-bottom: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); backdrop-filter: blur(10px);
         }
 
-        .header-title { font-weight: 800; font-size: 15px; color: #fff; }
-        .header-sub { font-size: 9px; color: #707085; font-family: monospace; margin-top: 2px; }
-        .btn-disconnect { background: #240c12; border: 1px solid #ff003c44; color: #ff416c; padding: 6px 12px; font-size: 10px; font-weight: 800; border-radius: 6px; cursor: pointer; }
+        .header-title-wrapper { display: flex; flex-direction: column; flex-shrink: 1; min-width: 0; }
+        .header-title { font-weight: 800; font-size: 15px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .header-sub { font-size: 9px; color: #707085; font-family: monospace; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        
+        .header-controls-wrapper { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .btn-disconnect { background: #240c12; border: 1px solid #ff003c44; color: #ff416c; padding: 6px 12px; font-size: 10px; font-weight: 800; border-radius: 6px; cursor: pointer; white-space: nowrap; }
 
         .dashboard-arc-box {
             background: var(--panel); border: 1px solid var(--panel-border); border-radius: 16px;
@@ -125,7 +129,9 @@
     <div id="proximity-gate">
         <div class="radar-container">
             <button class="btn-connect-hardware" onclick="connettiProssimita()">
-                <span>🏍️ CONNETTI HARDWARE</span>
+                <span>
+
+🏍️ CONNETTI HARDWARE</span>
                 <div class="pulse-ring"></div>
             </button>
         </div>
@@ -134,12 +140,12 @@
     </div>
 
     <div class="header">
-        <div>
+        <div class="header-title-wrapper">
             <div class="header-title">QuickShifter Pro</div>
             <div id="signal-strength" class="header-sub">CONNESSIONE BLE INATTIVA</div>
         </div>
-        <div style="display:flex; align-items:center; gap:12px;">
-            <input type="text" id="bikeName" value="LA MIA MOTO" style="background:transparent; border:none; color:var(--accent); text-transform:uppercase; text-align:right; font-weight:900; font-size:14px; outline:none;" oninput="salvaNomeMoto(this.value)">
+        <div class="header-controls-wrapper">
+            <input type="text" id="bikeName" value="LA MIA MOTO" style="background:transparent; border:none; color:var(--accent); text-transform:uppercase; text-align:right; font-weight:900; font-size:12px; width:90px; outline:none;" oninput="salvaNomeMoto(this.value)">
             <button class="btn-disconnect" id="disconnetti-rapido" onclick="dissociaDispositivo()" style="display:none;">SCONNETTI</button>
         </div>
     </div>
@@ -199,7 +205,7 @@
 
     <div id="pane-placeholder" class="sub-pane" style="display:none;">
         <div class="card" style="text-align:center; padding:30px 0; color:#505065;">
-            <div style="font-size:32px; margin-bottom:10px;">🛠----</div>
+            <div style="font-size:32px; margin-bottom:10px;">🛠️</div>
             <div style="font-size:12px; font-weight:800;" id="placeholder-title">MODULO ATTIVO</div>
         </div>
     </div>
@@ -231,6 +237,11 @@
             document.getElementById('liveVal').innerText = savedMs;
             document.getElementById('lastCut').innerText = savedMs;
             document.body.className = savedTheme + '-theme';
+            
+            // Imposta la classe active sul pulsante corretto salvato all'avvio
+            const btnId = "btn-" + savedTheme;
+            const targetBtn = document.getElementById(btnId);
+            if(targetBtn) targetBtn.classList.add('active');
         });
 
         function salvaNomeMoto(val) { localStorage.setItem('qs_bike', val); }
@@ -255,22 +266,28 @@
             }
         }
 
+        /* CORREZIONE FUNZIONE PULSANTI MAPPE VELOCITÀ */
         function setMode(ms, theme, btn) {
             document.querySelectorAll('.preset-grid .btn-action').forEach(b => b.classList.remove('active'));
             btn.classList.add('active'); 
             document.body.className = theme + '-theme';
+            
             localStorage.setItem('qs_ms', ms); 
             localStorage.setItem('qs_theme', theme);
+            
             if(ms === 0) { 
                 sendCommand({type: "scoppi", value: true}); 
                 document.getElementById('lastCut').innerText = "POP"; 
             } else { 
                 sendCommand({type: "scoppi", value: false}); 
                 sendCommand({type: "slider", value: parseInt(ms)}); 
+                
+                // Forziamo l'aggiornamento grafico immediato degli elementi della view
                 document.getElementById('slider').value = ms; 
                 document.getElementById('liveVal').innerText = ms; 
                 document.getElementById('lastCut').innerText = ms; 
             }
+            log(`Mappa impostata: ${ms === 0 ? 'Pop & Bang' : ms + 'ms'}`);
         }
 
         function inviaValoreTiming(val) { 
