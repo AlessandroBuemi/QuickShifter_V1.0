@@ -287,4 +287,148 @@
         // NUOVA LOGICA CICLICA POP & BANG 1, 2, 3
         function ruotaPopBang(btn) {
             document.querySelectorAll('.preset-grid .btn-action').forEach(b => b.classList.remove('active'));
-            btn.classList.add('
+            btn.classList.add('active');
+            
+            currentPopMode++;
+            if(currentPopMode > 3) currentPopMode = 1; // Cicla tra 1, 2 e 3
+
+            let modalitaNome = "";
+            if(currentPopMode === 1) {
+                document.body.className = 'pop1-theme';
+                btn.innerText = "💥 BANG 1: STD";
+                modalitaNome = "Standard";
+                document.getElementById('lastCut').innerText = "BANG 1";
+            } else if(currentPopMode === 2) {
+                document.body.className = 'pop2-theme';
+                btn.innerText = "💥 BANG 2: DOPPIO";
+                modalitaNome = "Doppio Cut";
+                document.getElementById('lastCut').innerText = "BANG 2";
+            } else if(currentPopMode === 3) {
+                document.body.className = 'pop3-theme';
+                btn.innerText = "💥 BANG 3: FLAME";
+                modalitaNome = "Flame Cut";
+                document.getElementById('lastCut').innerText = "BANG 3";
+            }
+
+            localStorage.setItem('qs_theme', 'pop' + currentPopMode);
+            sendCommand({type:"scoppi",value:currentPopMode}); 
+            log(`Attivato: Pop & Bang [Mappa ${currentPopMode} - ${modalitaNome}]`);
+        }
+
+        function inviaValoreTiming(val) { 
+            currentPopMode = 0;
+            document.querySelectorAll('.preset-grid .btn-action').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-pop').innerText = "💥 POP & BANG";
+            localStorage.setItem('qs_ms', val); 
+            sendCommand({type:"slider",value:parseInt(val)}); 
+        }
+
+        function cambiaStatoMotore(bloccato) {
+            const btnLock = document.getElementById('btn-lock-ecu'); 
+            const btnUnlock = document.getElementById('btn-unlock-ecu');
+            if(bloccato) { 
+                btnLock.classList.add('lock-active'); 
+                btnUnlock.classList.remove('unlock-active'); 
+                sendCommand({type:"ecu_state",status:"LOCKED"}); 
+            } else { 
+                btnLock.classList.remove('lock-active'); 
+                btnUnlock.classList.add('unlock-active'); 
+                sendCommand({type:"ecu_state",status:"UNLOCKED"}); 
+            }
+        }
+
+        function switchSicurezzaProssimita() {
+            const btn = document.getElementById('btn-toggle-prox'); 
+            sicurezzaProssimitaAttiva = !sicurezzaProssimitaAttiva;
+            if(sicurezzaProssimitaAttiva) { 
+                btn.classList.add('prox-active'); 
+                btn.innerText = "🛡️ PROSSIMITÀ AUTOMATICA: ATTIVA"; 
+                sendCommand({type:"proximity_fence",value:true}); 
+            } else { 
+                btn.classList.remove('prox-active'); 
+                btn.innerText = "🛡️ PROSSIMITÀ AUTOMATICA: DISATTIVATA"; 
+                sendCommand({type:"proximity_fence",value:false}); 
+            }
+        }
+
+        async function connettiProssimita() {
+            document.getElementById('gate-status').innerText = "Inizializzazione accoppiamento BLE...";
+            try {
+                bluetoothDevice = await navigator.bluetooth.requestDevice({
+                    filters: [{ services: [SERVICE_UUID] }],
+                    optionalServices: [SERVICE_UUID]
+                });
+
+                bluetoothDevice.addEventListener('gattserverdisconnected', onDisconnected);
+                const srv = await bluetoothDevice.gatt.connect();
+                const service = await srv.getPrimaryService(SERVICE_UUID);
+                rxChar = await service.getCharacteristic(CHARACTERISTIC_RX_UUID);
+                const txChar = await service.getCharacteristic(CHARACTERISTIC_TX_UUID);
+
+                await txChar.startNotifications();
+                txChar.addEventListener('characteristicvaluechanged', gestisciDatiInArrivo);
+
+                document.getElementById('proximity-gate').style.display = 'none';
+                document.getElementById('disconnetti-rapido').style.display = 'block';
+                document.getElementById('signal-strength').innerText = `HARDWARE CONNESSO`;
+                log("Link stabilito con l'ESP32.");
+            } catch(e) { 
+                document.getElementById('gate-status').innerText = "ERRORE LINK: " + e.message; 
+            }
+        }
+
+        function dissociaDispositivo() { 
+            if (bluetoothDevice && bluetoothDevice.gatt.connected) {
+                bluetoothDevice.gatt.disconnect(); 
+            } else {
+                onDisconnected();
+            }
+        }
+
+        function onDisconnected() { 
+            rxChar = null; 
+            document.getElementById('disconnetti-rapido').style.display = 'none'; 
+            document.getElementById('signal-strength').innerText = `CONNESSIONE BLE INATTIVA`; 
+            document.getElementById('proximity-gate').style.display = 'flex'; 
+            document.getElementById('gate-status').innerText = "DISPOSITIVO SCONNESSO. RICONNETTI HARDWARE..."; 
+        }
+
+        function gestisciDatiInArrivo(event) {
+            let enc = new TextDecoder("utf-8"); 
+            let valoreRicevuto = enc.decode(event.target.value);
+            try {
+                let data = JSON.parse(valoreRicevuto);
+                if(data.cutTime !== undefined && data.bangMode === 0) { 
+                    document.getElementById('liveVal').innerText = data.cutTime; 
+                    document.getElementById('slider').value = data.cutTime; 
+                    document.getElementById('lastCut').innerText = data.cutTime + "ms"; 
+                }
+                if(data.contatore !== undefined) {
+                    document.getElementById('cambiate').innerText = data.contatore;
+                }
+                if(data.rpm !== undefined) { 
+                    let pct = ((data.rpm - 0) / 12000) * 100; 
+                    document.getElementById('rpmBar').style.width = pct + '%'; 
+                    document.getElementById('rpmNum').innerText = data.rpm; 
+                }
+                if(data.speed !== undefined) {
+                    document.getElementById('speedNum').innerText = data.speed;
+                }
+            } catch (e) { 
+                if(valoreRicevuto.trim().length > 0) log("ECU: " + valoreRicevuto); 
+            }
+        }
+
+        async function sendCommand(jsonData) { 
+            if (!rxChar) return; 
+            try { 
+                let encoder = new TextEncoder('utf-8'); 
+                let data = encoder.encode(JSON.stringify(jsonData)); 
+                await rxChar.writeValue(data); 
+            } catch(err) { 
+                console.log("Errore invio: ", err); 
+            } 
+        }
+    </script>
+</body>
+</html>
