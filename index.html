@@ -72,7 +72,6 @@
             100% { opacity: 0; transform: translate(-50%, -50%) scale(1.25); }
         }
 
-        /* HEADER STRUTTURATO PER EVITARE SBOARDAMENTI */
         .header {
             background: var(--panel); border: 1px solid var(--panel-border); border-left: 5px solid var(--accent);
             padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
@@ -129,9 +128,7 @@
     <div id="proximity-gate">
         <div class="radar-container">
             <button class="btn-connect-hardware" onclick="connettiProssimita()">
-                <span>
-
-🏍️ CONNETTI HARDWARE</span>
+                <span>🏍️ CONNETTI HARDWARE</span>
                 <div class="pulse-ring"></div>
             </button>
         </div>
@@ -169,7 +166,7 @@
                 <button class="btn-action sec-btn" id="btn-lock-ecu" onclick="cambiaStatoMotore(true)">🔒 BLOCCA MOTO</button>
                 <button class="btn-action sec-btn unlock-active" id="btn-unlock-ecu" onclick="cambiaStatoMotore(false)">🔓 SBLOCCATA</button>
             </div>
-            <button class="btn-action sec-btn" id="btn-toggle-prox" onclick="switchSicurezzaProssimita()" style="width:100%; text-align:center; padding:14px 0;">🛡️ PROSSIMITÀ AUTOMATICA: DISATTIVATA</button>
+            <button class="btn-action sec-btn" id="btn-toggle-prox" onclick="switchSicurezzaProssimita()">🛡️ PROSSIMITÀ AUTOMATICA: DISATTIVATA</button>
         </div>
     </div>
 
@@ -238,7 +235,6 @@
             document.getElementById('lastCut').innerText = savedMs;
             document.body.className = savedTheme + '-theme';
             
-            // Imposta la classe active sul pulsante corretto salvato all'avvio
             const btnId = "btn-" + savedTheme;
             const targetBtn = document.getElementById(btnId);
             if(targetBtn) targetBtn.classList.add('active');
@@ -254,7 +250,6 @@
         function cambiaTab(id, elemento) {
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
             elemento.classList.add('active');
-            localStorage.setItem('qs_last_tab', id);
             document.getElementById('pane-home').style.display = (id === 'home') ? 'block' : 'none';
             document.getElementById('pane-shifter').style.display = (id === 'shifter') ? 'block' : 'none';
             const pPlace = document.getElementById('pane-placeholder');
@@ -266,7 +261,7 @@
             }
         }
 
-        /* CORREZIONE FUNZIONE PULSANTI MAPPE VELOCITÀ */
+        /* STRUTTURA DEL PACCHETTO STRINGATA SOTTO I 20 BYTE PER EVITARE BUFFER OVERFLOW BLE */
         function setMode(ms, theme, btn) {
             document.querySelectorAll('.preset-grid .btn-action').forEach(b => b.classList.remove('active'));
             btn.classList.add('active'); 
@@ -276,23 +271,20 @@
             localStorage.setItem('qs_theme', theme);
             
             if(ms === 0) { 
-                sendCommand({type: "scoppi", value: true}); 
+                sendCommand({type:"scoppi",value:true}); 
                 document.getElementById('lastCut').innerText = "POP"; 
             } else { 
-                sendCommand({type: "scoppi", value: false}); 
-                sendCommand({type: "slider", value: parseInt(ms)}); 
-                
-                // Forziamo l'aggiornamento grafico immediato degli elementi della view
+                sendCommand({type:"slider",value:parseInt(ms)}); 
                 document.getElementById('slider').value = ms; 
                 document.getElementById('liveVal').innerText = ms; 
                 document.getElementById('lastCut').innerText = ms; 
             }
-            log(`Mappa impostata: ${ms === 0 ? 'Pop & Bang' : ms + 'ms'}`);
+            log(`Mappa: ${ms === 0 ? 'Pop' : ms + 'ms'}`);
         }
 
         function inviaValoreTiming(val) { 
             localStorage.setItem('qs_ms', val); 
-            sendCommand({type: "slider", value: parseInt(val)}); 
+            sendCommand({type:"slider",value:parseInt(val)}); 
         }
 
         function cambiaStatoMotore(bloccato) {
@@ -301,11 +293,11 @@
             if(bloccato) { 
                 btnLock.classList.add('lock-active'); 
                 btnUnlock.classList.remove('unlock-active'); 
-                sendCommand({type: "ecu_state", status: "LOCKED"}); 
+                sendCommand({type:"ecu_state",status:"LOCKED"}); 
             } else { 
                 btnLock.classList.remove('lock-active'); 
                 btnUnlock.classList.add('unlock-active'); 
-                sendCommand({type: "ecu_state", status: "UNLOCKED"}); 
+                sendCommand({type:"ecu_state",status:"UNLOCKED"}); 
             }
         }
 
@@ -315,11 +307,11 @@
             if(sicurezzaProssimitaAttiva) { 
                 btn.classList.add('prox-active'); 
                 btn.innerText = "🛡️ PROSSIMITÀ AUTOMATICA: ATTIVA"; 
-                sendCommand({type: "proximity_fence", value: true}); 
+                sendCommand({type:"proximity_fence",value:true}); 
             } else { 
                 btn.classList.remove('prox-active'); 
                 btn.innerText = "🛡️ PROSSIMITÀ AUTOMATICA: DISATTIVATA"; 
-                sendCommand({type: "proximity_fence", value: false}); 
+                sendCommand({type:"proximity_fence",value:false}); 
             }
         }
 
@@ -343,7 +335,7 @@
                 document.getElementById('proximity-gate').style.display = 'none';
                 document.getElementById('disconnetti-rapido').style.display = 'block';
                 document.getElementById('signal-strength').innerText = `HARDWARE CONNESSO`;
-                log("Link stabilito correttamente con l'ESP32.");
+                log("Link stabilito con l'ESP32.");
             } catch(e) { 
                 document.getElementById('gate-status').innerText = "ERRORE LINK: " + e.message; 
             }
@@ -362,7 +354,7 @@
             document.getElementById('disconnetti-rapido').style.display = 'none'; 
             document.getElementById('signal-strength').innerText = `CONNESSIONE BLE INATTIVA`; 
             document.getElementById('proximity-gate').style.display = 'flex'; 
-            document.getElementById('gate-status').innerText = "DISPOSITIVO SCONNESSO. PREMI SUL PULSANTE PER RICONNETTERE HARDWARE..."; 
+            document.getElementById('gate-status').innerText = "DISPOSITIVO SCONNESSO. RICONNETTI HARDWARE..."; 
         }
 
         function gestisciDatiInArrivo(event) {
