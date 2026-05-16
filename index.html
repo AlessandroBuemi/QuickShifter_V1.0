@@ -130,7 +130,9 @@
     <div id="proximity-gate">
         <div class="radar-container">
             <button class="btn-connect-hardware" onclick="connettiProssimita()">
-                <span>🏍️ CONNETTI HARDWARE</span>
+                <span>
+
+🏍️ CONNETTI HARDWARE</span>
                 <div class="pulse-ring"></div>
             </button>
         </div>
@@ -195,7 +197,7 @@
             <div class="tel-grid">
                 <div class="tel-box"><div class="tel-num" id="cambiate">0</div><div class="tel-lbl">CAMBIATE</div></div>
                 <div class="tel-box"><div class="tel-num" style="color:#00ff66">96%</div><div class="tel-lbl">FLUIDITÀ</div></div>
-                <div class="tel-box"><div class="tel-num" id="lastCut">55</div><div class="tel-lbl">LAST CUT</div></div>
+                <div class="tel-box"><div class="tel-num" id="lastCut">55ms</div><div class="tel-lbl">LAST CUT</div></div>
             </div>
         </div>
 
@@ -225,7 +227,7 @@
         let rxChar;
         let bluetoothDevice = null;
         let sicurezzaProssimitaAttiva = false;
-        let currentPopMode = 0; // 0 = spento, 1 = std, 2 = double, 3 = flame
+        let currentPopMode = 0; 
 
         document.addEventListener("DOMContentLoaded", () => {
             if(localStorage.getItem('qs_bike')) {
@@ -235,7 +237,7 @@
             const savedTheme = localStorage.getItem('qs_theme') || "race";
             document.getElementById('slider').value = savedMs;
             document.getElementById('liveVal').innerText = savedMs;
-            document.getElementById('lastCut').innerText = savedMs;
+            document.getElementById('lastCut').innerText = savedMs + "ms";
             document.body.className = savedTheme + '-theme';
             
             const btnId = "btn-" + savedTheme;
@@ -264,9 +266,9 @@
             }
         }
 
-        // CORREZIONE DEFINITIVA SINCRONIZZAZIONE PULSANTI -> SLIDER
+        // AGGIORNA INTERFACCIA E SLIDER ALL'ISTANTE
         function setMode(ms, theme, btn) {
-            currentPopMode = 0; // Resetta rotazione pop
+            currentPopMode = 0; 
             document.querySelectorAll('.preset-grid .btn-action').forEach(b => b.classList.remove('active'));
             btn.classList.add('active'); 
             document.body.className = theme + '-theme';
@@ -275,7 +277,7 @@
             localStorage.setItem('qs_ms', ms); 
             localStorage.setItem('qs_theme', theme);
             
-            // Muove lo slider visivo
+            // Forza lo slider a muoversi visivamente sul tempo del pulsante cliccato
             document.getElementById('slider').value = ms; 
             document.getElementById('liveVal').innerText = ms; 
             document.getElementById('lastCut').innerText = ms + "ms"; 
@@ -284,13 +286,12 @@
             log(`Mappa: ${ms}ms`);
         }
 
-        // NUOVA LOGICA CICLICA POP & BANG 1, 2, 3
         function ruotaPopBang(btn) {
             document.querySelectorAll('.preset-grid .btn-action').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
             
             currentPopMode++;
-            if(currentPopMode > 3) currentPopMode = 1; // Cicla tra 1, 2 e 3
+            if(currentPopMode > 3) currentPopMode = 1; 
 
             let modalitaNome = "";
             if(currentPopMode === 1) {
@@ -374,6 +375,7 @@
                 log("Link stabilito con l'ESP32.");
             } catch(e) { 
                 document.getElementById('gate-status').innerText = "ERRORE LINK: " + e.message; 
+                onDisconnected();
             }
         }
 
