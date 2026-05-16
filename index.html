@@ -20,15 +20,15 @@
             --box-bg: #0d0d14;
         }
 
-        /* MODALITÀ GIORNO / LIGHT MODE AD ALTO CONTRASTO */
+        /* LIGHT MODE AD ALTO CONTRASTO */
         body.light-mode {
             --bg-dark: #f0f2f5;
             --panel: rgba(255, 255, 255, 0.98);
-            --panel-border: rgba(0, 0, 0, 0.08);
+            --panel-border: rgba(0, 0, 0, 0.12);
             --text-main: #1c1c24;
             --text-muted: #555566;
             --btn-bg: #e4e6eb;
-            --box-bg: #f0f2f5;
+            --box-bg: #e4e6eb;
             --bg-radar: radial-gradient(circle at center, #ffffff 0%, #dcdfe4 100%);
         }
 
@@ -49,7 +49,7 @@
             min-height: 100vh;
             display: flex;
             flex-direction: column;
-            transition: background-color 0.2s, color 0.2s;
+            transition: background-color 0.15s, color 0.15s;
         }
 
         #proximity-gate {
@@ -72,7 +72,6 @@
             font-weight: 900; border-radius: 50px; cursor: pointer; box-shadow: 0 0 30px rgba(255, 0, 60, 0.4);
             letter-spacing: 1px; transition: transform 0.1s; display: flex; align-items: center; gap: 12px;
         }
-        .btn-connect-hardware:active { transform: scale(0.96); }
 
         .pulse-ring {
             position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
@@ -85,30 +84,32 @@
             100% { opacity: 0; transform: translate(-50%, -50%) scale(1.25); }
         }
 
+        /* HOTBAR UNIFORMATA SENZA SOVRAPPOSIZIONI */
         .header {
             background: var(--panel); border: 1px solid var(--panel-border); border-left: 5px solid var(--accent);
-            padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
-            border-radius: 12px; margin-bottom: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); backdrop-filter: blur(10px);
+            padding: 10px 14px; display: flex; justify-content: space-between; align-items: center;
+            border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); backdrop-filter: blur(10px);
         }
 
-        .header-title-wrapper { display: flex; flex-direction: column; flex-shrink: 1; min-width: 0; }
-        .header-title { font-weight: 800; font-size: 15px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .header-sub { font-size: 9px; color: var(--text-muted); font-family: monospace; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .header-title-wrapper { display: flex; flex-direction: column; min-width: 0; flex: 1; }
+        .header-title { font-weight: 800; font-size: 14px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .header-sub { font-size: 9px; color: var(--text-muted); font-family: monospace; margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
-        .header-controls-wrapper { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        .header-controls-wrapper { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
         
-        /* PULSANTE CAMBIO TEMA GLOBALE */
+        /* PULSANTE TEMA SOLO EMOJI */
         .btn-theme-toggle {
-            background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-main);
-            padding: 6px 10px; font-size: 11px; font-weight: 700; border-radius: 8px; cursor: pointer;
+            background: var(--btn-bg); border: 1px solid var(--panel-border); 
+            font-size: 18px; width: 36px; height: 36px; display: flex; align-items: center; 
+            justify-content: center; border-radius: 8px; cursor: pointer; outline: none;
         }
 
-        .btn-disconnect { background: #240c12; border: 1px solid #ff003c44; color: #ff416c; padding: 6px 12px; font-size: 10px; font-weight: 800; border-radius: 6px; cursor: pointer; white-space: nowrap; }
+        .btn-disconnect { background: #240c12; border: 1px solid #ff003c44; color: #ff416c; padding: 6px 10px; font-size: 10px; font-weight: 800; border-radius: 6px; cursor: pointer; }
 
         .dashboard-arc-box {
             background: var(--panel); border: 1px solid var(--panel-border); border-radius: 16px;
             padding: 25px 20px; text-align: center; position: relative; margin-bottom: 15px;
-            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.05);
         }
 
         .arc-contagiri { width: 100%; height: 18px; background: #09090d; border: 1px solid rgba(255,255,255,0.03); border-radius: 30px; overflow: hidden; margin-bottom: 20px; position: relative; }
@@ -137,10 +138,9 @@
         .tel-lbl { font-size: 9px; color: var(--text-muted); margin-top: 6px; font-weight: 700; }
         .console { background: #07070a; height: 95px; overflow-y: auto; padding: 10px; font-size: 10px; color: #00ff66; border-radius: 10px; font-family: monospace; }
 
-        .bottom-nav { position: fixed; bottom: 12px; left: 12px; right: 12px; background: var(--panel); border: 1px solid var(--panel-border); display: grid; grid-template-columns: repeat(5, 1fr); padding: 12px 6px; z-index: 1000; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .bottom-nav { position: fixed; bottom: 12px; left: 12px; right: 12px; background: var(--panel); border: 1px solid var(--panel-border); display: grid; grid-template-columns: repeat(5, 1fr); padding: 12px 6px; z-index: 1000; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
         .nav-item { background: transparent; border: none; color: var(--text-muted); font-size: 9px; font-weight: 800; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
         .nav-item.active { color: var(--accent); }
-        .nav-icon { font-size: 18px; margin-bottom: 4px; }
     </style>
 </head>
 <body class="race-theme">
@@ -153,41 +153,41 @@
             </button>
         </div>
         <h2 style="font-size:18px; font-weight:900; margin-bottom:8px; color:var(--text-main);">LINK CENTRALINA ARDUINO</h2>
-        <p id="gate-status" style="font-size:12px; color:var(--text-muted); max-width:280px; line-height:1.4;">Clicca sul pulsante rosso per aprire la finestra di accoppiamento del browser ed eseguire il collegamento stabile con l'ESP32.</p>
+        <p id="gate-status" style="font-size:12px; color:var(--text-muted); max-width:280px; line-height:1.4;">Clicca sul pulsante rosso per aprire la finestra di accoppiamento.</p>
     </div>
 
     <div class="header">
         <div class="header-title-wrapper">
             <div class="header-title">QuickShifter Pro</div>
-            <div id="signal-strength" class="header-sub">CONNESSIONE BLE INATTIVA</div>
+            <div id="signal-strength" class="header-sub">DISCONNESSO</div>
         </div>
         <div class="header-controls-wrapper">
-            <button class="btn-theme-toggle" id="theme-switcher" onclick="toggleVisionMode()">☀️ DIURNO</button>
-            <input type="text" id="bikeName" value="LA MIA MOTO" style="background:transparent; border:none; color:var(--accent); text-transform:uppercase; text-align:right; font-weight:900; font-size:12px; width:80px; outline:none;" oninput="salvaNomeMoto(this.value)">
-            <button class="btn-disconnect" id="disconnetti-rapido" onclick="dissociaDispositivo()" style="display:none;">SCONNETTI</button>
+            <button class="btn-theme-toggle" id="theme-switcher" onclick="toggleVisionMode()">☀️</button>
+            <input type="text" id="bikeName" value="MOTO" style="background:transparent; border:none; color:var(--accent); text-transform:uppercase; text-align:right; font-weight:900; font-size:11px; width:65px; outline:none;" oninput="salvaNomeMoto(this.value)">
+            <button class="btn-disconnect" id="disconnetti-rapido" onclick="dissociaDispositivo()" style="display:none;">❌</button>
         </div>
     </div>
 
     <div id="pane-home" class="sub-pane">
         <div class="dashboard-arc-box">
-            <div style="position:absolute; top:12px; left:18px; font-size:9px; color:var(--text-muted); font-weight:800; letter-spacing:1px;">LIVE TELEMETRY</div>
+            <div style="position:absolute; top:12px; left:18px; font-size:9px; color:var(--text-muted); font-weight:800;">LIVE TELEMETRY</div>
             <div class="arc-contagiri"><div class="arc-fill" id="rpmBar"></div></div>
             <div style="display:flex; justify-content:space-between; margin-top:-14px; margin-bottom:15px; font-size:11px; color:var(--text-muted); font-weight:700;">
-                <span>4000 RPM</span>
+                <span>4k RPM</span>
                 <span style="color:var(--text-main); font-weight:800; font-size:13px;" id="rpmNum">0</span>
-                <span>12000 LIMIT</span>
+                <span>12k LIMIT</span>
             </div>
             <div class="speed-heavy" id="speedNum">0</div>
             <div style="font-size:11px; color:var(--text-muted); font-weight:800; letter-spacing:3px; margin-top:8px;">KM/H</div>
         </div>
 
         <div class="card">
-            <div class="card-title">Sicurezza Hardware & Stato Veicolo</div>
+            <div class="card-title">Sicurezza Hardware</div>
             <div class="preset-grid">
-                <button class="btn-action sec-btn" id="btn-lock-ecu" onclick="cambiaStatoMotore(true)">🔒 BLOCCA MOTO</button>
-                <button class="btn-action sec-btn unlock-active" id="btn-unlock-ecu" onclick="cambiaStatoMotore(false)">🔓 SBLOCCATA</button>
+                <button class="btn-action sec-btn" id="btn-lock-ecu" onclick="cambiaStatoMotore(true)">🔒 BLOCCA</button>
+                <button class="btn-action sec-btn unlock-active" id="btn-unlock-ecu" onclick="cambiaStatoMotore(false)">🔓 ATTIVA</button>
             </div>
-            <button class="btn-action sec-btn" id="btn-toggle-prox" onclick="switchSicurezzaProssimita()">🛡️ PROSSIMITÀ AUTOMATICA: DISATTIVATA</button>
+            <button class="btn-action sec-btn" id="btn-toggle-prox" onclick="switchSicurezzaProssimita()">🛡️ PROSSIMITÀ: OFF</button>
         </div>
     </div>
 
@@ -195,22 +195,22 @@
         <div class="card">
             <div class="card-title">Mappe Cambio & Tempi di Taglio</div>
             <div class="preset-grid">
-                <button class="btn-action" id="btn-eco" onclick="setMode(75, 'eco', this)">75ms COMFORT</button>
-                <button class="btn-action" id="btn-sport" onclick="setMode(65, 'sport', this)">65ms STANDARD</button>
-                <button class="btn-action" id="btn-race" onclick="setMode(55, 'race', this)">55ms RACING</button>
-                <button class="btn-action" id="btn-pop" onclick="ruotaPopBang(this)">💥 POP & BANG</button>
+                <button class="btn-action" id="btn-eco" onclick="setMode(75, 'eco', this)">75ms</button>
+                <button class="btn-action" id="btn-sport" onclick="setMode(65, 'sport', this)">65ms</button>
+                <button class="btn-action" id="btn-race" onclick="setMode(55, 'race', this)">55ms</button>
+                <button class="btn-action" id="btn-pop" onclick="ruotaPopBang(this)">💥 POP</button>
             </div>
             <div class="slider-container">
                 <input type="range" id="slider" min="30" max="100" value="55" oninput="document.getElementById('liveVal').innerText=this.value" onchange="inviaValoreTiming(this.value)">
                 <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; margin-top:10px; color:var(--text-muted);">
-                    <span>FINE TUNING MANUALE:</span>
+                    <span>FINE TUNING:</span>
                     <span style="color:var(--accent); font-weight:800;"><span id="liveVal">55</span> ms</span>
                 </div>
             </div>
         </div>
 
         <div class="card">
-            <div class="card-title">Analisi Shifter & AI Autotuning</div>
+            <div class="card-title">Analisi Shifter</div>
             <div class="tel-grid">
                 <div class="tel-box"><div class="tel-num" id="cambiate">0</div><div class="tel-lbl">CAMBIATE</div></div>
                 <div class="tel-box"><div class="tel-num" style="color:#00ff66">96%</div><div class="tel-lbl">FLUIDITÀ</div></div>
@@ -218,7 +218,7 @@
             </div>
         </div>
 
-        <div class="card"><div class="card-title">ECU Live Log Terminal</div><div class="console" id="console">SYS: In attesa di link...</div></div>
+        <div class="card"><div class="card-title">ECU Terminal</div><div class="console" id="console">SYS: In attesa...</div></div>
     </div>
 
     <div id="pane-placeholder" class="sub-pane" style="display:none;">
@@ -229,11 +229,11 @@
     </div>
 
     <nav class="bottom-nav">
-        <button class="nav-item active" id="nav-home" onclick="cambiaTab('home', this)"><span class="nav-icon">🏠</span>HOME</button>
-        <button class="nav-item" id="nav-shifter" onclick="cambiaTab('shifter', this)"><span class="nav-icon">⚙️</span>SHIFTER</button>
-        <button class="nav-item" onclick="cambiaTab('anti-wheelie', this)"><span class="nav-icon">🏍️</span>ANTI-W</button>
-        <button class="nav-item" onclick="cambiaTab('targa', this)"><span class="nav-icon">🆔</span>TARGA</button>
-        <button class="nav-item" onclick="cambiaTab('track', this)"><span class="nav-icon">📍</span>TRACK</button>
+        <button class="nav-item active" id="nav-home" onclick="cambiaTab('home', this)">🏠 HOME</button>
+        <button class="nav-item" id="nav-shifter" onclick="cambiaTab('shifter', this)">⚙️ SHIFTER</button>
+        <button class="nav-item" onclick="cambiaTab('anti-wheelie', this)">🏍️ ANTI-W</button>
+        <button class="nav-item" onclick="cambiaTab('targa', this)">🆔 TARGA</button>
+        <button class="nav-item" onclick="cambiaTab('track', this)">📍 TRACK</button>
     </nav>
 
     <script>
@@ -250,10 +250,11 @@
             if(localStorage.getItem('qs_bike')) {
                 document.getElementById('bikeName').value = localStorage.getItem('qs_bike');
             }
-            // Controllo ed applicazione modalità Giorno/Notte salvata
             if(localStorage.getItem('qs_vision') === 'light') {
                 document.body.classList.add('light-mode');
-                document.getElementById('theme-switcher').innerText = "🌙 NOTTURNO";
+                document.getElementById('theme-switcher').innerText = "🌙";
+            } else {
+                document.getElementById('theme-switcher').innerText = "☀️";
             }
 
             const savedMs = localStorage.getItem('qs_ms') || "55";
@@ -262,25 +263,31 @@
             document.getElementById('liveVal').innerText = savedMs;
             document.getElementById('lastCut').innerText = savedMs + "ms";
             
-            // Applica il colore tema mantenendo la base chiaro/scuro
-            document.body.className = document.body.className.includes('light-mode') ? 'light-mode ' + savedTheme + '-theme' : savedTheme + '-theme';
+            applyThemeClasses(savedTheme);
             
             const btnId = "btn-" + savedTheme;
             const targetBtn = document.getElementById(btnId);
             if(targetBtn) targetBtn.classList.add('active');
         });
 
-        // LOGICA DI SWITCH CHIARO / SCURO
-        void function toggleVisionMode() {
-            const isLight = document.body.classList.toggle('light-mode');
+        function toggleVisionMode() {
+            const body = document.body;
             const switcher = document.getElementById('theme-switcher');
-            if(isLight) {
-                localStorage.setItem('qs_vision', 'light');
-                switcher.innerText = "🌙 NOTTURNO";
-            } else {
+            
+            if(body.classList.contains('light-mode')) {
+                body.classList.remove('light-mode');
                 localStorage.setItem('qs_vision', 'dark');
-                switcher.innerText = "☀️ DIURNO";
+                switcher.innerText = "☀️";
+            } else {
+                body.classList.add('light-mode');
+                localStorage.setItem('qs_vision', 'light');
+                switcher.innerText = "🌙";
             }
+        }
+
+        function applyThemeClasses(currentTheme) {
+            const hasLight = document.body.classList.contains('light-mode');
+            document.body.className = hasLight ? 'light-mode ' + currentTheme + '-theme' : currentTheme + '-theme';
         }
 
         function salvaNomeMoto(val) { localStorage.setItem('qs_bike', val); }
@@ -294,7 +301,7 @@
             const pPlace = document.getElementById('pane-placeholder');
             if(id !== 'home' && id !== 'shifter') { 
                 pPlace.style.display = 'block'; 
-                document.getElementById('placeholder-title').innerText = `MODULO ${id.toUpperCase()} ATTIVO`; 
+                document.getElementById('placeholder-title').innerText = `MODULO ${id.toUpperCase()}`; 
             } else { pPlace.style.display = 'none'; }
         }
 
@@ -303,10 +310,8 @@
             document.querySelectorAll('.preset-grid .btn-action').forEach(b => b.classList.remove('active'));
             btn.classList.add('active'); 
             
-            // Mantieni light-mode se attivo
-            const lightActive = document.body.classList.contains('light-mode') ? 'light-mode ' : '';
-            document.body.className = lightActive + theme + '-theme';
-            document.getElementById('btn-pop').innerText = "💥 POP & BANG";
+            applyThemeClasses(theme);
+            document.getElementById('btn-pop').innerText = "💥 POP";
             
             localStorage.setItem('qs_ms', ms); 
             localStorage.setItem('qs_theme', theme);
@@ -326,35 +331,29 @@
             currentPopMode++;
             if(currentPopMode > 3) currentPopMode = 1; 
 
-            const lightActive = document.body.classList.contains('light-mode') ? 'light-mode ' : '';
-            let modalitaNome = "";
-            
             if(currentPopMode === 1) {
-                document.body.className = lightActive + 'pop1-theme';
-                btn.innerText = "💥 BANG 1: STD";
-                modalitaNome = "Standard";
+                applyThemeClasses('pop1-theme');
+                btn.innerText = "💥 B1";
                 document.getElementById('lastCut').innerText = "BANG 1";
             } else if(currentPopMode === 2) {
-                document.body.className = lightActive + 'pop2-theme';
-                btn.innerText = "💥 BANG 2: DOPPIO";
-                modalitaNome = "Doppio Cut";
+                applyThemeClasses('pop2-theme');
+                btn.innerText = "💥 B2";
                 document.getElementById('lastCut').innerText = "BANG 2";
             } else if(currentPopMode === 3) {
-                document.body.className = lightActive + 'pop3-theme';
-                btn.innerText = "💥 BANG 3: FLAME";
-                modalitaNome = "Flame Cut";
+                applyThemeClasses('pop3-theme');
+                btn.innerText = "💥 B3";
                 document.getElementById('lastCut').innerText = "BANG 3";
             }
 
             localStorage.setItem('qs_theme', 'pop' + currentPopMode);
             sendCommand({type:"scoppi",value:currentPopMode}); 
-            log(`Attivato: Pop & Bang [Mappa ${currentPopMode} - ${modalitaNome}]`);
+            log(`Pop & Bang Mappa ${currentPopMode}`);
         }
 
         function inviaValoreTiming(val) { 
             currentPopMode = 0;
             document.querySelectorAll('.preset-grid .btn-action').forEach(b => b.classList.remove('active'));
-            document.getElementById('btn-pop').innerText = "💥 POP & BANG";
+            document.getElementById('btn-pop').innerText = "💥 POP";
             localStorage.setItem('qs_ms', val); 
             sendCommand({type:"slider",value:parseInt(val)}); 
         }
@@ -378,17 +377,17 @@
             sicurezzaProssimitaAttiva = !sicurezzaProssimitaAttiva;
             if(sicurezzaProssimitaAttiva) { 
                 btn.classList.add('prox-active'); 
-                btn.innerText = "🛡️ PROSSIMITÀ AUTOMATICA: ATTIVA"; 
+                btn.innerText = "🛡️ PROSSIMITÀ: ON"; 
                 sendCommand({type:"proximity_fence",value:true}); 
             } else { 
                 btn.classList.remove('prox-active'); 
-                btn.innerText = "🛡️ PROSSIMITÀ AUTOMATICA: DISATTIVATA"; 
+                btn.innerText = "🛡️ PROSSIMITÀ: OFF"; 
                 sendCommand({type:"proximity_fence",value:false}); 
             }
         }
 
         async function connettiProssimita() {
-            document.getElementById('gate-status').innerText = "Inizializzazione accoppiamento BLE...";
+            document.getElementById('gate-status').innerText = "Connessione BLE...";
             try {
                 bluetoothDevice = await navigator.bluetooth.requestDevice({
                     filters: [{ services: [SERVICE_UUID] }],
@@ -406,10 +405,10 @@
 
                 document.getElementById('proximity-gate').style.display = 'none';
                 document.getElementById('disconnetti-rapido').style.display = 'block';
-                document.getElementById('signal-strength').innerText = `HARDWARE CONNESSO`;
-                log("Link stabilito con l'ESP32.");
+                document.getElementById('signal-strength').innerText = `CONNESSO`;
+                log("Link stabilito.");
             } catch(e) { 
-                document.getElementById('gate-status').innerText = "ERRORE LINK: " + e.message; 
+                document.getElementById('gate-status').innerText = "ERRORE: " + e.message; 
                 onDisconnected();
             }
         }
@@ -421,9 +420,9 @@
         function onDisconnected() { 
             rxChar = null; 
             document.getElementById('disconnetti-rapido').style.display = 'none'; 
-            document.getElementById('signal-strength').innerText = `CONNESSIONE BLE INATTIVA`; 
+            document.getElementById('signal-strength').innerText = `DISCONNESSO`; 
             document.getElementById('proximity-gate').style.display = 'flex'; 
-            document.getElementById('gate-status').innerText = "DISPOSITIVO SCONNESSO. RICONNETTI HARDWARE..."; 
+            document.getElementById('gate-status').innerText = "RICONNETTI HARDWARE..."; 
         }
 
         function gestisciDatiInArrivo(event) {
