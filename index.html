@@ -13,7 +13,23 @@
             --panel-border: rgba(255, 255, 255, 0.05);
             --panel-glow: rgba(255, 0, 60, 0.1);
             --text-main: #f0f0f5;
+            --text-muted: #808095;
+            --bg-radar: radial-gradient(circle at center, #0e0e17 0%, #040406 100%);
             --font-racing: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            --btn-bg: #14141f;
+            --box-bg: #0d0d14;
+        }
+
+        /* MODALITÀ GIORNO / LIGHT MODE AD ALTO CONTRASTO */
+        body.light-mode {
+            --bg-dark: #f0f2f5;
+            --panel: rgba(255, 255, 255, 0.98);
+            --panel-border: rgba(0, 0, 0, 0.08);
+            --text-main: #1c1c24;
+            --text-muted: #555566;
+            --btn-bg: #e4e6eb;
+            --box-bg: #f0f2f5;
+            --bg-radar: radial-gradient(circle at center, #ffffff 0%, #dcdfe4 100%);
         }
 
         body.eco-theme { --accent: #00ff66; --panel-glow: rgba(0, 255, 102, 0.08); }
@@ -27,24 +43,19 @@
 
         body {
             background-color: var(--bg-dark);
-            background-image: 
-                linear-gradient(315deg, rgba(0,0,0,0.4) 0%, transparent 100%),
-                linear-gradient(45deg, #13131a 25%, transparent 25%, transparent 75%, #13131a 75%),
-                linear-gradient(45deg, #13131a 25%, #0a0a0f 25%, #0a0a0f 75%, #13131a 75%);
-            background-size: 100% 100%, 12px 12px, 12px 12px;
-            background-position: 0 0, 0 0, 6px 6px;
             color: var(--text-main);
             font-family: var(--font-racing);
             padding: 15px 15px 95px 15px;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            transition: background-color 0.2s, color 0.2s;
         }
 
         #proximity-gate {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: radial-gradient(circle at center, #0e0e17 0%, #040406 100%);
+            background: var(--bg-radar);
             z-index: 9999;
             display: flex;
             flex-direction: column;
@@ -77,50 +88,57 @@
         .header {
             background: var(--panel); border: 1px solid var(--panel-border); border-left: 5px solid var(--accent);
             padding: 12px 16px; display: flex; justify-content: space-between; align-items: center;
-            border-radius: 12px; margin-bottom: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.3); backdrop-filter: blur(10px);
+            border-radius: 12px; margin-bottom: 15px; box-shadow: 0 8px 24px rgba(0,0,0,0.1); backdrop-filter: blur(10px);
         }
 
         .header-title-wrapper { display: flex; flex-direction: column; flex-shrink: 1; min-width: 0; }
-        .header-title { font-weight: 800; font-size: 15px; color: #fff; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-        .header-sub { font-size: 9px; color: #707085; font-family: monospace; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .header-title { font-weight: 800; font-size: 15px; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+        .header-sub { font-size: 9px; color: var(--text-muted); font-family: monospace; margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
         
         .header-controls-wrapper { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+        
+        /* PULSANTE CAMBIO TEMA GLOBALE */
+        .btn-theme-toggle {
+            background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-main);
+            padding: 6px 10px; font-size: 11px; font-weight: 700; border-radius: 8px; cursor: pointer;
+        }
+
         .btn-disconnect { background: #240c12; border: 1px solid #ff003c44; color: #ff416c; padding: 6px 12px; font-size: 10px; font-weight: 800; border-radius: 6px; cursor: pointer; white-space: nowrap; }
 
         .dashboard-arc-box {
             background: var(--panel); border: 1px solid var(--panel-border); border-radius: 16px;
             padding: 25px 20px; text-align: center; position: relative; margin-bottom: 15px;
-            box-shadow: 0 12px 32px rgba(0,0,0,0.4), inset 0 0 20px rgba(0,0,0,0.6);
+            box-shadow: 0 12px 32px rgba(0,0,0,0.15);
         }
 
         .arc-contagiri { width: 100%; height: 18px; background: #09090d; border: 1px solid rgba(255,255,255,0.03); border-radius: 30px; overflow: hidden; margin-bottom: 20px; position: relative; }
         .arc-fill { width: 0%; height: 100%; transition: width 0.08s linear; border-radius: 30px; background-size: 8px 100%; background-image: linear-gradient(90deg, transparent 20%, rgba(0,0,0,0.15) 20%), linear-gradient(90deg, #00ff66 45%, #ffaa00 70%, #ff003c 88%); }
-        .speed-heavy { font-size: 96px; font-weight: 900; color: #fff; line-height: 0.85; font-family: Arial, sans-serif; letter-spacing: -3px; }
+        .speed-heavy { font-size: 96px; font-weight: 900; color: var(--text-main); line-height: 0.85; font-family: Arial, sans-serif; letter-spacing: -3px; }
 
         .card { background: var(--panel); border: 1px solid var(--panel-border); padding: 18px; border-radius: 16px; margin-bottom: 15px; }
-        .card-title { font-size: 11px; color: #808095; letter-spacing: 1.5px; margin-bottom: 16px; text-transform: uppercase; font-weight: 700; border-bottom: 1px solid rgba(255,255,255,0.05); padding-bottom: 8px; }
+        .card-title { font-size: 11px; color: var(--text-muted); letter-spacing: 1.5px; margin-bottom: 16px; text-transform: uppercase; font-weight: 700; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; }
         .preset-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 12px; margin-bottom: 18px; }
         
-        .btn-action { background: #14141f; border: 1px solid rgba(255,255,255,0.03); color: #a0a0b5; padding: 16px 10px; font-size: 11px; font-weight: 800; border-radius: 10px; cursor: pointer; }
+        .btn-action { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-main); padding: 16px 10px; font-size: 11px; font-weight: 800; border-radius: 10px; cursor: pointer; }
         .btn-action.active { background: var(--accent); color: #000; border-color: var(--accent); box-shadow: 0 0 16px var(--accent); }
 
-        .sec-btn { background: #11141a; border: 1px solid #222b3c; color: #7888a5; }
+        .sec-btn { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-muted); }
         .sec-btn.lock-active { background: #2e0811; border-color: #ff003c; color: #ff3366; }
         .sec-btn.unlock-active { background: #082817; border-color: #00ff66; color: #33ff88; }
         .sec-btn.prox-active { background: #1a1e3a; border-color: #3b82f6; color: #60a5fa; }
 
-        .slider-container { background: #0d0d14; padding: 12px; border-radius: 10px; }
+        .slider-container { background: var(--box-bg); padding: 12px; border-radius: 10px; }
         input[type=range] { -webkit-appearance: none; width: 100%; background: #1c1c28; height: 8px; border-radius: 4px; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 22px; background: #fff; border: 3px solid var(--accent); cursor: pointer; border-radius: 8px; }
 
         .tel-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 12px; }
-        .tel-box { background: #0d0d14; padding: 14px 5px; text-align: center; border-radius: 10px; }
-        .tel-num { font-size: 24px; font-weight: 800; color: #fff; }
-        .tel-lbl { font-size: 9px; color: #555566; margin-top: 6px; font-weight: 700; }
+        .tel-box { background: var(--box-bg); padding: 14px 5px; text-align: center; border-radius: 10px; }
+        .tel-num { font-size: 24px; font-weight: 800; color: var(--text-main); }
+        .tel-lbl { font-size: 9px; color: var(--text-muted); margin-top: 6px; font-weight: 700; }
         .console { background: #07070a; height: 95px; overflow-y: auto; padding: 10px; font-size: 10px; color: #00ff66; border-radius: 10px; font-family: monospace; }
 
-        .bottom-nav { position: fixed; bottom: 12px; left: 12px; right: 12px; background: rgba(12, 12, 18, 0.92); border: 1px solid rgba(255,255,255,0.04); display: grid; grid-template-columns: repeat(5, 1fr); padding: 12px 6px; z-index: 1000; border-radius: 20px; }
-        .nav-item { background: transparent; border: none; color: #555566; font-size: 9px; font-weight: 800; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
+        .bottom-nav { position: fixed; bottom: 12px; left: 12px; right: 12px; background: var(--panel); border: 1px solid var(--panel-border); display: grid; grid-template-columns: repeat(5, 1fr); padding: 12px 6px; z-index: 1000; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.1); }
+        .nav-item { background: transparent; border: none; color: var(--text-muted); font-size: 9px; font-weight: 800; display: flex; flex-direction: column; align-items: center; cursor: pointer; }
         .nav-item.active { color: var(--accent); }
         .nav-icon { font-size: 18px; margin-bottom: 4px; }
     </style>
@@ -130,14 +148,12 @@
     <div id="proximity-gate">
         <div class="radar-container">
             <button class="btn-connect-hardware" onclick="connettiProssimita()">
-                <span>
-
-🏍️ CONNETTI HARDWARE</span>
+                <span>🏍️ CONNETTI HARDWARE</span>
                 <div class="pulse-ring"></div>
             </button>
         </div>
-        <h2 style="font-size:18px; font-weight:900; margin-bottom:8px; color:#fff;">LINK CENTRALINA ARDUINO</h2>
-        <p id="gate-status" style="font-size:12px; color:#707085; max-width:280px; line-height:1.4;">Clicca sul pulsante rosso per aprire la finestra di accoppiamento del browser ed eseguire il collegamento stabile con l'ESP32.</p>
+        <h2 style="font-size:18px; font-weight:900; margin-bottom:8px; color:var(--text-main);">LINK CENTRALINA ARDUINO</h2>
+        <p id="gate-status" style="font-size:12px; color:var(--text-muted); max-width:280px; line-height:1.4;">Clicca sul pulsante rosso per aprire la finestra di accoppiamento del browser ed eseguire il collegamento stabile con l'ESP32.</p>
     </div>
 
     <div class="header">
@@ -146,22 +162,23 @@
             <div id="signal-strength" class="header-sub">CONNESSIONE BLE INATTIVA</div>
         </div>
         <div class="header-controls-wrapper">
-            <input type="text" id="bikeName" value="LA MIA MOTO" style="background:transparent; border:none; color:var(--accent); text-transform:uppercase; text-align:right; font-weight:900; font-size:12px; width:90px; outline:none;" oninput="salvaNomeMoto(this.value)">
+            <button class="btn-theme-toggle" id="theme-switcher" onclick="toggleVisionMode()">☀️ DIURNO</button>
+            <input type="text" id="bikeName" value="LA MIA MOTO" style="background:transparent; border:none; color:var(--accent); text-transform:uppercase; text-align:right; font-weight:900; font-size:12px; width:80px; outline:none;" oninput="salvaNomeMoto(this.value)">
             <button class="btn-disconnect" id="disconnetti-rapido" onclick="dissociaDispositivo()" style="display:none;">SCONNETTI</button>
         </div>
     </div>
 
     <div id="pane-home" class="sub-pane">
         <div class="dashboard-arc-box">
-            <div style="position:absolute; top:12px; left:18px; font-size:9px; color:#505065; font-weight:800; letter-spacing:1px;">LIVE TELEMETRY</div>
+            <div style="position:absolute; top:12px; left:18px; font-size:9px; color:var(--text-muted); font-weight:800; letter-spacing:1px;">LIVE TELEMETRY</div>
             <div class="arc-contagiri"><div class="arc-fill" id="rpmBar"></div></div>
-            <div style="display:flex; justify-content:space-between; margin-top:-14px; margin-bottom:15px; font-size:11px; color:#606075; font-weight:700;">
+            <div style="display:flex; justify-content:space-between; margin-top:-14px; margin-bottom:15px; font-size:11px; color:var(--text-muted); font-weight:700;">
                 <span>4000 RPM</span>
-                <span style="color:#fff; font-weight:800; font-size:13px;" id="rpmNum">0</span>
+                <span style="color:var(--text-main); font-weight:800; font-size:13px;" id="rpmNum">0</span>
                 <span>12000 LIMIT</span>
             </div>
             <div class="speed-heavy" id="speedNum">0</div>
-            <div style="font-size:11px; color:#505065; font-weight:800; letter-spacing:3px; margin-top:8px;">KM/H</div>
+            <div style="font-size:11px; color:var(--text-muted); font-weight:800; letter-spacing:3px; margin-top:8px;">KM/H</div>
         </div>
 
         <div class="card">
@@ -185,7 +202,7 @@
             </div>
             <div class="slider-container">
                 <input type="range" id="slider" min="30" max="100" value="55" oninput="document.getElementById('liveVal').innerText=this.value" onchange="inviaValoreTiming(this.value)">
-                <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; margin-top:10px; color:#707085;">
+                <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; margin-top:10px; color:var(--text-muted);">
                     <span>FINE TUNING MANUALE:</span>
                     <span style="color:var(--accent); font-weight:800;"><span id="liveVal">55</span> ms</span>
                 </div>
@@ -205,7 +222,7 @@
     </div>
 
     <div id="pane-placeholder" class="sub-pane" style="display:none;">
-        <div class="card" style="text-align:center; padding:30px 0; color:#505065;">
+        <div class="card" style="text-align:center; padding:30px 0; color:var(--text-muted);">
             <div style="font-size:32px; margin-bottom:10px;">🛠️</div>
             <div style="font-size:12px; font-weight:800;" id="placeholder-title">MODULO ATTIVO</div>
         </div>
@@ -233,24 +250,41 @@
             if(localStorage.getItem('qs_bike')) {
                 document.getElementById('bikeName').value = localStorage.getItem('qs_bike');
             }
+            // Controllo ed applicazione modalità Giorno/Notte salvata
+            if(localStorage.getItem('qs_vision') === 'light') {
+                document.body.classList.add('light-mode');
+                document.getElementById('theme-switcher').innerText = "🌙 NOTTURNO";
+            }
+
             const savedMs = localStorage.getItem('qs_ms') || "55";
             const savedTheme = localStorage.getItem('qs_theme') || "race";
             document.getElementById('slider').value = savedMs;
             document.getElementById('liveVal').innerText = savedMs;
             document.getElementById('lastCut').innerText = savedMs + "ms";
-            document.body.className = savedTheme + '-theme';
+            
+            // Applica il colore tema mantenendo la base chiaro/scuro
+            document.body.className = document.body.className.includes('light-mode') ? 'light-mode ' + savedTheme + '-theme' : savedTheme + '-theme';
             
             const btnId = "btn-" + savedTheme;
             const targetBtn = document.getElementById(btnId);
             if(targetBtn) targetBtn.classList.add('active');
         });
 
-        function salvaNomeMoto(val) { localStorage.setItem('qs_bike', val); }
-        
-        function log(msg) { 
-            const c = document.getElementById('console'); 
-            if(c) { c.innerHTML += `<br>> ${msg}`; c.scrollTop = c.scrollHeight; } 
+        // LOGICA DI SWITCH CHIARO / SCURO
+        void function toggleVisionMode() {
+            const isLight = document.body.classList.toggle('light-mode');
+            const switcher = document.getElementById('theme-switcher');
+            if(isLight) {
+                localStorage.setItem('qs_vision', 'light');
+                switcher.innerText = "🌙 NOTTURNO";
+            } else {
+                localStorage.setItem('qs_vision', 'dark');
+                switcher.innerText = "☀️ DIURNO";
+            }
         }
+
+        function salvaNomeMoto(val) { localStorage.setItem('qs_bike', val); }
+        function log(msg) { const c = document.getElementById('console'); if(c) { c.innerHTML += `<br>> ${msg}`; c.scrollTop = c.scrollHeight; } }
 
         function cambiaTab(id, elemento) {
             document.querySelectorAll('.nav-item').forEach(b => b.classList.remove('active'));
@@ -261,23 +295,22 @@
             if(id !== 'home' && id !== 'shifter') { 
                 pPlace.style.display = 'block'; 
                 document.getElementById('placeholder-title').innerText = `MODULO ${id.toUpperCase()} ATTIVO`; 
-            } else { 
-                pPlace.style.display = 'none'; 
-            }
+            } else { pPlace.style.display = 'none'; }
         }
 
-        // AGGIORNA INTERFACCIA E SLIDER ALL'ISTANTE
         function setMode(ms, theme, btn) {
             currentPopMode = 0; 
             document.querySelectorAll('.preset-grid .btn-action').forEach(b => b.classList.remove('active'));
             btn.classList.add('active'); 
-            document.body.className = theme + '-theme';
+            
+            // Mantieni light-mode se attivo
+            const lightActive = document.body.classList.contains('light-mode') ? 'light-mode ' : '';
+            document.body.className = lightActive + theme + '-theme';
             document.getElementById('btn-pop').innerText = "💥 POP & BANG";
             
             localStorage.setItem('qs_ms', ms); 
             localStorage.setItem('qs_theme', theme);
             
-            // Forza lo slider a muoversi visivamente sul tempo del pulsante cliccato
             document.getElementById('slider').value = ms; 
             document.getElementById('liveVal').innerText = ms; 
             document.getElementById('lastCut').innerText = ms + "ms"; 
@@ -293,19 +326,21 @@
             currentPopMode++;
             if(currentPopMode > 3) currentPopMode = 1; 
 
+            const lightActive = document.body.classList.contains('light-mode') ? 'light-mode ' : '';
             let modalitaNome = "";
+            
             if(currentPopMode === 1) {
-                document.body.className = 'pop1-theme';
+                document.body.className = lightActive + 'pop1-theme';
                 btn.innerText = "💥 BANG 1: STD";
                 modalitaNome = "Standard";
                 document.getElementById('lastCut').innerText = "BANG 1";
             } else if(currentPopMode === 2) {
-                document.body.className = 'pop2-theme';
+                document.body.className = lightActive + 'pop2-theme';
                 btn.innerText = "💥 BANG 2: DOPPIO";
                 modalitaNome = "Doppio Cut";
                 document.getElementById('lastCut').innerText = "BANG 2";
             } else if(currentPopMode === 3) {
-                document.body.className = 'pop3-theme';
+                document.body.className = lightActive + 'pop3-theme';
                 btn.innerText = "💥 BANG 3: FLAME";
                 modalitaNome = "Flame Cut";
                 document.getElementById('lastCut').innerText = "BANG 3";
@@ -380,11 +415,7 @@
         }
 
         function dissociaDispositivo() { 
-            if (bluetoothDevice && bluetoothDevice.gatt.connected) {
-                bluetoothDevice.gatt.disconnect(); 
-            } else {
-                onDisconnected();
-            }
+            if (bluetoothDevice && bluetoothDevice.gatt.connected) { bluetoothDevice.gatt.disconnect(); } else { onDisconnected(); }
         }
 
         function onDisconnected() { 
@@ -405,20 +436,14 @@
                     document.getElementById('slider').value = data.cutTime; 
                     document.getElementById('lastCut').innerText = data.cutTime + "ms"; 
                 }
-                if(data.contatore !== undefined) {
-                    document.getElementById('cambiate').innerText = data.contatore;
-                }
+                if(data.contatore !== undefined) { document.getElementById('cambiate').innerText = data.contatore; }
                 if(data.rpm !== undefined) { 
                     let pct = ((data.rpm - 0) / 12000) * 100; 
                     document.getElementById('rpmBar').style.width = pct + '%'; 
                     document.getElementById('rpmNum').innerText = data.rpm; 
                 }
-                if(data.speed !== undefined) {
-                    document.getElementById('speedNum').innerText = data.speed;
-                }
-            } catch (e) { 
-                if(valoreRicevuto.trim().length > 0) log("ECU: " + valoreRicevuto); 
-            }
+                if(data.speed !== undefined) { document.getElementById('speedNum').innerText = data.speed; }
+            } catch (e) { if(valoreRicevuto.trim().length > 0) log("ECU: " + valoreRicevuto); }
         }
 
         async function sendCommand(jsonData) { 
@@ -427,9 +452,7 @@
                 let encoder = new TextEncoder('utf-8'); 
                 let data = encoder.encode(JSON.stringify(jsonData)); 
                 await rxChar.writeValue(data); 
-            } catch(err) { 
-                console.log("Errore invio: ", err); 
-            } 
+            } catch(err) { console.log("Errore invio: ", err); } 
         }
     </script>
 </body>
