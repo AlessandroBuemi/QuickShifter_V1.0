@@ -19,7 +19,9 @@
         body.eco-theme { --accent: #00ff66; --panel-glow: rgba(0, 255, 102, 0.08); }
         body.sport-theme { --accent: #ff6600; --panel-glow: rgba(255, 102, 0, 0.08); }
         body.race-theme { --accent: #ff003c; --panel-glow: rgba(255, 0, 60, 0.08); }
-        body.pop-theme { --accent: #b026ff; --panel-glow: rgba(176, 38, 255, 0.08); }
+        body.pop1-theme { --accent: #b026ff; --panel-glow: rgba(176, 38, 255, 0.08); }
+        body.pop2-theme { --accent: #ff00ff; --panel-glow: rgba(255, 0, 255, 0.08); }
+        body.pop3-theme { --accent: #00ffff; --panel-glow: rgba(0, 255, 255, 0.08); }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; }
 
@@ -177,7 +179,7 @@
                 <button class="btn-action" id="btn-eco" onclick="setMode(75, 'eco', this)">75ms COMFORT</button>
                 <button class="btn-action" id="btn-sport" onclick="setMode(65, 'sport', this)">65ms STANDARD</button>
                 <button class="btn-action" id="btn-race" onclick="setMode(55, 'race', this)">55ms RACING</button>
-                <button class="btn-action" id="btn-pop" onclick="setMode(0, 'pop', this)">POP & BANG</button>
+                <button class="btn-action" id="btn-pop" onclick="ruotaPopBang(this)">💥 POP & BANG</button>
             </div>
             <div class="slider-container">
                 <input type="range" id="slider" min="30" max="100" value="55" oninput="document.getElementById('liveVal').innerText=this.value" onchange="inviaValoreTiming(this.value)">
@@ -223,6 +225,7 @@
         let rxChar;
         let bluetoothDevice = null;
         let sicurezzaProssimitaAttiva = false;
+        let currentPopMode = 0; // 0 = spento, 1 = std, 2 = double, 3 = flame
 
         document.addEventListener("DOMContentLoaded", () => {
             if(localStorage.getItem('qs_bike')) {
@@ -261,138 +264,27 @@
             }
         }
 
-        /* STRUTTURA DEL PACCHETTO STRINGATA SOTTO I 20 BYTE PER EVITARE BUFFER OVERFLOW BLE */
+        // CORREZIONE DEFINITIVA SINCRONIZZAZIONE PULSANTI -> SLIDER
         function setMode(ms, theme, btn) {
+            currentPopMode = 0; // Resetta rotazione pop
             document.querySelectorAll('.preset-grid .btn-action').forEach(b => b.classList.remove('active'));
             btn.classList.add('active'); 
             document.body.className = theme + '-theme';
+            document.getElementById('btn-pop').innerText = "💥 POP & BANG";
             
             localStorage.setItem('qs_ms', ms); 
             localStorage.setItem('qs_theme', theme);
             
-            if(ms === 0) { 
-                sendCommand({type:"scoppi",value:true}); 
-                document.getElementById('lastCut').innerText = "POP"; 
-            } else { 
-                sendCommand({type:"slider",value:parseInt(ms)}); 
-                document.getElementById('slider').value = ms; 
-                document.getElementById('liveVal').innerText = ms; 
-                document.getElementById('lastCut').innerText = ms; 
-            }
-            log(`Mappa: ${ms === 0 ? 'Pop' : ms + 'ms'}`);
+            // Muove lo slider visivo
+            document.getElementById('slider').value = ms; 
+            document.getElementById('liveVal').innerText = ms; 
+            document.getElementById('lastCut').innerText = ms + "ms"; 
+
+            sendCommand({type:"slider",value:parseInt(ms)}); 
+            log(`Mappa: ${ms}ms`);
         }
 
-        function inviaValoreTiming(val) { 
-            localStorage.setItem('qs_ms', val); 
-            sendCommand({type:"slider",value:parseInt(val)}); 
-        }
-
-        function cambiaStatoMotore(bloccato) {
-            const btnLock = document.getElementById('btn-lock-ecu'); 
-            const btnUnlock = document.getElementById('btn-unlock-ecu');
-            if(bloccato) { 
-                btnLock.classList.add('lock-active'); 
-                btnUnlock.classList.remove('unlock-active'); 
-                sendCommand({type:"ecu_state",status:"LOCKED"}); 
-            } else { 
-                btnLock.classList.remove('lock-active'); 
-                btnUnlock.classList.add('unlock-active'); 
-                sendCommand({type:"ecu_state",status:"UNLOCKED"}); 
-            }
-        }
-
-        function switchSicurezzaProssimita() {
-            const btn = document.getElementById('btn-toggle-prox'); 
-            sicurezzaProssimitaAttiva = !sicurezzaProssimitaAttiva;
-            if(sicurezzaProssimitaAttiva) { 
-                btn.classList.add('prox-active'); 
-                btn.innerText = "🛡️ PROSSIMITÀ AUTOMATICA: ATTIVA"; 
-                sendCommand({type:"proximity_fence",value:true}); 
-            } else { 
-                btn.classList.remove('prox-active'); 
-                btn.innerText = "🛡️ PROSSIMITÀ AUTOMATICA: DISATTIVATA"; 
-                sendCommand({type:"proximity_fence",value:false}); 
-            }
-        }
-
-        async function connettiProssimita() {
-            document.getElementById('gate-status').innerText = "Inizializzazione accoppiamento BLE...";
-            try {
-                bluetoothDevice = await navigator.bluetooth.requestDevice({
-                    filters: [{ services: [SERVICE_UUID] }],
-                    optionalServices: [SERVICE_UUID]
-                });
-
-                bluetoothDevice.addEventListener('gattserverdisconnected', onDisconnected);
-                const srv = await bluetoothDevice.gatt.connect();
-                const service = await srv.getPrimaryService(SERVICE_UUID);
-                rxChar = await service.getCharacteristic(CHARACTERISTIC_RX_UUID);
-                const txChar = await service.getCharacteristic(CHARACTERISTIC_TX_UUID);
-
-                await txChar.startNotifications();
-                txChar.addEventListener('characteristicvaluechanged', gestisciDatiInArrivo);
-
-                document.getElementById('proximity-gate').style.display = 'none';
-                document.getElementById('disconnetti-rapido').style.display = 'block';
-                document.getElementById('signal-strength').innerText = `HARDWARE CONNESSO`;
-                log("Link stabilito con l'ESP32.");
-            } catch(e) { 
-                document.getElementById('gate-status').innerText = "ERRORE LINK: " + e.message; 
-            }
-        }
-
-        function dissociaDispositivo() { 
-            if (bluetoothDevice && bluetoothDevice.gatt.connected) {
-                bluetoothDevice.gatt.disconnect(); 
-            } else {
-                onDisconnected();
-            }
-        }
-
-        function onDisconnected() { 
-            rxChar = null; 
-            document.getElementById('disconnetti-rapido').style.display = 'none'; 
-            document.getElementById('signal-strength').innerText = `CONNESSIONE BLE INATTIVA`; 
-            document.getElementById('proximity-gate').style.display = 'flex'; 
-            document.getElementById('gate-status').innerText = "DISPOSITIVO SCONNESSO. RICONNETTI HARDWARE..."; 
-        }
-
-        function gestisciDatiInArrivo(event) {
-            let enc = new TextDecoder("utf-8"); 
-            let valoreRicevuto = enc.decode(event.target.value);
-            try {
-                let data = JSON.parse(valoreRicevuto);
-                if(data.cutTime !== undefined) { 
-                    document.getElementById('liveVal').innerText = data.cutTime; 
-                    document.getElementById('slider').value = data.cutTime; 
-                    document.getElementById('lastCut').innerText = data.scoppiActive ? "POP" : data.cutTime; 
-                }
-                if(data.contatore !== undefined) {
-                    document.getElementById('cambiate').innerText = data.contatore;
-                }
-                if(data.rpm !== undefined) { 
-                    let pct = ((data.rpm - 0) / 12000) * 100; 
-                    document.getElementById('rpmBar').style.width = pct + '%'; 
-                    document.getElementById('rpmNum').innerText = data.rpm; 
-                }
-                if(data.speed !== undefined) {
-                    document.getElementById('speedNum').innerText = data.speed;
-                }
-            } catch (e) { 
-                if(valoreRicevuto.trim().length > 0) log("ECU: " + valoreRicevuto); 
-            }
-        }
-
-        async function sendCommand(jsonData) { 
-            if (!rxChar) return; 
-            try { 
-                let encoder = new TextEncoder('utf-8'); 
-                let data = encoder.encode(JSON.stringify(jsonData)); 
-                await rxChar.writeValue(data); 
-            } catch(err) { 
-                console.log("Errore invio: ", err); 
-            } 
-        }
-    </script>
-</body>
-</html>
+        // NUOVA LOGICA CICLICA POP & BANG 1, 2, 3
+        function ruotaPopBang(btn) {
+            document.querySelectorAll('.preset-grid .btn-action').forEach(b => b.classList.remove('active'));
+            btn.classList.add('
