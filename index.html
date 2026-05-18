@@ -3,183 +3,614 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QuickShifter Pro V3.1</title>
+    <title>QuickShifter Pro v1.7</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    
     <style>
+        /* CONFIGURAZIONE BASE DI DEFAULT (VARIABILI DINAMICHE) */
         :root {
             --accent: #ff003c;
-            --bg-dark: #0a0a0f;
-            --panel: rgba(18, 18, 26, 0.95);
-            --panel-border: rgba(255, 255, 255, 0.05);
-            --text-main: #f0f0f5;
-            --text-muted: #808095;
-            --btn-bg: #14141f;
+            --bg-dark: #0a0507;
+            --panel: rgba(18, 10, 14, 0.75);
+            --panel-border: rgba(255, 255, 255, 0.08);
+            --panel-glow: rgba(255, 0, 60, 0.35);
+            --text-main: #f5f0f2;
+            --text-muted: #9c8a90;
+            --btn-bg: rgba(255, 255, 255, 0.05);
+            --box-bg: rgba(0, 0, 0, 0.4);
+            --bg-gradient: linear-gradient(135deg, #14050a 0%, #050103 100%);
+            --slider-track: rgba(255, 255, 255, 0.12);
+            --btn-active-text: #ffffff;
         }
 
         body.light-mode {
-            --bg-dark: #ffffff;
-            --panel: #ffffff;
-            --panel-border: #e2e8f0;
-            --text-main: #000000;
-            --text-muted: #64748b;
-            --btn-bg: #f1f5f9;
+            --bg-dark: #fbf9fa;
+            --panel: rgba(255, 255, 255, 0.85);
+            --panel-border: rgba(0, 0, 0, 0.08);
+            --panel-glow: rgba(0, 0, 0, 0.04);
+            --text-main: #1f1618;
+            --text-muted: #75666a;
+            --btn-bg: rgba(0, 0, 0, 0.04);
+            --box-bg: rgba(255, 255, 255, 0.6);
+            --bg-gradient: linear-gradient(135deg, #fceef2 0%, #ffffff 100%);
+            --slider-track: rgba(0, 0, 0, 0.12);
+            --btn-active-text: #ffffff;
         }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; }
-        body { background-color: var(--bg-dark); color: var(--text-main); font-family: system-ui, sans-serif; padding: 15px; min-height: 100vh; display: flex; flex-direction: column; transition: background 0.2s; }
+        /* -------------------------------------------------------------
+           GESTIONE SFUMATURE DI BRAND: NOTTE (AL NERO) vs GIORNO (AL BIANCO)
+           ------------------------------------------------------------- */
+        /* KTM */
+        body.brand-ktm { 
+            --accent: #ff6600; --panel-glow: rgba(255, 102, 0, 0.45);
+            --bg-gradient: linear-gradient(135deg, #220d00 0%, #050200 100%);
+            --panel: rgba(30, 15, 5, 0.7); --btn-active-text: #000000;
+        }
+        body.light-mode.brand-ktm {
+            --bg-gradient: linear-gradient(135deg, #ffe0cc 0%, #ffffff 100%);
+            --panel: rgba(255, 255, 255, 0.85); --btn-active-text: #ffffff;
+        }
+
+        /* YAMAHA */
+        body.brand-yamaha { 
+            --accent: #005bf6; --panel-glow: rgba(0, 91, 246, 0.5);
+            --bg-gradient: linear-gradient(135deg, #001135 0%, #00030f 100%);
+            --panel: rgba(8, 20, 42, 0.7); --btn-active-text: #ffffff;
+        }
+        body.light-mode.brand-yamaha {
+            --bg-gradient: linear-gradient(135deg, #cce0ff 0%, #ffffff 100%);
+            --panel: rgba(255, 255, 255, 0.85); --btn-active-text: #ffffff;
+        }
+
+        /* BETA */
+        body.brand-beta { 
+            --accent: #ff1e1e; --panel-glow: rgba(255, 30, 30, 0.45);
+            --bg-gradient: linear-gradient(135deg, #260202 0%, #050000 100%);
+            --panel: rgba(38, 12, 12, 0.7); --btn-active-text: #ffffff;
+        }
+        body.light-mode.brand-beta {
+            --bg-gradient: linear-gradient(135deg, #ffcccc 0%, #ffffff 100%);
+            --panel: rgba(255, 255, 255, 0.85); --btn-active-text: #ffffff;
+        }
+
+        /* TM */
+        body.brand-tm { 
+            --accent: #00bfff; --panel-glow: rgba(0, 191, 255, 0.45);
+            --bg-gradient: linear-gradient(135deg, #002235 0%, #00060f 100%);
+            --panel: rgba(5, 28, 40, 0.7); --btn-active-text: #000000;
+        }
+        body.light-mode.brand-tm {
+            --bg-gradient: linear-gradient(135deg, #ccf2ff 0%, #ffffff 100%);
+            --panel: rgba(255, 255, 255, 0.85); --btn-active-text: #ffffff;
+        }
+
+        /* KAWASAKI */
+        body.brand-kawasaki { 
+            --accent: #33cc30; --panel-glow: rgba(51, 204, 48, 0.4);
+            --bg-gradient: linear-gradient(135deg, #062605 0%, #000800 100%);
+            --panel: rgba(12, 35, 11, 0.7); --btn-active-text: #000000;
+        }
+        body.light-mode.brand-kawasaki {
+            --bg-gradient: linear-gradient(135deg, #d2ffd0 0%, #ffffff 100%);
+            --panel: rgba(255, 255, 255, 0.85); --btn-active-text: #ffffff;
+        }
+
+        /* SUZUKI */
+        body.brand-suzuki { 
+            --accent: #f4d000; --panel-glow: rgba(244, 208, 0, 0.35);
+            --bg-gradient: linear-gradient(135deg, #262200 0%, #050400 100%);
+            --panel: rgba(36, 33, 10, 0.7); --btn-active-text: #000000;
+        }
+        body.light-mode.brand-suzuki {
+            --bg-gradient: linear-gradient(135deg, #fffbcb 0%, #ffffff 100%);
+            --panel: rgba(255, 255, 255, 0.85); --btn-active-text: #000000;
+        }
+
+        /* DUCATI */
+        body.brand-ducati { 
+            --accent: #e50000; --panel-glow: rgba(229, 0, 0, 0.45);
+            --bg-gradient: linear-gradient(135deg, #2b0000 0%, #050000 100%);
+            --panel: rgba(38, 10, 10, 0.7); --btn-active-text: #ffffff;
+        }
+        body.light-mode.brand-ducati {
+            --bg-gradient: linear-gradient(135deg, #ffcccc 0%, #ffffff 100%);
+            --panel: rgba(255, 255, 255, 0.85); --btn-active-text: #ffffff;
+        }
+
+        /* HUSQVARNA */
+        body.brand-husqvarna { 
+            --accent: #00337c; --panel-glow: rgba(0, 51, 124, 0.5);
+            --bg-gradient: linear-gradient(135deg, #001026 0%, #000208 100%);
+            --panel: rgba(8, 20, 36, 0.7); --btn-active-text: #ffffff;
+        }
+        body.light-mode.brand-husqvarna {
+            --bg-gradient: linear-gradient(135deg, #cce0ff 0%, #ffffff 100%);
+            --panel: rgba(255, 255, 255, 0.85); --btn-active-text: #ffffff;
+        }
+
+        /* CASO LIMITE: VARIANTED BRAND NERA (CRITICITÀ TESTI INVISIBILI) */
+        body.brand-nera { 
+            --accent: #ffffff; --panel-glow: rgba(255, 255, 255, 0.2);
+            --bg-gradient: linear-gradient(135deg, #222225 0%, #09090a 100%);
+            --panel: rgba(35, 35, 40, 0.75); --btn-active-text: #000000; /* Testo nero su bottone neon bianco attivo */
+        }
+        body.light-mode.brand-nera {
+            --accent: #18181b; --panel-glow: rgba(0, 0, 0, 0.12);
+            --bg-gradient: linear-gradient(135deg, #e4e4e7 0%, #ffffff 100%);
+            --panel: rgba(255, 255, 255, 0.9); --btn-active-text: #ffffff; /* Testo bianco su bottone scuro attivo */
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; font-family: 'Inter', sans-serif; }
+
+        body {
+            background-color: var(--bg-dark);
+            background-image: var(--bg-gradient);
+            background-attachment: fixed;
+            color: var(--text-main);
+            padding: 15px 15px 95px 15px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background-image 0.4s ease, background-color 0.4s, color 0.3s;
+        }
+
+        .header, .card, .bottom-nav, .sidebar {
+            backdrop-filter: blur(25px);
+            -webkit-backdrop-filter: blur(25px);
+            border: 1px solid var(--panel-border);
+            border-radius: 18px;
+            background: var(--panel);
+            transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
+        }
+
+        .header {
+            border-left: 5px solid var(--accent);
+            padding: 12px 14px; display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 15px; box-shadow: 0 8px 32px rgba(0,0,0,0.05);
+        }
+
+        .header-title { font-weight: 900; font-size: 15px; color: var(--text-main); letter-spacing: -0.3px; }
+        .header-sub { font-size: 10px; color: var(--text-muted); font-weight: 700; margin-top: 2px; text-transform: uppercase; }
         
-        .header { background: var(--panel); border: 1px solid var(--panel-border); border-left: 5px solid var(--accent); padding: 10px 14px; display: flex; justify-content: space-between; align-items: center; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
-        .header-title { font-weight: 800; font-size: 14px; }
-        .btn-theme-toggle { background: var(--btn-bg); border: 1px solid var(--panel-border); font-size: 20px; width: 40px; height: 40px; border-radius: 10px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        .btn-menu-trigger { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-main); font-size: 16px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; }
+        .btn-disconnect { background: rgba(255, 0, 60, 0.1); border: 1px solid rgba(255, 0, 60, 0.3); color: #ff416c; padding: 8px 12px; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; }
 
-        .dashboard-arc-box { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 16px; padding: 30px 20px; text-align: center; margin-bottom: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
-        .arc-contagiri { width: 100%; height: 20px; background: #e2e8f0; border-radius: 30px; overflow: hidden; margin-bottom: 20px; }
-        .arc-fill { width: 0%; height: 100%; background: linear-gradient(90deg, #00ff66, #ff003c); transition: width 0.1s; }
-        .speed-heavy { font-size: 100px; font-weight: 900; letter-spacing: -4px; }
+        /* PORTALE COPERTURA ACCESSO DI SICUREZZA */
+        #proximity-gate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); background-image: var(--bg-gradient); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; }
+        .auth-card { background: var(--panel); border: 1px solid var(--panel-border); padding: 25px; border-radius: 24px; width: 100%; max-width: 340px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); text-align: center; }
+        .input-password { width: 100%; padding: 14px; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--panel-border); border-radius: 10px; color: var(--text-main); font-size: 14px; text-align: center; margin-top: 15px; outline: none; font-weight: 800; letter-spacing: 2px; }
+        body.light-mode .input-password { background: rgba(0, 0, 0, 0.05); }
 
-        .card { background: var(--panel); border: 1px solid var(--panel-border); padding: 20px; border-radius: 16px; margin-bottom: 15px; }
-        .card-title { font-size: 11px; color: var(--text-muted); font-weight: 800; letter-spacing: 1px; margin-bottom: 12px; text-transform: uppercase; }
-        .preset-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 12px; }
+        .btn-connect-hardware { background: var(--accent); border: none; color: var(--btn-active-text); padding: 16px 28px; font-size: 13px; font-weight: 900; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; margin: 20px auto; }
+        body:not(.light-mode) .btn-connect-hardware { box-shadow: 0 0 20px var(--panel-glow); }
+
+        /* SIDEBAR COMPLETA CON ESPANSIONI CORRETTE RIPRISTINATE */
+        .sidebar { position: fixed; top: 0; right: -300px; width: 300px; height: 100%; z-index: 2000; padding: 25px 20px; display: flex; flex-direction: column; gap: 18px; transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: -10px 0 40px rgba(0,0,0,0.15); overflow-y: auto; border-radius: 24px 0 0 24px; }
+        .sidebar.open { right: 0; }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); z-index: 1999; display: none; }
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 12px; }
+        .sidebar-close { background: none; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; font-weight: 800; }
+
+        .brand-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 5px; }
+        .btn-brand-select { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-main); font-size: 10px; font-weight: 700; padding: 11px 4px; border-radius: 10px; cursor: pointer; text-align: center; text-transform: uppercase; }
+        .btn-brand-select.selected-brand { border-color: var(--accent); color: var(--accent); font-weight: 900; }
+        body:not(.light-mode) .btn-brand-select.selected-brand { box-shadow: 0 0 12px var(--panel-glow); }
+
+        /* TELEMETRIA ED ESPOSIZIONE DATI REALI */
+        .dashboard-arc-box { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 20px; padding: 25px 20px; text-align: center; margin-bottom: 15px; }
+        .arc-contagiri { width: 100%; height: 16px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--panel-border); border-radius: 30px; overflow: hidden; margin-bottom: 18px; position: relative; }
+        body.light-mode .arc-contagiri { background: rgba(0,0,0,0.07); }
+        .arc-fill { width: 0%; height: 100%; background: var(--accent); transition: width 0.1s linear; border-radius: 30px; }
+        body:not(.light-mode) .arc-fill { filter: drop-shadow(0 0 6px var(--accent)); }
         
-        .btn-action { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-main); padding: 18px; font-size: 12px; font-weight: 800; border-radius: 12px; cursor: pointer; transition: all 0.15s; }
-        .btn-action.active { background: var(--accent); color: #fff; box-shadow: 0 8px 20px rgba(255, 0, 60, 0.2); }
-        .btn-action.on-state { background: #00ff66; color: #000; font-weight: 900; }
+        .digital-num { font-family: 'Orbitron', sans-serif; }
+        .speed-heavy { font-size: 86px; font-weight: 900; color: var(--text-main); line-height: 0.85; letter-spacing: -2px; }
 
-        #gate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; }
-        .btn-connect { background: #ff003c; border: none; color: #fff; padding: 25px 50px; font-size: 18px; font-weight: 900; border-radius: 50px; cursor: pointer; box-shadow: 0 15px 30px rgba(255, 0, 60, 0.3); }
+        .card { padding: 18px; margin-bottom: 15px; }
+        .card-title { font-size: 11px; color: var(--text-muted); letter-spacing: 1.5px; margin-bottom: 16px; text-transform: uppercase; font-weight: 800; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; }
+        
+        .preset-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 12px; margin-bottom: 18px; }
+        .btn-action { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-main); padding: 16px 10px; font-size: 11px; font-weight: 800; border-radius: 12px; cursor: pointer; transition: background 0.2s, border-color 0.2s, box-shadow 0.2s; }
+        
+        /* -------------------------------------------------------------
+           SOLO ED ESCLUSIVAMENTE NELLA MODALITÀ NOTTE I BOTTONI ATTIVI DIVENTANO NEON
+           ------------------------------------------------------------- */
+        .btn-action.active { 
+            background: var(--accent); 
+            color: var(--btn-active-text); 
+            border-color: var(--accent); 
+        }
+        body:not(.light-mode) .btn-action.active {
+            box-shadow: 0 0 20px var(--panel-glow);
+            filter: drop-shadow(0 0 4px var(--accent)); /* Forza l'effetto Neon sui pulsanti di selezione */
+        }
+        body.light-mode .btn-action.active {
+            box-shadow: none; filter: none; /* Disattiva riverberi di giorno */
+        }
+
+        .sec-btn { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-muted); }
+        .sec-btn.lock-active { background: #ff003c; border-color: #ff003c; color: #ffffff; }
+        .sec-btn.unlock-active { background: #00ff66; border-color: #00ff66; color: #000000; }
+        body:not(.light-mode) .sec-btn.lock-active { box-shadow: 0 0 15px rgba(255,0,60,0.4); }
+        body:not(.light-mode) .sec-btn.unlock-active { box-shadow: 0 0 15px rgba(0,255,102,0.4); }
+
+        /* COMPATIBILITÀ AVANZATA SLIDER CURSORI */
+        .slider-container { background: var(--box-bg); padding: 14px; border-radius: 12px; border: 1px solid var(--panel-border); }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: var(--slider-track); height: 8px; border-radius: 4px; outline: none; }
+        
+        input[type=range]::-webkit-slider-thumb { 
+            -webkit-appearance: none; width: 26px; height: 26px; background: #ffffff; 
+            border: 4px solid var(--accent); cursor: pointer; border-radius: 50%; 
+        }
+        body:not(.light-mode) input[type=range]::-webkit-slider-thumb { box-shadow: 0 0 10px var(--panel-glow); }
+
+        .tel-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 12px; }
+        .tel-box { background: var(--box-bg); padding: 14px 5px; text-align: center; border-radius: 12px; border: 1px solid var(--panel-border); }
+        .tel-num { font-size: 22px; font-weight: 800; color: var(--text-main); }
+        .tel-lbl { font-size: 9px; color: var(--text-muted); margin-top: 6px; font-weight: 800; }
+        
+        .console { background: rgba(0,0,0,0.4); height: 85px; overflow-y: auto; padding: 10px; font-size: 10px; color: #00ff66; border-radius: 12px; font-family: monospace; border: 1px solid var(--panel-border); }
+        body.light-mode .console { background: rgba(0,0,0,0.04); color: #00993d; }
+
+        /* BARRA INFERIORE DI NAVIGAZIONE */
+        .bottom-nav { position: fixed; bottom: 12px; left: 12px; right: 12px; display: grid; grid-template-columns: repeat(2, 1fr); padding: 12px 6px; z-index: 1000; border-radius: 24px; box-shadow: 0 10px 35px rgba(0,0,0,0.1); }
+        .nav-item { background: transparent; border: none; color: var(--text-muted); font-size: 12px; font-weight: 800; display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px; }
+        .nav-item.active { color: var(--accent); }
+        
+        /* MENU DA COMPLETARE BLOCCATI */
+        .menu-item-disabled { padding: 12px; background: rgba(0,0,0,0.15); border-radius: 10px; border: 1px solid var(--panel-border); color: var(--text-muted); font-size: 11px; font-weight: 700; opacity: 0.35; }
+        body.light-mode .menu-item-disabled { background: rgba(0,0,0,0.04); }
+        .sidebar-input-bike { width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--panel-border); border-radius: 8px; color: var(--text-main); font-weight: 800; font-size: 12px; outline: none; border-left: 3px solid var(--accent); }
+        body.light-mode .sidebar-input-bike { background: rgba(0,0,0,0.03); }
     </style>
 </head>
-<body class="dark-mode">
+<body>
 
-    <div id="gate">
-        <button class="btn-connect" onclick="connettiBLE()">🏍️ CONNETTI CENTRALINA</button>
-        <p style="margin-top:20px; font-size:12px; opacity:0.6;">Connessione automatica criptata.</p>
+    <div id="proximity-gate">
+        <div class="auth-card">
+            <h2 id="gate-title" style="font-size:16px; font-weight:900; margin-bottom:5px; color:var(--text-main);">SECURITY LINK</h2>
+            <p id="gate-desc" style="font-size:11px; color:var(--text-muted); line-height:1.4;">Analisi crittografica hardware...</p>
+            <input type="password" id="pass-hardware" class="input-password" placeholder="••••">
+            <button id="btn-main-gate" class="btn-connect-hardware" onclick="gestisciAzioneConnessioneGate()">
+                <span id="btn-gate-text">🏍️ HARDWARE LINK</span>
+            </button>
+            <p id="gate-status" style="font-size:11px; color:var(--text-muted); font-weight:600; margin-top:12px;">In attesa dell'ESP32...</p>
+            <button onclick="avviaModalitaDemo()" style="background:none; border:none; color:var(--text-muted); font-size:10px; text-decoration:underline; margin-top:18px; cursor:pointer; font-weight:700;">Avvia Centralina Virtuale (Modalità Demo)</button>
+        </div>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <div class="sidebar" id="sidebarMenu">
+        <div class="sidebar-header">
+            <h3 style="font-size: 13px; font-weight: 900;">SETUP ECU MOTO</h3>
+            <button class="sidebar-close" onclick="closeSidebar()">✕</button>
+        </div>
+        <div>
+            <label style="font-size: 10px; color: var(--text-muted); font-weight: 800; display:block; margin-bottom:6px;">DENOMINAZIONE VEICOLO</label>
+            <input type="text" id="bikeName" class="sidebar-input-bike" value="La Mia Moto" oninput="aggiornaNomeMotoDinamico(this.value)">
+        </div>
+        <div>
+            <label style="font-size: 10px; color: var(--text-muted); font-weight: 800; display:block; margin-bottom:6px;">ALLESTIMENTO BRAND ED ILLUMINAZIONE</label>
+            <div class="brand-grid">
+                <button class="btn-brand-select" id="brand-ktm" onclick="cambiaBrandTema('ktm')">KTM</button>
+                <button class="btn-brand-select" id="brand-yamaha" onclick="cambiaBrandTema('yamaha')">Yamaha</button>
+                <button class="btn-brand-select" id="brand-beta" onclick="cambiaBrandTema('beta')">Beta</button>
+                <button class="btn-brand-select" id="brand-tm" onclick="cambiaBrandTema('tm')">TM</button>
+                <button class="btn-brand-select" id="brand-kawasaki" onclick="cambiaBrandTema('kawasaki')">Kawasaki</button>
+                <button class="btn-brand-select" id="brand-suzuki" onclick="cambiaBrandTema('suzuki')">Suzuki</button>
+                <button class="btn-brand-select" id="brand-ducati" onclick="cambiaBrandTema('ducati')">Ducati</button>
+                <button class="btn-brand-select" id="brand-husqvarna" onclick="cambiaBrandTema('husqvarna')">Husq.</button>
+                <button class="btn-brand-select" id="brand-nera" onclick="cambiaBrandTema('nera')">Nera</button>
+            </div>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 8px;">
+            <label style="font-size: 10px; color: var(--text-muted); font-weight: 800;">VISUALIZZAZIONE</label>
+            <button class="btn-action" id="theme-switcher-sidebar" onclick="toggleVisionMode()" style="padding:12px; font-size:11px; font-weight:800;">☀️ MODALITÀ GIORNO</button>
+        </div>
+        <div style="display: flex; flex-direction: column; gap: 10px;">
+            <label style="font-size: 10px; color: var(--text-muted); font-weight: 800;">ESPANSIONI HARDWARE</label>
+            <div class="menu-item-disabled">🏍️ Anti-Wheelie Control (AWC)</div>
+            <div class="menu-item-disabled">🪪 Servo Targa Flap Stepper</div>
+            <div class="menu-item-disabled">📊 Analisi Tempi Cronometro GPS</div>
+        </div>
     </div>
 
     <div class="header">
-        <div class="header-title-wrapper">
-            <div class="header-title">QuickShifter V3.1</div>
-            <div id="signal" style="font-size:9px; color:var(--text-muted);">DISCONNESSO</div>
+        <div>
+            <div class="header-title" id="header-bike-display">La Mia Moto</div>
+            <div id="signal-strength" class="header-sub">DISCONNESSO</div>
         </div>
-        <div style="display:flex; align-items:center; gap:10px;">
-            <button class="btn-theme-toggle" onclick="toggleMode()">☀️</button>
-            <input type="text" id="bike" value="MOTO" style="background:transparent; border:none; color:var(--accent); text-align:right; font-weight:900; font-size:12px; width:70px; outline:none;">
+        <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="btn-disconnect" id="disconnetti-rapido" onclick="scollegaDispositivo()" style="display:none;">SCOLLEGA</button>
+            <button class="btn-menu-trigger" onclick="openSidebar()">☰</button>
         </div>
     </div>
 
-    <div id="home" class="pane">
+    <div id="pane-home" class="sub-pane">
         <div class="dashboard-arc-box">
-            <div class="arc-contagiri"><div class="arc-fill" id="rpmBar"></div></div>
-            <div class="speed-heavy" id="speedNum">0</div>
-            <div style="font-size:12px; font-weight:800; color:var(--text-muted);">KM/H</div>
-        </div>
-
-        <div class="card">
-            <div class="card-title">Mappe & Sicurezza</div>
-            <div class="preset-grid">
-                <button class="btn-action active" id="btn-race" onclick="send({type:'slider',value:55})">RACE 55ms</button>
-                <button class="btn-action" id="btn-sport" onclick="send({type:'slider',value:65})">SPORT 65ms</button>
-                <button class="btn-action" style="border-color:#ff003c;" onclick="send({type:'ecu_state',status:'LOCKED'})">🔒 BLOCCA</button>
-                <button class="btn-action" style="border-color:#00ff66;" onclick="send({type:'ecu_state',status:'UNLOCKED'})">🔓 SBLOCCA</button>
+            <div class="arc-contagiri"><div class="arc-fill" id="rpmBar" style="width: 0%;"></div></div>
+            <div style="display:flex; justify-content:space-between; margin-top:-14px; margin-bottom:15px; font-size:11px; color:var(--text-muted); font-weight:800;">
+                <span>RPM</span>
+                <span style="color:var(--text-main); font-weight:900; font-size:14px;" id="rpmNum" class="digital-num">--</span>
+                <span>12k LIMIT</span>
             </div>
+            <div class="speed-heavy digital-num" id="speedNum">--</div>
+            <div style="font-size:11px; color:var(--text-muted); font-weight:800; letter-spacing:3px; margin-top:8px;">KM/H</div>
         </div>
-
         <div class="card">
-            <div class="card-title">Impianto Luci Moto</div>
-            <div class="preset-grid">
-                <button class="btn-action" id="btn-luci-manuale" onclick="toggleLuciManuale()">💡 LUCI: OFF</button>
-                <button class="btn-action" id="btn-luci-auto" onclick="toggleLuciAuto()">🤖 AUTOMATICO: OFF</button>
+            <div class="card-title">Stato Blocco Centralina Elettronica</div>
+            <div class="preset-grid" style="margin-bottom:0;">
+                <button class="btn-action sec-btn" id="btn-lock-ecu" onclick="cambiaStatoBloccoMoto(true)">🔒 CHIAVE LOCK</button>
+                <button class="btn-action sec-btn unlock-active" id="btn-unlock-ecu" onclick="cambiaStatoBloccoMoto(false)">🔓 CHIAVE UNLOCK</button>
             </div>
         </div>
     </div>
+
+    <div id="pane-shifter" class="sub-pane" style="display:none;">
+        <div class="card">
+            <div class="card-title">Configurazione Tempi Di Cut-Off</div>
+            <div class="preset-grid">
+                <button class="btn-action active" id="btn-eco" onclick="setMode(75, this)">75ms (ECO)</button>
+                <button class="btn-action" id="btn-sport" onclick="setMode(65, this)">65ms (SPORT)</button>
+                <button class="btn-action" id="btn-race" onclick="setMode(55, this)">55ms (RACE)</button>
+                <button class="btn-action" id="btn-pop" onclick="ruotaPopBang(this)">💥 POP: OFF</button>
+            </div>
+            <div class="slider-container">
+                <input type="range" id="slider" min="30" max="100" value="75" oninput="document.getElementById('liveVal').innerText=this.value" onchange="inviaValoreTimingDiretto(this.value)">
+                <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; margin-top:10px; color:var(--text-muted);">
+                    <span>FINE TUNING IN TIME:</span>
+                    <span style="color:var(--text-main); font-weight:800;"><span id="liveVal" class="digital-num">75</span> ms</span>
+                </div>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">Analisi Shifter</div>
+            <div class="tel-grid">
+                <div class="tel-box"><div class="tel-num digital-num" id="cambiate">--</div><div class="tel-lbl">CAMBIATE</div></div>
+                <div class="tel-box"><div class="tel-num digital-num" style="color:#00ff66" id="fluidita-id">--</div><div class="tel-lbl">FLUIDITÀ</div></div>
+                <div class="tel-box"><div class="tel-num digital-num" id="lastCut">--</div><div class="tel-lbl">LAST CUT</div></div>
+            </div>
+        </div>
+        <div class="card"><div class="card-title">Terminale Seriale RX</div><div class="console" id="console">SYS: In attesa di segnale hardware...</div></div>
+    </div>
+
+    <nav class="bottom-nav">
+        <button class="nav-item active" id="nav-home" onclick="cambiaTab('home', this)">🏠 DASH</button>
+        <button class="nav-item" id="nav-shifter" onclick="cambiaTab('shifter', this)">⚙️ CAMBIO</button>
+    </nav>
 
     <script>
-        const SERVICE = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
-        const RX = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
-        let rxChar;
-        let statoLuciAttuale = false;
-        let statoAutoAttuale = false;
+        const CENTRALINA_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+        const CHAR_RX_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+        const CHAR_TX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 
-        function toggleMode() {
-            const isLight = document.body.classList.toggle('light-mode');
-            document.querySelector('.btn-theme-toggle').innerText = isLight ? "🌙" : "☀️";
-            localStorage.setItem('vision', isLight ? 'light' : 'dark');
+        let rxCharacteristic = null;
+        let bluetoothDevice = null;
+        let isDemoMode = false;
+        let demoLoopInterval = null;
+        let currentPopMode = 0; 
+        let isFirstSetupMode = false;
+
+        document.addEventListener("DOMContentLoaded", () => {
+            let nomeSalvato = localStorage.getItem('qs_bike') || "La Mia Moto";
+            document.getElementById('bikeName').value = nomeSalvato;
+            document.getElementById('header-bike-display').innerText = nomeSalvato;
+
+            let brandSalvato = localStorage.getItem('qs_brand_theme') || "ktm";
+            cambiaBrandTema(brandSalvato);
+
+            if(localStorage.getItem('qs_vision') === 'light') {
+                document.body.classList.add('light-mode');
+                document.getElementById('theme-switcher-sidebar').innerText = "🌙 MODALITÀ NOTTE";
+            }
+            
+            const savedMs = localStorage.getItem('qs_ms') || "75";
+            document.getElementById('slider').value = savedMs;
+            document.getElementById('liveVal').innerText = savedMs;
+
+            verificaStatoPasswordConfigurata();
+        });
+
+        function verificaStatoPasswordConfigurata() {
+            let passSalvataBrowser = localStorage.getItem('qs_secure_pass');
+            if (!passSalvataBrowser) {
+                isFirstSetupMode = true;
+                document.getElementById('gate-title').innerText = "INITIAL CONFIG";
+                document.getElementById('gate-desc').innerText = "Crea una password numerica sicura per vincolare l'Arduino a questo telefono.";
+                document.getElementById('pass-hardware').placeholder = "CREA PASSWORD DI SICUREZZA";
+                document.getElementById('pass-hardware').style.display = 'block';
+            } else {
+                isFirstSetupMode = false;
+                document.getElementById('gate-title').innerText = "SECURITY HANDSHAKE";
+                document.getElementById('gate-desc').innerText = "L'app invierà le chiavi crittografate salvate all'accoppiamento.";
+                document.getElementById('pass-hardware').style.display = 'none'; 
+            }
         }
 
-        async function connettiBLE() {
-            try {
-                const device = await navigator.bluetooth.requestDevice({ filters: [{ services: [SERVICE] }] });
-                const srv = await device.gatt.connect();
-                const service = await srv.getPrimaryService(SERVICE);
-                rxChar = await service.getCharacteristic(RX);
-                const txChar = await service.getCharacteristic("6e400003-b5a3-f393-e0a9-e50e24dcca9e");
-                
-                await txChar.startNotifications();
-                txChar.addEventListener('characteristicvaluechanged', (e) => {
-                    const data = JSON.parse(new TextDecoder().decode(e.target.value));
-                    
-                    // Gestione Telemetria standard
-                    if(data.rpm) document.getElementById('rpmBar').style.width = (data.rpm/12000*100)+'%';
-                    if(data.speed) document.getElementById('speedNum').innerText = data.speed;
-                    
-                    // Ricezione stato luci REALE salvato in EEPROM
-                    if(data.hasOwnProperty('luci_status')) {
-                        statoLuciAttuale = data.luci_status;
-                        aggiornaGraficaLuci();
-                    }
-                    if(data.hasOwnProperty('luci_auto')) {
-                        statoAutoAttuale = data.luci_auto;
-                        aggiornaGraficaLuci();
-                    }
-                });
-                
-                document.getElementById('gate').style.display = 'none';
-                document.getElementById('signal').innerText = "CONNESSO (Bonded)";
-            } catch(e) { alert(e); }
+        function cambiaBrandTema(brand) {
+            document.body.className = document.body.className.replace(/\bbrand-\S+/g, '');
+            document.body.classList.add('brand-' + brand);
+            localStorage.setItem('qs_brand_theme', brand);
+            
+            document.querySelectorAll('.btn-brand-select').forEach(b => b.classList.remove('selected-brand'));
+            const targetBtn = document.getElementById('brand-' + brand);
+            if(targetBtn) targetBtn.classList.add('selected-brand');
         }
 
-        function toggleLuciManuale() {
-            if(statoAutoAttuale) {
-                alert("Disattiva prima la modalità Automatica per controllare le luci manualmente!");
+        function openSidebar() { document.getElementById('sidebarMenu').classList.add('open'); document.getElementById('sidebarOverlay').style.display = 'block'; }
+        function closeSidebar() { document.getElementById('sidebarMenu').classList.remove('open'); document.getElementById('sidebarOverlay').style.display = 'none'; }
+        function aggiornaNomeMotoDinamico(valore) { let nome = valore.trim() === "" ? "La Mia Moto" : valore; localStorage.setItem('qs_bike', nome); document.getElementById('header-bike-display').innerText = nome; }
+
+        function toggleVisionMode() {
+            const body = document.body;
+            const btn = document.getElementById('theme-switcher-sidebar');
+            body.classList.toggle('light-mode');
+            const isLight = body.classList.contains('light-mode');
+            localStorage.setItem('qs_vision', isLight ? 'light' : 'dark');
+            btn.innerText = isLight ? "🌙 MODALITÀ NOTTE" : "☀️ MODALITÀ GIORNO";
+        }
+
+        function logTerminal(messaggio) {
+            const output = document.getElementById('console');
+            if(output) { output.innerHTML += `<br>> ${messaggio}`; output.scrollTop = output.scrollHeight; }
+        }
+
+        function cambiaTab(idTab, bottoneNav) {
+            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
+            document.querySelectorAll('.sub-pane').forEach(pane => pane.style.display = 'none');
+            bottoneNav.classList.add('active');
+            document.getElementById('pane-' + idTab).style.display = 'block';
+        }
+
+        function setMode(ms, bottonePremuto) {
+            currentPopMode = 0;
+            document.querySelectorAll('#pane-shifter .btn-action').forEach(b => b.classList.remove('active'));
+            bottonePremuto.classList.add('active');
+            document.getElementById('btn-pop').innerText = "💥 POP: OFF";
+            localStorage.setItem('qs_ms', ms);
+            document.getElementById('slider').value = ms;
+            document.getElementById('liveVal').innerText = ms;
+            inviaPacchettoCentralina({type: "slider", value: parseInt(ms)});
+        }
+
+        function ruotaPopBang(bottonePop) {
+            document.querySelectorAll('#pane-shifter .btn-action').forEach(b => b.classList.remove('active'));
+            bottonePop.classList.add('active');
+            currentPopMode++;
+            if(currentPopMode > 3) currentPopMode = 0;
+            bottonePop.innerText = currentPopMode === 0 ? "💥 POP: OFF" : "💥 MOD B" + currentPopMode;
+            inviaPacchettoCentralina({type: "scoppi", value: currentPopMode});
+        }
+
+        function inviaValoreTimingDiretto(valoreMs) {
+            document.querySelectorAll('#pane-shifter .btn-action').forEach(b => b.classList.remove('active'));
+            document.getElementById('btn-pop').innerText = "💥 POP: OFF";
+            localStorage.setItem('qs_ms', valoreMs);
+            inviaPacchettoCentralina({type: "slider", value: parseInt(valoreMs)});
+        }
+
+        function cambiaStatoBloccoMoto(statoBlocco) {
+            document.getElementById('btn-lock-ecu').classList.toggle('lock-active', statoBlocco);
+            document.getElementById('btn-unlock-ecu').classList.toggle('unlock-active', !statoBlocco);
+            inviaPacchettoCentralina({type: "ecu_state", status: statoBlocco ? "LOCKED" : "UNLOCKED"});
+        }
+
+        async function gestisciAzioneConnessioneGate() {
+            let passInput = document.getElementById('pass-hardware').value.trim();
+            if(isFirstSetupMode && passInput === "") {
+                document.getElementById('gate-status').innerText = "Setta un codice di blocco!";
                 return;
             }
-            send({type: 'toggle_luci', value: !statoLuciAttuale});
-        }
+            document.getElementById('gate-status').innerText = "Scansione radio BLE...";
 
-        function toggleLuciAuto() {
-            send({type: 'auto_luci', value: !statoAutoAttuale});
-        }
+            try {
+                bluetoothDevice = await navigator.bluetooth.requestDevice({
+                    filters: [{ name: 'Quickshifter_Secure' }],
+                    optionalServices: [CENTRALINA_SERVICE_UUID]
+                });
 
-        function aggiornaGraficaLuci() {
-            const btnManuale = document.getElementById('btn-luci-manuale');
-            const btnAuto = document.getElementById('btn-luci-auto');
-
-            // Grafica Pulsante Manuale
-            if(statoLuciAttuale) {
-                btnManuale.innerText = "💡 LUCI: ACCESE";
-                btnManuale.classList.add('on-state');
-            } else {
-                btnManuale.innerText = "💡 LUCI: SPENTE";
-                btnManuale.classList.remove('on-state');
-            }
-
-            // Grafica Pulsante Automatico
-            if(statoAutoAttuale) {
-                btnAuto.innerText = "🤖 AUTOMATICO: ON";
-                btnAuto.classList.add('active');
-                btnManuale.style.opacity = "0.4"; // Disabilita visivamente il manuale
-            } else {
-                btnAuto.innerText = "🤖 AUTOMATICO: OFF";
-                btnAuto.classList.remove('active');
-                btnManuale.style.opacity = "1";
+                if (isFirstSetupMode) {
+                    localStorage.setItem('qs_secure_pass', passInput);
+                    await stabilisciConnessioneGATT(passInput, true);
+                } else {
+                    let passAutenticazione = localStorage.getItem('qs_secure_pass');
+                    await stabilisciConnessioneGATT(passAutenticazione, false);
+                }
+            } catch(erroreLink) {
+                document.getElementById('gate-status').innerText = "Errore: " + erroreLink.message;
             }
         }
 
-        async function send(json) {
-            if(!rxChar) return;
-            await rxChar.writeValue(new TextEncoder().encode(JSON.stringify(json)));
+        async function stabilisciConnessioneGATT(pass, isNewCreation) {
+            bluetoothDevice.addEventListener('gattserverdisconnected', ripristinaStatoDisconnesso);
+            const serverGatt = await bluetoothDevice.gatt.connect();
+            const servizioPrimario = await serverGatt.getPrimaryService(CENTRALINA_SERVICE_UUID);
+            rxCharacteristic = await servizioPrimario.getCharacteristic(CHAR_RX_UUID);
+            const txCharacteristic = await servizioPrimario.getCharacteristic(CHAR_TX_UUID);
+
+            await txCharacteristic.startNotifications();
+            txCharacteristic.addEventListener('characteristicvaluechanged', smistaPacchettiDatiInIngresso);
+
+            if(demoLoopInterval) clearInterval(demoLoopInterval);
+            isDemoMode = false;
+
+            document.getElementById('proximity-gate').style.display = 'none';
+            document.getElementById('disconnetti-rapido').style.display = 'block';
+            document.getElementById('signal-strength').innerText = "CONNESSO GO";
+            
+            if(isNewCreation) {
+                inviaPacchettoCentralina({type: "setup_new_pass", pass: pass});
+            } else {
+                inviaPacchettoCentralina({type: "auth_pass", pass: pass});
+            }
         }
 
-        if(localStorage.getItem('vision') === 'light') toggleMode();
+        function avviaModalitaDemo() {
+            isDemoMode = true;
+            document.getElementById('proximity-gate').style.display = 'none';
+            document.getElementById('disconnetti-rapido').style.display = 'block';
+            document.getElementById('signal-strength').innerText = "DEMO SIMULATION";
+            document.getElementById('cambiate').innerText = "32";
+            document.getElementById('fluidita-id').innerText = "97%";
+            document.getElementById('lastCut').innerText = "75ms";
+
+            demoLoopInterval = setInterval(() => {
+                let rpmFinto = Math.floor(Math.random() * (11500 - 1800) + 1800);
+                document.getElementById('rpmBar').style.width = (rpmFinto / 12000) * 100 + '%';
+                document.getElementById('rpmNum').innerText = rpmFinto;
+                document.getElementById('speedNum').innerText = Math.floor(Math.random() * (142 - 25) + 25);
+            }, 150);
+        }
+
+        function scollegaDispositivo() {
+            if (bluetoothDevice && bluetoothDevice.gatt.connected) {
+                bluetoothDevice.gatt.disconnect();
+            } else {
+                ripristinaStatoDisconnesso();
+            }
+        }
+
+        function ripristinaStatoDisconnesso() {
+            rxCharacteristic = null;
+            if(demoLoopInterval) clearInterval(demoLoopInterval);
+            document.getElementById('disconnetti-rapido').style.display = 'none';
+            document.getElementById('signal-strength').innerText = "DISCONNESSO";
+            document.getElementById('proximity-gate').style.display = 'flex';
+            
+            // RIPRISTINO STATICO DEI VALORI ORIGINARI SE SCOLLEGATO
+            document.getElementById('rpmBar').style.width = '0%';
+            document.getElementById('rpmNum').innerText = '--';
+            document.getElementById('speedNum').innerText = '--';
+            document.getElementById('cambiate').innerText = '--';
+            document.getElementById('fluidita-id').innerText = '--';
+            document.getElementById('lastCut').innerText = '--';
+            
+            verificaStatoPasswordConfigurata();
+        }
+
+        function smistaPacchettiDatiInIngresso(eventoGatt) {
+            let decoder = new TextDecoder("utf-8");
+            let stringaDati = decoder.decode(eventoGatt.target.value);
+            try {
+                let pacchettoJson = JSON.parse(stringaDati);
+                if(pacchettoJson.rpm !== undefined) {
+                    document.getElementById('rpmBar').style.width = (pacchettoJson.rpm / 12000) * 100 + '%';
+                    document.getElementById('rpmNum').innerText = pacchettoJson.rpm;
+                }
+                if(pacchettoJson.speed !== undefined) document.getElementById('speedNum').innerText = pacchettoJson.speed;
+                if(pacchettoJson.contatore !== undefined) document.getElementById('cambiate').innerText = pacchettoJson.contatore;
+                if(pacchettoJson.cutTime !== undefined) document.getElementById('lastCut').innerText = pacchettoJson.cutTime + "ms";
+                if(pacchettoJson.fluidita !== undefined) document.getElementById('fluidita-id').innerText = pacchettoJson.fluidita + "%";
+            } catch(e) { }
+        }
+
+        async function inviaPacchettoCentralina(oggettoScrittura) {
+            if(isDemoMode || !rxCharacteristic) return;
+            try {
+                let encoder = new TextEncoder('utf-8');
+                await rxCharacteristic.writeValue(encoder.encode(JSON.stringify(oggettoScrittura)));
+            } catch(e) { console.log(e); }
+        }
     </script>
 </body>
 </html>
