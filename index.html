@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QuickShifter Pro v1.9</title>
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+    <title>QuickShifter Pro v1.0</title>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght=500;700;900&family=Inter:wght=400;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
         :root {
@@ -36,7 +36,7 @@
             --btn-active-text: #ffffff;
         }
 
-        /* CONFIGURAZIONE COLORI CARD VARIABILI PER BRAND CON CONTRASTI OTTIMIZZATI */
+        /* CARD BRAND AUTOMOBILISTICHE E MOTO */
         body.brand-ktm { 
             --accent: #ff6600; --panel-glow: rgba(255, 102, 0, 0.45); --btn-active-text: #000000;
             --bg-gradient: linear-gradient(135deg, #1c0b00 0%, #070300 100%); --panel: rgba(40, 20, 5, 0.5);
@@ -302,29 +302,26 @@
         const CENTRALINA_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
         const CHAR_RX_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
         const CHAR_TX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
-        
+
         let rxCharacteristic = null; let bluetoothDevice = null;
         let isDemoMode = false; let demoLoopInterval = null; let currentPopMode = 0; 
         let bluetoothConnected = false; let hardwareSecurityStatus = "DISCONNECTED";
-        
+
         document.addEventListener("DOMContentLoaded", async () => {
             let nomeSalvato = localStorage.getItem('qs_bike') || "La Mia Moto";
             document.getElementById('bikeName').value = nomeSalvato;
             document.getElementById('header-bike-display').innerText = nomeSalvato;
             cambiaBrandTema(localStorage.getItem('qs_brand_theme') || "ktm");
-        
+
             if(localStorage.getItem('qs_vision') === 'light') {
                 document.body.classList.add('light-mode');
                 document.getElementById('theme-switcher-sidebar').innerText = "🌙 MODALITÀ NOTTE";
             }
-        
-            // Aggiungiamo dinamicamente il pulsante reset nella sidebar se non esiste
+
             creaPulsanteResetInSidebar();
-            
-            // Controlla se ci sono dispositivi già associati in passato
             verifcaDispositiviPreassociati();
         });
-        
+
         function creaPulsanteResetInSidebar() {
             if (document.getElementById('btn-reset-storage')) return;
             const sidebar = document.getElementById('sidebarMenu');
@@ -345,7 +342,7 @@
             divContenitore.appendChild(btnReset);
             sidebar.appendChild(divContenitore);
         }
-        
+
         async function verifcaDispositiviPreassociati() {
             if (navigator.bluetooth && navigator.bluetooth.getDevices) {
                 try {
@@ -357,7 +354,7 @@
                 } catch (e) { console.log("Errore getDevices:", e); }
             }
         }
-        
+
         function svuotaMemoriaLocaleCompleta() {
             if(confirm("Vuoi dimenticare il PIN e la centralina associata su questo telefono?")) {
                 localStorage.clear();
@@ -365,7 +362,7 @@
                 window.location.reload();
             }
         }
-        
+
         function cambiaBrandTema(brand) {
             document.body.className = document.body.className.replace(/\bbrand-\S+/g, '');
             document.body.classList.add('brand-' + brand); localStorage.setItem('qs_brand_theme', brand);
@@ -373,88 +370,86 @@
             const targetBtn = document.getElementById('brand-' + brand);
             if(targetBtn) targetBtn.classList.add('selected-brand');
         }
-        
+
         function openSidebar() { document.getElementById('sidebarMenu').classList.add('open'); document.getElementById('sidebarOverlay').style.display = 'block'; }
         function closeSidebar() { document.getElementById('sidebarMenu').classList.remove('open'); document.getElementById('sidebarOverlay').style.display = 'none'; }
         function aggiornaNomeMotoDinamico(valore) { let nome = valore.trim() === "" ? "La Mia Moto" : valore; localStorage.setItem('qs_bike', nome); document.getElementById('header-bike-display').innerText = nome; }
-        
+
         function toggleVisionMode() {
             const body = document.body; const btn = document.getElementById('theme-switcher-sidebar');
             body.classList.toggle('light-mode');
             localStorage.setItem('qs_vision', body.classList.contains('light-mode') ? 'light' : 'dark');
             btn.innerText = body.classList.contains('light-mode') ? "🌙 MODALITÀ NOTTE" : "☀️ MODALITÀ GIORNO";
         }
-        
+
         function cambiaTab(idTab, bottoneNav) {
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.sub-pane').forEach(pane => pane.style.style.display = 'none');
-            bottoneNav.classList.add('active'); document.getElementById('pane-' + idTab).style.display = 'block';
+            document.querySelectorAll('.sub-pane').forEach(pane => pane.style.display = 'none');
+            bottoneNav.classList.add('active'); 
+            document.getElementById('pane-' + idTab).style.display = 'block';
         }
-        
+
         function setMode(ms, bottonePremuto) {
             currentPopMode = 0; document.querySelectorAll('#pane-shifter .btn-action').forEach(b => b.classList.remove('active'));
             bottonePremuto.classList.add('active'); document.getElementById('btn-pop').innerText = "💥 POP: OFF";
             document.getElementById('slider').value = ms; document.getElementById('liveVal').innerText = ms;
             inviaPacchettoCentralina({type: "slider", value: parseInt(ms)});
         }
-        
+
         function ruotaPopBang(bottonePop) {
             document.querySelectorAll('#pane-shifter .btn-action').forEach(b => b.classList.remove('active'));
             bottonePop.classList.add('active'); currentPopMode++; if(currentPopMode > 3) currentPopMode = 0;
             bottonePop.innerText = currentPopMode === 0 ? "💥 POP: OFF" : "💥 MOD B" + currentPopMode;
             inviaPacchettoCentralina({type: "scoppi", value: currentPopMode});
         }
-        
+
         function inviaValoreTimingDiretto(valoreMs) {
             document.querySelectorAll('#pane-shifter .btn-action').forEach(b => b.classList.remove('active'));
             document.getElementById('btn-pop').innerText = "💥 POP: OFF";
             inviaPacchettoCentralina({type: "slider", value: parseInt(valoreMs)});
         }
-        
+
         function cambiaStatoBloccoMoto(statoBlocco) {
             document.getElementById('btn-lock-ecu').classList.toggle('lock-active', statoBlocco);
             document.getElementById('btn-unlock-ecu').classList.toggle('unlock-active', !statoBlocco);
             inviaPacchettoCentralina({type: "ecu_state", status: statoBlocco ? "LOCKED" : "UNLOCKED"});
         }
-        
+
         async function azionePulsanteCentraleGate() {
             if (!bluetoothConnected) {
                 document.getElementById('gate-status').innerText = "Stabilizzazione link hardware...";
                 try {
-                    // TENTATIVO DI RICONNESSIONE AUTOMATICA SENZA POPUP SE GIÀ ASSOCIATO
                     if (navigator.bluetooth && navigator.bluetooth.getDevices) {
                         const devices = await navigator.bluetooth.getDevices();
                         if (devices.length > 0) {
                             bluetoothDevice = devices[0];
                         }
                     }
-        
-                    // Se non c'è nessun dispositivo salvato, apre la classica tendina di selezione
+
                     if (!bluetoothDevice) {
                         bluetoothDevice = await navigator.bluetooth.requestDevice({
                             filters: [{ name: 'Quickshifter_Secure' }], optionalServices: [CENTRALINA_SERVICE_UUID]
                         });
                     }
-        
+
                     bluetoothDevice.addEventListener('gattserverdisconnected', ripristinaStatoDisconnesso);
                     const serverGatt = await bluetoothDevice.gatt.connect();
                     const servizioPrimario = await serverGatt.getPrimaryService(CENTRALINA_SERVICE_UUID);
                     rxCharacteristic = await servizioPrimario.getCharacteristic(CHAR_RX_UUID);
                     const txCharacteristic = await servizioPrimario.getCharacteristic(CHAR_TX_UUID);
-        
+
                     await txCharacteristic.startNotifications();
                     txCharacteristic.addEventListener('characteristicvaluechanged', smistaPacchettiDatiInIngresso);
-        
+
                     bluetoothConnected = true;
                     document.getElementById('gate-status').innerText = "Sincronizzazione di sicurezza...";
                     
-                    // Unico ping pulito con delay leggermente aumentato per far assestare la seriale BLE
                     setTimeout(() => {
                         inviaPacchettoCentralina({type: "ping"});
                     }, 500);
                     
                 } catch(e) { 
-                    bluetoothDevice = null; // Resetta in caso di errore per permettere la selezione manuale al click successivo
+                    bluetoothDevice = null;
                     document.getElementById('gate-status').innerText = "Errore: " + e.message; 
                     document.getElementById('btn-gate-text').innerText = "🤝 CONNETTI BLUETOOTH";
                 }
@@ -463,16 +458,14 @@
                 if(pin.length < 4) { document.getElementById('gate-status').innerText = "Inserisci 4 cifre!"; return; }
                 
                 localStorage.setItem('qs_local_pass', pin);
-                
-                // Mandiamo una stringa pulita. Se il tuo firmware necessita di un int, usa parseInt(pin)
                 inviaPacchettoCentralina({type: "auth_pass", pass: pin});
             }
         }
-        
+
         function smistaPacchettiDatiInIngresso(eventoGatt) {
             let decoder = new TextDecoder("utf-8");
             let json = JSON.parse(decoder.decode(eventoGatt.target.value));
-        
+
             if(json.security !== undefined) {
                 hardwareSecurityStatus = json.security;
                 
@@ -490,13 +483,12 @@
                     document.getElementById('gate-title').innerText = "CENTRALINA CRITTOGRAFATA";
                     document.getElementById('gate-desc').innerText = "Inserisci il PIN per sbloccare l'interfaccia di configurazione:";
                     document.getElementById('btn-gate-text').innerText = "🔓 ACCEDI CON PIN";
-        
+
                     let autoPin = localStorage.getItem('qs_local_pass');
                     if(autoPin && autoPin.length === 4) {
                         document.getElementById('pass-hardware').value = autoPin;
                         document.getElementById('gate-status').innerText = "Sblocco automatico in corso...";
                         
-                        // Inviamo un solo tentativo pulito (stringa). Se l'ESP32 vuole l'intero, cambialo qui in: parseInt(autoPin)
                         setTimeout(() => {
                             inviaPacchettoCentralina({type: "auth_pass", pass: autoPin});
                         }, 200);
@@ -520,7 +512,7 @@
                     document.getElementById('btn-gate-text').innerText = "🔓 RIPROVA ACCESSO";
                 }
             }
-        
+
             if(hardwareSecurityStatus === "UNLOCKED") {
                 if(json.rpm !== undefined) {
                     document.getElementById('rpmBar').style.width = (json.rpm / 12000) * 100 + '%';
@@ -532,7 +524,7 @@
                 if(json.fluidita !== undefined) document.getElementById('fluidita-id').innerText = json.fluidita + "%";
             }
         }
-        
+
         function avviaModalitaDemo() {
             isDemoMode = true; document.getElementById('proximity-gate').style.display = 'none';
             document.getElementById('disconnetti-rapido').style.display = 'block';
@@ -545,11 +537,11 @@
                 document.getElementById('speedNum').innerText = Math.floor(Math.random() * (135 - 30) + 30);
             }, 150);
         }
-        
+
         function scollegaDispositivo() {
             if (bluetoothDevice && bluetoothDevice.gatt.connected) { bluetoothDevice.gatt.disconnect(); } else { ripristinaStatoDisconnesso(); }
         }
-        
+
         function ripristinaStatoDisconnesso() {
             rxCharacteristic = null; bluetoothConnected = false; hardwareSecurityStatus = "DISCONNECTED";
             if(demoLoopInterval) clearInterval(demoLoopInterval);
@@ -561,7 +553,6 @@
             document.getElementById('cambiate').innerText = '--'; document.getElementById('fluidita-id').innerText = '--'; document.getElementById('lastCut').innerText = '--';
             document.getElementById('gate-title').innerText = "HARDWARE LINK REQUIRED";
             
-            // Controlliamo se possiamo proporre la riconnessione rapida o classica
             verifcaDispositiviPreassociati().then(() => {
                 if (document.getElementById('btn-gate-text').innerText !== "⚡ RICONNESSIONE RAPIDA") {
                     document.getElementById('btn-gate-text').innerText = "🤝 CONNETTI BLUETOOTH";
@@ -571,7 +562,7 @@
             document.getElementById('pass-hardware').style.display = "block"; 
             document.getElementById('gate-status').innerText = "Stato: Centralina isolata";
         }
-        
+
         async function inviaPacchettoCentralina(oggettoScrittura) {
             if(isDemoMode || !rxCharacteristic) return;
             try {
