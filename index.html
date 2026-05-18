@@ -412,7 +412,7 @@
         function smistaPacchettiDatiInIngresso(eventoGatt) {
             let decoder = new TextDecoder("utf-8");
             let json = JSON.parse(decoder.decode(eventoGatt.target.value));
-
+        
             if(json.security !== undefined) {
                 hardwareSecurityStatus = json.security;
                 
@@ -429,7 +429,17 @@
                     if(autoPin && autoPin.length === 4) {
                         document.getElementById('gate-status').innerText = "Invio PIN memorizzato...";
                         inviaPacchettoCentralina({type: "auth_pass", pass: autoPin});
+                        
+                        // Forziamo comunque la visibilità del box dopo 1.5 secondi se la centralina 
+                        // non dovesse sbloccarsi subito (es. se il PIN memorizzato fosse errato)
+                        setTimeout(() => {
+                            if(hardwareSecurityStatus !== "UNLOCKED") {
+                                document.getElementById('pass-hardware').style.display = "block";
+                                document.getElementById('btn-gate-text').innerText = "🔓 ACCEDI CON PIN ANCHE SE SALVATO";
+                            }
+                        }, 1500);
                     } else {
+                        // Se non c'è PIN in memoria, mostra IMMEDIATAMENTE i controlli per digitarlo
                         document.getElementById('pass-hardware').style.display = "block";
                         document.getElementById('gate-title').innerText = "CENTRALINA CRITTOGRAFATA";
                         document.getElementById('gate-desc').innerText = "Inserisci il PIN per sbloccare l'interfaccia di configurazione:";
@@ -443,6 +453,7 @@
                     document.getElementById('signal-strength').innerText = "CONNESSO GO";
                 } 
                 else if(hardwareSecurityStatus === "AUTH_FAIL") {
+                    // Se fallisce l'autenticazione automatica (o manuale), puliamo e mostriamo l'input
                     localStorage.removeItem('qs_local_pass'); 
                     document.getElementById('pass-hardware').style.display = "block";
                     document.getElementById('pass-hardware').value = "";
@@ -452,7 +463,7 @@
                     document.getElementById('btn-gate-text').innerText = "🔓 RIPROVA ACCESSO";
                 }
             }
-
+        
             if(hardwareSecurityStatus === "UNLOCKED") {
                 if(json.rpm !== undefined) {
                     document.getElementById('rpmBar').style.width = (json.rpm / 12000) * 100 + '%';
