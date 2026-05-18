@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QuickShifter Pro v1.0</title>
+    <title>QuickShifter Pro v2.0</title>
+    
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" id="meta-theme-color" content="#ff6600">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="QS Pro">
+    <link rel="apple-touch-icon" href="icon-512.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght=500;700;900&family=Inter:wght=400;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
@@ -36,7 +44,7 @@
             --btn-active-text: #ffffff;
         }
 
-        /* CARD BRAND AUTOMOBILISTICHE E MOTO */
+        /* TEMI DEI BRAND */
         body.brand-ktm { 
             --accent: #ff6600; --panel-glow: rgba(255, 102, 0, 0.45); --btn-active-text: #000000;
             --bg-gradient: linear-gradient(135deg, #1c0b00 0%, #070300 100%); --panel: rgba(40, 20, 5, 0.5);
@@ -155,7 +163,6 @@
         
         .btn-action.active { background: var(--accent); color: var(--btn-active-text); border-color: var(--accent); }
         body:not(.light-mode) .btn-action.active { box-shadow: 0 0 20px var(--panel-glow); filter: drop-shadow(0 0 4px var(--accent)); }
-        body.light-mode .btn-action.active { box-shadow: none; filter: none; }
 
         .sec-btn { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-muted); }
         .sec-btn.lock-active { background: #ff003c; border-color: #ff003c; color: #ffffff; }
@@ -176,6 +183,7 @@
         .bottom-nav { position: fixed; bottom: 12px; left: 12px; right: 12px; display: grid; grid-template-columns: repeat(2, 1fr); padding: 12px 6px; z-index: 1000; border-radius: 24px; box-shadow: 0 10px 35px rgba(0,0,0,0.1); }
         .nav-item { background: transparent; border: none; color: var(--text-muted); font-size: 12px; font-weight: 800; display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px; }
         .nav-item.active { color: var(--accent); }
+        .nav-item span { font-size: 15px; pointer-events: none; } /* Impedisce l'errore del tocco mobile sull'emoji */
         
         .menu-item-disabled { padding: 12px; background: rgba(0,0,0,0.15); border-radius: 10px; border: 1px solid var(--panel-border); color: var(--text-muted); font-size: 11px; font-weight: 700; opacity: 0.35; }
         .sidebar-input-bike { width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--panel-border); border-radius: 8px; color: var(--text-main); font-weight: 800; font-size: 12px; outline: none; border-left: 3px solid var(--accent); }
@@ -224,7 +232,7 @@
         </div>
         <div style="display: flex; flex-direction: column; gap: 8px;">
             <label style="font-size: 10px; color: var(--text-muted); font-weight: 800;">VISUALIZZAZIONE</label>
-            <button class="btn-action" id="theme-switcher-sidebar" onclick="toggleVisionMode()" style="padding:12px; font-size:11px; font-weight:800;">☀️ MODALITÀ GIORNO</button>
+            <button class="btn-action" id="theme-switcher-sidebar" onclick="toggleVisionMode()" style="padding:12px; font-size:11px; font-weight:800;">🌙 MODALITÀ NOTTE</button>
         </div>
         <div style="display: flex; flex-direction: column; gap: 10px;">
             <label style="font-size: 10px; color: var(--text-muted); font-weight: 800;">ESPANSIONI HARDWARE</label>
@@ -294,8 +302,12 @@
     </div>
 
     <nav class="bottom-nav">
-        <button class="nav-item active" id="nav-home" onclick="cambiaTab('home', this)">🏠 DASH</button>
-        <button class="nav-item" id="nav-shifter" onclick="cambiaTab('shifter', this)">⚙️ CAMBIO</button>
+        <button class="nav-item active" id="nav-home" onclick="cambiaTab('home', this)">
+            <span>🏠</span> DASH
+        </button>
+        <button class="nav-item" id="nav-shifter" onclick="cambiaTab('shifter', this)">
+            <span>⚙️</span> CAMBIO
+        </button>
     </nav>
 
     <script>
@@ -365,10 +377,24 @@
 
         function cambiaBrandTema(brand) {
             document.body.className = document.body.className.replace(/\bbrand-\S+/g, '');
-            document.body.classList.add('brand-' + brand); localStorage.setItem('qs_brand_theme', brand);
+            document.body.classList.add('brand-' + brand); 
+            localStorage.setItem('qs_brand_theme', brand);
+            
             document.querySelectorAll('.btn-brand-select').forEach(b => b.classList.remove('selected-brand'));
             const targetBtn = document.getElementById('brand-' + brand);
             if(targetBtn) targetBtn.classList.add('selected-brand');
+
+            // Mappa dei colori per aggiornare il browser e la barra dello smartphone
+            const coloriBrand = {
+                'ktm': '#ff6600', 'yamaha': '#005bf6', 'beta': '#ff1e1e',
+                'tm': '#00bfff', 'kawasaki': '#33cc30', 'suzuki': '#f4d000',
+                'ducati': '#e50000', 'husqvarna': '#00337c', 'nera': '#18181b'
+            };
+
+            const metaTheme = document.getElementById('meta-theme-color');
+            if (metaTheme && coloriBrand[brand]) {
+                metaTheme.setAttribute('content', coloriBrand[brand]);
+            }
         }
 
         function openSidebar() { document.getElementById('sidebarMenu').classList.add('open'); document.getElementById('sidebarOverlay').style.display = 'block'; }
@@ -383,10 +409,25 @@
         }
 
         function cambiaTab(idTab, bottoneNav) {
-            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.sub-pane').forEach(pane => pane.style.display = 'none');
-            bottoneNav.classList.add('active'); 
-            document.getElementById('pane-' + idTab).style.display = 'block';
+            // Rimuove la selezione da tutte le voci di navigazione
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Nasconde in modo solido tutti i pannelli (risolve il bug del blocco mobile)
+            document.querySelectorAll('.sub-pane').forEach(pane => {
+                pane.style.display = 'none';
+            });
+            
+            // Attiva il pulsante corrente e mostra lo schermo corretto
+            if (bottoneNav) {
+                bottoneNav.classList.add('active');
+            }
+            
+            const targetPane = document.getElementById('pane-' + idTab);
+            if (targetPane) {
+                targetPane.style.display = 'block';
+            }
         }
 
         function setMode(ms, bottonePremuto) {
