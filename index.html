@@ -330,7 +330,7 @@
         function openSidebar() { document.getElementById('sidebarMenu').classList.add('open'); document.getElementById('sidebarOverlay').style.display = 'block'; }
         function closeSidebar() { document.getElementById('sidebarMenu').classList.remove('open'); document.getElementById('sidebarOverlay').style.display = 'none'; }
         function aggiornaNomeMotoDinamico(valore) { let nome = valore.trim() === "" ? "La Mia Moto" : valore; localStorage.setItem('qs_bike', nome); document.getElementById('header-bike-display').innerText = nome; }
-        
+
         function toggleVisionMode() {
             const body = document.body; const btn = document.getElementById('theme-switcher-sidebar');
             body.classList.toggle('light-mode');
@@ -387,27 +387,23 @@
                     txCharacteristic.addEventListener('characteristicvaluechanged', smistaPacchettiDatiInIngresso);
 
                     bluetoothConnected = true;
-                    document.getElementById('gate-status').innerText = "Connesso! Sincronizzazione PIN...";
+                    document.getElementById('gate-status').innerText = "Connesso! Sincronizzazione stato ECU...";
                     
-                    // Controlla se abbiamo un PIN salvato nel browser localmente per mandarlo subito in automatico
-                    let autoPin = localStorage.getItem('qs_local_pass');
-                    if(autoPin && autoPin.length === 4) {
-                        document.getElementById('gate-status').innerText = "Verifica automatica credenziali...";
-                        inviaPacchettoCentralina({type: "auth_pass", pass: autoPin});
-                    } else {
+                    // Invio immediato del ping asincrono dopo handshake BLE
+                    setTimeout(() => {
                         inviaPacchettoCentralina({type: "ping"});
-                    }
+                    }, 300);
+                    
                 } catch(e) { document.getElementById('gate-status').innerText = "Errore: " + e.message; }
             } else {
                 let pin = document.getElementById('pass-hardware').value.trim();
                 if(pin.length < 4) { document.getElementById('gate-status').innerText = "Inserisci 4 cifre!"; return; }
                 
-                // Salviamo temporaneamente in locale la password digitata dall'utente prima di mandarla
                 localStorage.setItem('qs_local_pass', pin);
                 
                 if (hardwareSecurityStatus === "NEED_SETUP") {
                     inviaPacchettoCentralina({type: "setup_new_pass", pass: pin});
-                } else if (hardwareSecurityStatus === "NEED_AUTH" || hardwareSecurityStatus === "AUTH_FAIL") {
+                } else {
                     inviaPacchettoCentralina({type: "auth_pass", pass: pin});
                 }
             }
@@ -421,18 +417,25 @@
                 hardwareSecurityStatus = json.security;
                 
                 if(hardwareSecurityStatus === "NEED_SETUP") {
-                    localStorage.removeItem('qs_local_pass'); // Pulisce se l'Arduino è resettato
+                    localStorage.removeItem('qs_local_pass'); 
                     document.getElementById('pass-hardware').style.display = "block";
                     document.getElementById('gate-title').innerText = "SETUP PIN CENTRALINA";
-                    document.getElementById('gate-desc').innerText = "L'Arduino è stato formattato da pulsante fisco. Registra un PIN a 4 cifre:";
+                    document.getElementById('gate-desc').innerText = "L'Arduino è stato formattato dal pulsante fisico. Registra un PIN a 4 cifre:";
                     document.getElementById('btn-gate-text').innerText = "🔒 SALVA PIN DI BLOCCO";
+                    document.getElementById('gate-status').innerText = "In attesa di nuovo PIN.";
                 } 
                 else if(hardwareSecurityStatus === "NEED_AUTH") {
-                    // Se fallisce l'autologin automatico, viene forzato qui
-                    document.getElementById('pass-hardware').style.display = "block";
-                    document.getElementById('gate-title').innerText = "CENTRALINA CRITTOGRAFATA";
-                    document.getElementById('gate-desc').innerText = "Inserisci il PIN per sbloccare l'interfaccia di configurazione:";
-                    document.getElementById('btn-gate-text').innerText = "🔓 ACCEDI CON PIN";
+                    let autoPin = localStorage.getItem('qs_local_pass');
+                    if(autoPin && autoPin.length === 4) {
+                        document.getElementById('gate-status').innerText = "Invio PIN memorizzato...";
+                        inviaPacchettoCentralina({type: "auth_pass", pass: autoPin});
+                    } else {
+                        document.getElementById('pass-hardware').style.display = "block";
+                        document.getElementById('gate-title').innerText = "CENTRALINA CRITTOGRAFATA";
+                        document.getElementById('gate-desc').innerText = "Inserisci il PIN per sbloccare l'interfaccia di configurazione:";
+                        document.getElementById('btn-gate-text').innerText = "🔓 ACCEDI CON PIN";
+                        document.getElementById('gate-status').innerText = "Richiesto sblocco manuale.";
+                    }
                 } 
                 else if(hardwareSecurityStatus === "UNLOCKED") {
                     document.getElementById('proximity-gate').style.display = 'none';
@@ -440,9 +443,11 @@
                     document.getElementById('signal-strength').innerText = "CONNESSO GO";
                 } 
                 else if(hardwareSecurityStatus === "AUTH_FAIL") {
-                    localStorage.removeItem('qs_local_pass'); // Cancella la password errata dalla memoria
+                    localStorage.removeItem('qs_local_pass'); 
                     document.getElementById('pass-hardware').style.display = "block";
                     document.getElementById('pass-hardware').value = "";
+                    document.getElementById('gate-title').innerText = "CENTRALINA CRITTOGRAFATA";
+                    document.getElementById('gate-desc').innerText = "Inserisci il PIN per sbloccare l'interfaccia di configurazione:";
                     document.getElementById('gate-status').innerText = "❌ PIN ERRATO! Inserisci quello corretto:";
                     document.getElementById('btn-gate-text').innerText = "🔓 RIPROVA ACCESSO";
                 }
