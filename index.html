@@ -3,81 +3,116 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QuickShifter Pro v1.8</title>
+    <title>QuickShifter Pro v1.9</title>
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
         :root {
             --accent: #ff6600;
             --bg-dark: #0a0507;
-            --panel: rgba(18, 10, 14, 0.75);
-            --panel-border: rgba(255, 255, 255, 0.08);
+            --panel: rgba(28, 11, 0, 0.55);
+            --panel-border: rgba(255, 255, 255, 0.1);
             --panel-glow: rgba(255, 102, 0, 0.45);
             --text-main: #f5f0f2;
-            --text-muted: #9c8a90;
-            --btn-bg: rgba(255, 255, 255, 0.05);
-            --box-bg: rgba(0, 0, 0, 0.4);
-            --bg-gradient: linear-gradient(135deg, #220d00 0%, #050200 100%);
-            --slider-track: rgba(255, 255, 255, 0.12);
+            --text-muted: #dcd1d5;
+            --btn-bg: rgba(255, 255, 255, 0.07);
+            --box-bg: rgba(0, 0, 0, 0.5);
+            --bg-gradient: linear-gradient(135deg, #1c0b00 0%, #070300 100%);
+            --slider-track: rgba(255, 255, 255, 0.15);
             --btn-active-text: #000000;
         }
 
         body.light-mode {
             --bg-dark: #fbf9fa;
-            --panel: rgba(255, 255, 255, 0.85);
+            --panel: rgba(255, 230, 204, 0.6);
             --panel-border: rgba(0, 0, 0, 0.08);
             --panel-glow: rgba(0, 0, 0, 0.04);
-            --text-main: #1f1618;
-            --text-muted: #75666a;
-            --btn-bg: rgba(0, 0, 0, 0.04);
-            --box-bg: rgba(255, 255, 255, 0.6);
-            --bg-gradient: linear-gradient(135deg, #ffe0cc 0%, #ffffff 100%);
+            --text-main: #2b1a08;
+            --text-muted: #6e5d4f;
+            --btn-bg: rgba(0, 0, 0, 0.05);
+            --box-bg: rgba(255, 255, 255, 0.7);
+            --bg-gradient: linear-gradient(135deg, #ffe6cc 0%, #fdfbf7 100%);
             --slider-track: rgba(0, 0, 0, 0.12);
             --btn-active-text: #ffffff;
         }
 
-        /* SFUMATURE DI BRAND DINAMICHE */
-        body.brand-ktm { --accent: #ff6600; --panel-glow: rgba(255, 102, 0, 0.45); --bg-gradient: linear-gradient(135deg, #220d00 0%, #050200 100%); --btn-active-text: #000000; }
-        body.light-mode.brand-ktm { --bg-gradient: linear-gradient(135deg, #ffe0cc 0%, #ffffff 100%); --btn-active-text: #ffffff; }
+        /* CONFIGURAZIONE COLORI CARD VARIABILI PER BRAND CON CONTRASTI OTTIMIZZATI */
+        body.brand-ktm { 
+            --accent: #ff6600; --panel-glow: rgba(255, 102, 0, 0.45); --btn-active-text: #000000;
+            --bg-gradient: linear-gradient(135deg, #1c0b00 0%, #070300 100%); --panel: rgba(40, 20, 5, 0.5);
+        }
+        body.light-mode.brand-ktm { 
+            --bg-gradient: linear-gradient(135deg, #ffe6cc 0%, #fdfbf7 100%); --panel: rgba(255, 218, 185, 0.55); --text-main: #3d1f00; --text-muted: #7a4b19;
+        }
 
-        body.brand-yamaha { --accent: #005bf6; --panel-glow: rgba(0, 91, 246, 0.5); --bg-gradient: linear-gradient(135deg, #001135 0%, #00030f 100%); --btn-active-text: #ffffff; --panel: rgba(8, 20, 42, 0.7); }
-        body.light-mode.brand-yamaha { --bg-gradient: linear-gradient(135deg, #cce0ff 0%, #ffffff 100%); --btn-active-text: #ffffff; }
+        body.brand-yamaha { 
+            --accent: #005bf6; --panel-glow: rgba(0, 91, 246, 0.5); --btn-active-text: #ffffff;
+            --bg-gradient: linear-gradient(135deg, #000b21 0%, #00020a 100%); --panel: rgba(8, 25, 60, 0.45);
+        }
+        body.light-mode.brand-yamaha { 
+            --bg-gradient: linear-gradient(135deg, #cce0ff 0%, #f7f9ff 100%); --panel: rgba(179, 209, 255, 0.5); --text-main: #00225c; --text-muted: #406094;
+        }
 
-        body.brand-beta { --accent: #ff1e1e; --panel-glow: rgba(255, 30, 30, 0.45); --bg-gradient: linear-gradient(135deg, #260202 0%, #050000 100%); --btn-active-text: #ffffff; --panel: rgba(38, 12, 12, 0.7); }
-        body.light-mode.brand-beta { --bg-gradient: linear-gradient(135deg, #ffcccc 0%, #ffffff 100%); --btn-active-text: #ffffff; }
+        body.brand-beta { 
+            --accent: #ff1e1e; --panel-glow: rgba(255, 30, 30, 0.45); --btn-active-text: #ffffff;
+            --bg-gradient: linear-gradient(135deg, #1f0202 0%, #050000 100%); --panel: rgba(60, 10, 10, 0.5);
+        }
+        body.light-mode.brand-beta { 
+            --bg-gradient: linear-gradient(135deg, #ffcccc 0%, #fff7f7 100%); --panel: rgba(255, 179, 179, 0.5); --text-main: #5c0000; --text-muted: #944040;
+        }
 
-        body.brand-tm { --accent: #00bfff; --panel-glow: rgba(0, 191, 255, 0.45); --bg-gradient: linear-gradient(135deg, #002235 0%, #00060f 100%); --btn-active-text: #000000; --panel: rgba(5, 28, 40, 0.7); }
-        body.light-mode.brand-tm { --bg-gradient: linear-gradient(135deg, #ccf2ff 0%, #ffffff 100%); --btn-active-text: #ffffff; }
+        body.brand-tm { 
+            --accent: #00bfff; --panel-glow: rgba(0, 191, 255, 0.45); --btn-active-text: #000000;
+            --bg-gradient: linear-gradient(135deg, #001624 0%, #00040a 100%); --panel: rgba(5, 35, 55, 0.5);
+        }
+        body.light-mode.brand-tm { 
+            --bg-gradient: linear-gradient(135deg, #ccf2ff 0%, #f7fcff 100%); --panel: rgba(179, 242, 255, 0.5); --text-main: #00475c; --text-muted: #408294;
+        }
 
-        body.brand-kawasaki { --accent: #33cc30; --panel-glow: rgba(51, 204, 48, 0.4); --bg-gradient: linear-gradient(135deg, #062605 0%, #000800 100%); --btn-active-text: #000000; --panel: rgba(12, 35, 11, 0.7); }
-        body.light-mode.brand-kawasaki { --bg-gradient: linear-gradient(135deg, #d2ffd0 0%, #ffffff 100%); --btn-active-text: #ffffff; }
+        body.brand-kawasaki { 
+            --accent: #33cc30; --panel-glow: rgba(51, 204, 48, 0.4); --btn-active-text: #000000;
+            --bg-gradient: linear-gradient(135deg, #041a04 0%, #000500 100%); --panel: rgba(15, 45, 15, 0.5);
+        }
+        body.light-mode.brand-kawasaki { 
+            --bg-gradient: linear-gradient(135deg, #d2ffd0 0%, #f7fff7 100%); --panel: rgba(188, 255, 186, 0.5); --text-main: #0a4708; --text-muted: #3d7a3b;
+        }
 
-        body.brand-suzuki { --accent: #f4d000; --panel-glow: rgba(244, 208, 0, 0.35); --bg-gradient: linear-gradient(135deg, #262200 0%, #050400 100%); --btn-active-text: #000000; --panel: rgba(36, 33, 10, 0.7); }
-        body.light-mode.brand-suzuki { --bg-gradient: linear-gradient(135deg, #fffbcb 0%, #ffffff 100%); --btn-active-text: #000000; }
+        body.brand-suzuki { 
+            --accent: #f4d000; --panel-glow: rgba(244, 208, 0, 0.35); --btn-active-text: #000000;
+            --bg-gradient: linear-gradient(135deg, #1c1900 0%, #050400 100%); --panel: rgba(45, 40, 10, 0.5);
+        }
+        body.light-mode.brand-suzuki { 
+            --bg-gradient: linear-gradient(135deg, #fffbcb 0%, #fffff0 100%); --panel: rgba(255, 250, 173, 0.55); --text-main: #473c00; --text-muted: #80701a;
+        }
 
-        body.brand-ducati { --accent: #e50000; --panel-glow: rgba(229, 0, 0, 0.45); --bg-gradient: linear-gradient(135deg, #2b0000 0%, #050000 100%); --btn-active-text: #ffffff; --panel: rgba(38, 10, 10, 0.7); }
-        body.light-mode.brand-ducati { --bg-gradient: linear-gradient(135deg, #ffcccc 0%, #ffffff 100%); --btn-active-text: #ffffff; }
+        body.brand-ducati { 
+            --accent: #e50000; --panel-glow: rgba(229, 0, 0, 0.45); --btn-active-text: #ffffff;
+            --bg-gradient: linear-gradient(135deg, #210000 0%, #050000 100%); --panel: rgba(55, 8, 8, 0.5);
+        }
+        body.light-mode.brand-ducati { 
+            --bg-gradient: linear-gradient(135deg, #ffcccc 0%, #fff7f7 100%); --panel: rgba(255, 179, 179, 0.5); --text-main: #5c0000; --text-muted: #944040;
+        }
 
-        body.brand-husqvarna { --accent: #00337c; --panel-glow: rgba(0, 51, 124, 0.5); --bg-gradient: linear-gradient(135deg, #001026 0%, #000208 100%); --btn-active-text: #ffffff; --panel: rgba(8, 20, 36, 0.7); }
-        body.light-mode.brand-husqvarna { --bg-gradient: linear-gradient(135deg, #cce0ff 0%, #ffffff 100%); --btn-active-text: #ffffff; }
+        body.brand-husqvarna { 
+            --accent: #00337c; --panel-glow: rgba(0, 51, 124, 0.5); --btn-active-text: #ffffff;
+            --bg-gradient: linear-gradient(135deg, #000b1a 0%, #000105 100%); --panel: rgba(8, 22, 45, 0.5);
+        }
+        body.light-mode.brand-husqvarna { 
+            --bg-gradient: linear-gradient(135deg, #cce0ff 0%, #f7f9ff 100%); --panel: rgba(179, 209, 255, 0.5); --text-main: #00225c; --text-muted: #406094;
+        }
 
-        body.brand-nera { --accent: #ffffff; --panel-glow: rgba(255, 255, 255, 0.2); --bg-gradient: linear-gradient(135deg, #222225 0%, #09090a 100%); --panel: rgba(35, 35, 40, 0.75); --btn-active-text: #000000; }
-        body.light-mode.brand-nera { --accent: #18181b; --panel-glow: rgba(0, 0, 0, 0.12); --bg-gradient: linear-gradient(135deg, #e4e4e7 0%, #ffffff 100%); --panel: rgba(255, 255, 255, 0.9); --btn-active-text: #ffffff; }
+        body.brand-nera { 
+            --accent: #ffffff; --panel-glow: rgba(255, 255, 255, 0.2); --btn-active-text: #000000;
+            --bg-gradient: linear-gradient(135deg, #18181b 0%, #050505 100%); --panel: rgba(40, 40, 45, 0.55);
+        }
+        body.light-mode.brand-nera { 
+            --bg-gradient: linear-gradient(135deg, #e4e4e7 0%, #fafafa 100%); --panel: rgba(212, 212, 216, 0.55); --text-main: #18181b; --text-muted: #52525b;
+        }
 
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-dark); background-image: var(--bg-gradient); background-attachment: fixed; color: var(--text-main); padding: 15px 15px 95px 15px; min-height: 100vh; display: flex; flex-direction: column; transition: all 0.3s ease; }
 
-        body {
-            background-color: var(--bg-dark); background-image: var(--bg-gradient); background-attachment: fixed;
-            color: var(--text-main); padding: 15px 15px 95px 15px; min-height: 100vh; display: flex; flex-direction: column;
-            transition: background-image 0.4s ease, background-color 0.4s, color 0.3s;
-        }
-
-        .header, .card, .bottom-nav, .sidebar {
-            backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px);
-            border: 1px solid var(--panel-border); border-radius: 18px; background: var(--panel);
-            transition: background 0.3s, border-color 0.3s, box-shadow 0.3s;
-        }
-
+        .header, .card, .bottom-nav, .sidebar { backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid var(--panel-border); border-radius: 18px; background: var(--panel); transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; }
         .header { border-left: 5px solid var(--accent); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .header-title { font-weight: 900; font-size: 15px; color: var(--text-main); letter-spacing: -0.3px; }
         .header-sub { font-size: 10px; color: var(--text-muted); font-weight: 700; margin-top: 2px; text-transform: uppercase; }
@@ -85,7 +120,6 @@
         .btn-menu-trigger { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-main); font-size: 16px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; }
         .btn-disconnect { background: rgba(255, 0, 60, 0.1); border: 1px solid rgba(255, 0, 60, 0.3); color: #ff416c; padding: 8px 12px; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; }
 
-        /* SECURITY PROXIMITY GATEWAY MASCHERA DI BLOCCO HARDWARE */
         #proximity-gate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); background-image: var(--bg-gradient); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; }
         .auth-card { background: var(--panel); border: 1px solid var(--panel-border); padding: 25px; border-radius: 24px; width: 100%; max-width: 340px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); text-align: center; }
         .input-password { width: 100%; padding: 14px; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--panel-border); border-radius: 10px; color: var(--text-main); font-size: 14px; text-align: center; margin-top: 15px; outline: none; font-weight: 800; letter-spacing: 2px; display: none; }
@@ -94,7 +128,6 @@
         .btn-connect-hardware { background: var(--accent); border: none; color: var(--btn-active-text); padding: 16px 28px; font-size: 13px; font-weight: 900; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; margin: 20px auto; }
         body:not(.light-mode) .btn-connect-hardware { box-shadow: 0 0 20px var(--panel-glow); }
 
-        /* SIDEBAR ED EXTRA MENU */
         .sidebar { position: fixed; top: 0; right: -300px; width: 300px; height: 100%; z-index: 2000; padding: 25px 20px; display: flex; flex-direction: column; gap: 18px; transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: -10px 0 40px rgba(0,0,0,0.15); overflow-y: auto; border-radius: 24px 0 0 24px; }
         .sidebar.open { right: 0; }
         .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); z-index: 1999; display: none; }
@@ -104,9 +137,7 @@
         .brand-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 5px; }
         .btn-brand-select { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-main); font-size: 10px; font-weight: 700; padding: 11px 4px; border-radius: 10px; cursor: pointer; text-align: center; text-transform: uppercase; }
         .btn-brand-select.selected-brand { border-color: var(--accent); color: var(--accent); font-weight: 900; }
-        body:not(.light-mode) .btn-brand-select.selected-brand { box-shadow: 0 0 12px var(--panel-glow); }
 
-        /* STRUMENTI STRUTTURA ED EFFETTI NEON IN NOTTE */
         .dashboard-arc-box { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 20px; padding: 25px 20px; text-align: center; margin-bottom: 15px; }
         .arc-contagiri { width: 100%; height: 16px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--panel-border); border-radius: 30px; overflow: hidden; margin-bottom: 18px; position: relative; }
         body.light-mode .arc-contagiri { background: rgba(0,0,0,0.07); }
@@ -129,28 +160,24 @@
         .sec-btn { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-muted); }
         .sec-btn.lock-active { background: #ff003c; border-color: #ff003c; color: #ffffff; }
         .sec-btn.unlock-active { background: #00ff66; border-color: #00ff66; color: #000000; }
-        body:not(.light-mode) .sec-btn.lock-active { box-shadow: 0 0 15px rgba(255,0,60,0.4); }
-        body:not(.light-mode) .sec-btn.unlock-active { box-shadow: 0 0 15px rgba(0,255,102,0.4); }
 
         .slider-container { background: var(--box-bg); padding: 14px; border-radius: 12px; border: 1px solid var(--panel-border); }
         input[type=range] { -webkit-appearance: none; width: 100%; background: var(--slider-track); height: 8px; border-radius: 4px; outline: none; }
         input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; background: #ffffff; border: 4px solid var(--accent); cursor: pointer; border-radius: 50%; }
-        body:not(.light-mode) input[type=range]::-webkit-slider-thumb { box-shadow: 0 0 10px var(--panel-glow); }
 
         .tel-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 12px; }
         .tel-box { background: var(--box-bg); padding: 14px 5px; text-align: center; border-radius: 12px; border: 1px solid var(--panel-border); }
         .tel-num { font-size: 22px; font-weight: 800; color: var(--text-main); }
         .tel-lbl { font-size: 9px; color: var(--text-muted); margin-top: 6px; font-weight: 800; }
         
-        .console { background: rgba(0,0,0,0.4); height: 85px; overflow-y: auto; padding: 10px; font-size: 10px; color: #00ff66; border-radius: 12px; font-family: monospace; border: 1px solid var(--panel-border); }
-        body.light-mode .console { background: rgba(0,0,0,0.04); color: #00993d; }
+        .console { background: var(--box-bg); height: 85px; overflow-y: auto; padding: 10px; font-size: 10px; color: #00ff66; border-radius: 12px; font-family: monospace; border: 1px solid var(--panel-border); }
+        body.light-mode .console { color: #008033; }
 
         .bottom-nav { position: fixed; bottom: 12px; left: 12px; right: 12px; display: grid; grid-template-columns: repeat(2, 1fr); padding: 12px 6px; z-index: 1000; border-radius: 24px; box-shadow: 0 10px 35px rgba(0,0,0,0.1); }
         .nav-item { background: transparent; border: none; color: var(--text-muted); font-size: 12px; font-weight: 800; display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px; }
         .nav-item.active { color: var(--accent); }
         
         .menu-item-disabled { padding: 12px; background: rgba(0,0,0,0.15); border-radius: 10px; border: 1px solid var(--panel-border); color: var(--text-muted); font-size: 11px; font-weight: 700; opacity: 0.35; }
-        body.light-mode .menu-item-disabled { background: rgba(0,0,0,0.04); }
         .sidebar-input-bike { width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--panel-border); border-radius: 8px; color: var(--text-main); font-weight: 800; font-size: 12px; outline: none; border-left: 3px solid var(--accent); }
     </style>
 </head>
@@ -159,7 +186,7 @@
     <div id="proximity-gate">
         <div class="auth-card">
             <h2 id="gate-title" style="font-size:16px; font-weight:900; margin-bottom:5px; color:var(--text-main);">HARDWARE LINK REQUIRED</h2>
-            <p id="gate-desc" style="font-size:11px; color:var(--text-muted); line-height:1.4;">Avvia prima la connessione Bluetooth wireless con l'ESP32.</p>
+            <p id="gate-desc" style="font-size:11px; color:var(--text-muted); line-height:1.4;">Avvia la connessione Bluetooth wireless con l'ESP32.</p>
             
             <input type="password" id="pass-hardware" class="input-password" maxlength="4" placeholder="••••">
             
@@ -276,23 +303,15 @@
         const CHAR_RX_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
         const CHAR_TX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 
-        let rxCharacteristic = null;
-        let bluetoothDevice = null;
-        let isDemoMode = false;
-        let demoLoopInterval = null;
-        let currentPopMode = 0; 
-        
-        // STATI DI VERIFICA GESTITI DALL'ARDUINO
-        let bluetoothConnected = false;
-        let hardwareSecurityStatus = "DISCONNECTED"; // DISCONNECTED, NEED_SETUP, NEED_AUTH, UNLOCKED
+        let rxCharacteristic = null; let bluetoothDevice = null;
+        let isDemoMode = false; let demoLoopInterval = null; let currentPopMode = 0; 
+        let bluetoothConnected = false; let hardwareSecurityStatus = "DISCONNECTED";
 
         document.addEventListener("DOMContentLoaded", () => {
             let nomeSalvato = localStorage.getItem('qs_bike') || "La Mia Moto";
             document.getElementById('bikeName').value = nomeSalvato;
             document.getElementById('header-bike-display').innerText = nomeSalvato;
-
-            let brandSalvato = localStorage.getItem('qs_brand_theme') || "ktm";
-            cambiaBrandTema(brandSalvato);
+            cambiaBrandTema(localStorage.getItem('qs_brand_theme') || "ktm");
 
             if(localStorage.getItem('qs_vision') === 'light') {
                 document.body.classList.add('light-mode');
@@ -302,8 +321,7 @@
 
         function cambiaBrandTema(brand) {
             document.body.className = document.body.className.replace(/\bbrand-\S+/g, '');
-            document.body.classList.add('brand-' + brand);
-            localStorage.setItem('qs_brand_theme', brand);
+            document.body.classList.add('brand-' + brand); localStorage.setItem('qs_brand_theme', brand);
             document.querySelectorAll('.btn-brand-select').forEach(b => b.classList.remove('selected-brand'));
             const targetBtn = document.getElementById('brand-' + brand);
             if(targetBtn) targetBtn.classList.add('selected-brand');
@@ -312,18 +330,18 @@
         function openSidebar() { document.getElementById('sidebarMenu').classList.add('open'); document.getElementById('sidebarOverlay').style.display = 'block'; }
         function closeSidebar() { document.getElementById('sidebarMenu').classList.remove('open'); document.getElementById('sidebarOverlay').style.display = 'none'; }
         function aggiornaNomeMotoDinamico(valore) { let nome = valore.trim() === "" ? "La Mia Moto" : valore; localStorage.setItem('qs_bike', nome); document.getElementById('header-bike-display').innerText = nome; }
+        
         function toggleVisionMode() {
             const body = document.body; const btn = document.getElementById('theme-switcher-sidebar');
-            body.classList.toggle('light-mode'); const isLight = body.classList.contains('light-mode');
-            localStorage.setItem('qs_vision', isLight ? 'light' : 'dark');
-            btn.innerText = isLight ? "🌙 MODALITÀ NOTTE" : "☀️ MODALITÀ GIORNO";
+            body.classList.toggle('light-mode');
+            localStorage.setItem('qs_vision', body.classList.contains('light-mode') ? 'light' : 'dark');
+            btn.innerText = body.classList.contains('light-mode') ? "🌙 MODALITÀ NOTTE" : "☀️ MODALITÀ GIORNO";
         }
 
         function cambiaTab(idTab, bottoneNav) {
             document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
             document.querySelectorAll('.sub-pane').forEach(pane => pane.style.display = 'none');
-            bottoneNav.classList.add('active');
-            document.getElementById('pane-' + idTab).style.display = 'block';
+            bottoneNav.classList.add('active'); document.getElementById('pane-' + idTab).style.display = 'block';
         }
 
         function setMode(ms, bottonePremuto) {
@@ -352,15 +370,12 @@
             inviaPacchettoCentralina({type: "ecu_state", status: statoBlocco ? "LOCKED" : "UNLOCKED"});
         }
 
-        // FUNZIONE UNICA DI CONTROLLO INTERFACCIA CENTRALE
         async function azionePulsanteCentraleGate() {
             if (!bluetoothConnected) {
-                // FASE 1: PRIMA IL COLLEGAMENTO BLUETOOTH
                 document.getElementById('gate-status').innerText = "Scansione BLE...";
                 try {
                     bluetoothDevice = await navigator.bluetooth.requestDevice({
-                        filters: [{ name: 'Quickshifter_Secure' }],
-                        optionalServices: [CENTRALINA_SERVICE_UUID]
+                        filters: [{ name: 'Quickshifter_Secure' }], optionalServices: [CENTRALINA_SERVICE_UUID]
                     });
                     bluetoothDevice.addEventListener('gattserverdisconnected', ripristinaStatoDisconnesso);
                     const serverGatt = await bluetoothDevice.gatt.connect();
@@ -372,23 +387,27 @@
                     txCharacteristic.addEventListener('characteristicvaluechanged', smistaPacchettiDatiInIngresso);
 
                     bluetoothConnected = true;
-                    document.getElementById('gate-status').innerText = "Connesso! Verifica credenziali centralina...";
+                    document.getElementById('gate-status').innerText = "Connesso! Sincronizzazione PIN...";
                     
-                    // Chiediamo all'Arduino lo stato della password inviando un ping vuoto
-                    inviaPacchettoCentralina({type: "ping"});
-                } catch(e) {
-                    document.getElementById('gate-status').innerText = "Errore BLE: " + e.message;
-                }
+                    // Controlla se abbiamo un PIN salvato nel browser localmente per mandarlo subito in automatico
+                    let autoPin = localStorage.getItem('qs_local_pass');
+                    if(autoPin && autoPin.length === 4) {
+                        document.getElementById('gate-status').innerText = "Verifica automatica credenziali...";
+                        inviaPacchettoCentralina({type: "auth_pass", pass: autoPin});
+                    } else {
+                        inviaPacchettoCentralina({type: "ping"});
+                    }
+                } catch(e) { document.getElementById('gate-status').innerText = "Errore: " + e.message; }
             } else {
-                // FASE 2: INVIO PASSWORD ALL'ARDUINO DOPO ESSERCI CONNESSI
                 let pin = document.getElementById('pass-hardware').value.trim();
-                if(pin.length < 4) {
-                    document.getElementById('gate-status').innerText = "Inserisci 4 cifre!";
-                    return;
-                }
+                if(pin.length < 4) { document.getElementById('gate-status').innerText = "Inserisci 4 cifre!"; return; }
+                
+                // Salviamo temporaneamente in locale la password digitata dall'utente prima di mandarla
+                localStorage.setItem('qs_local_pass', pin);
+                
                 if (hardwareSecurityStatus === "NEED_SETUP") {
                     inviaPacchettoCentralina({type: "setup_new_pass", pass: pin});
-                } else if (hardwareSecurityStatus === "NEED_AUTH") {
+                } else if (hardwareSecurityStatus === "NEED_AUTH" || hardwareSecurityStatus === "AUTH_FAIL") {
                     inviaPacchettoCentralina({type: "auth_pass", pass: pin});
                 }
             }
@@ -396,69 +415,66 @@
 
         function smistaPacchettiDatiInIngresso(eventoGatt) {
             let decoder = new TextDecoder("utf-8");
-            let stringaDati = decoder.decode(eventoGatt.target.value);
-            try {
-                let json = JSON.parse(stringaDati);
+            let json = JSON.parse(decoder.decode(eventoGatt.target.value));
 
-                // CONTROLLI STATO SICUREZZA DA FIRMWARE
-                if(json.security !== undefined) {
-                    hardwareSecurityStatus = json.security;
+            if(json.security !== undefined) {
+                hardwareSecurityStatus = json.security;
+                
+                if(hardwareSecurityStatus === "NEED_SETUP") {
+                    localStorage.removeItem('qs_local_pass'); // Pulisce se l'Arduino è resettato
                     document.getElementById('pass-hardware').style.display = "block";
-                    
-                    if(hardwareSecurityStatus === "NEED_SETUP") {
-                        document.getElementById('gate-title').innerText = "ECU RESETTATA!";
-                        document.getElementById('gate-desc').innerText = "L'Arduino è stato formattato. Crea un nuovo PIN di sblocco a 4 cifre:";
-                        document.getElementById('btn-gate-text').innerText = "🔒 SALVA NUOVO PIN";
-                        document.getElementById('gate-status').innerText = "In attesa di registrazione...";
-                    } else if(hardwareSecurityStatus === "NEED_AUTH") {
-                        document.getElementById('gate-title').innerText = "INSERISCI PIN";
-                        document.getElementById('gate-desc').innerText = "Centralina protetta da chiave di cifratura. Digita il codice per sbloccare il sito:";
-                        document.getElementById('btn-gate-text').innerText = "🔓 SBLOCCA SITO";
-                        document.getElementById('gate-status').innerText = "Frenato da controllo Hardware.";
-                    } else if(hardwareSecurityStatus === "UNLOCKED") {
-                        // SBLOCCO DEFINITIVO DEL SITO
-                        document.getElementById('proximity-gate').style.display = 'none';
-                        document.getElementById('disconnetti-rapido').style.display = 'block';
-                        document.getElementById('signal-strength').innerText = "CONNESSO GO";
-                    } else if(hardwareSecurityStatus === "AUTH_FAIL") {
-                        document.getElementById('gate-status').innerText = "❌ PIN ERRATO! Accesso negato.";
-                    }
+                    document.getElementById('gate-title').innerText = "SETUP PIN CENTRALINA";
+                    document.getElementById('gate-desc').innerText = "L'Arduino è stato formattato da pulsante fisco. Registra un PIN a 4 cifre:";
+                    document.getElementById('btn-gate-text').innerText = "🔒 SALVA PIN DI BLOCCO";
+                } 
+                else if(hardwareSecurityStatus === "NEED_AUTH") {
+                    // Se fallisce l'autologin automatico, viene forzato qui
+                    document.getElementById('pass-hardware').style.display = "block";
+                    document.getElementById('gate-title').innerText = "CENTRALINA CRITTOGRAFATA";
+                    document.getElementById('gate-desc').innerText = "Inserisci il PIN per sbloccare l'interfaccia di configurazione:";
+                    document.getElementById('btn-gate-text').innerText = "🔓 ACCEDI CON PIN";
+                } 
+                else if(hardwareSecurityStatus === "UNLOCKED") {
+                    document.getElementById('proximity-gate').style.display = 'none';
+                    document.getElementById('disconnetti-rapido').style.display = 'block';
+                    document.getElementById('signal-strength').innerText = "CONNESSO GO";
+                } 
+                else if(hardwareSecurityStatus === "AUTH_FAIL") {
+                    localStorage.removeItem('qs_local_pass'); // Cancella la password errata dalla memoria
+                    document.getElementById('pass-hardware').style.display = "block";
+                    document.getElementById('pass-hardware').value = "";
+                    document.getElementById('gate-status').innerText = "❌ PIN ERRATO! Inserisci quello corretto:";
+                    document.getElementById('btn-gate-text').innerText = "🔓 RIPROVA ACCESSO";
                 }
+            }
 
-                // DATI DI TELEMETRIA REALI (Funzionano solo se il sito è sbloccato)
-                if(hardwareSecurityStatus === "UNLOCKED") {
-                    if(json.rpm !== undefined) {
-                        document.getElementById('rpmBar').style.width = (json.rpm / 12000) * 100 + '%';
-                        document.getElementById('rpmNum').innerText = json.rpm;
-                    }
-                    if(json.speed !== undefined) document.getElementById('speedNum').innerText = json.speed;
-                    if(json.contatore !== undefined) document.getElementById('cambiate').innerText = json.contatore;
-                    if(json.cutTime !== undefined) document.getElementById('lastCut').innerText = json.cutTime + "ms";
-                    if(json.fluidita !== undefined) document.getElementById('fluidita-id').innerText = json.fluidita + "%";
+            if(hardwareSecurityStatus === "UNLOCKED") {
+                if(json.rpm !== undefined) {
+                    document.getElementById('rpmBar').style.width = (json.rpm / 12000) * 100 + '%';
+                    document.getElementById('rpmNum').innerText = json.rpm;
                 }
-            } catch(e) { }
+                if(json.speed !== undefined) document.getElementById('speedNum').innerText = json.speed;
+                if(json.contatore !== undefined) document.getElementById('cambiate').innerText = json.contatore;
+                if(json.cutTime !== undefined) document.getElementById('lastCut').innerText = json.cutTime + "ms";
+                if(json.fluidita !== undefined) document.getElementById('fluidita-id').innerText = json.fluidita + "%";
+            }
         }
 
         function avviaModalitaDemo() {
-            isDemoMode = true;
-            document.getElementById('proximity-gate').style.display = 'none';
+            isDemoMode = true; document.getElementById('proximity-gate').style.display = 'none';
             document.getElementById('disconnetti-rapido').style.display = 'block';
             document.getElementById('signal-strength').innerText = "DEMO SIMULATION";
-            document.getElementById('cambiate').innerText = "42";
-            document.getElementById('fluidita-id').innerText = "99%";
-            document.getElementById('lastCut').innerText = "75ms";
-
+            document.getElementById('cambiate').innerText = "12"; document.getElementById('fluidita-id').innerText = "98%"; document.getElementById('lastCut').innerText = "75ms";
             demoLoopInterval = setInterval(() => {
-                let rpmFinto = Math.floor(Math.random() * (11000 - 1500) + 1500);
+                let rpmFinto = Math.floor(Math.random() * (10800 - 2000) + 2000);
                 document.getElementById('rpmBar').style.width = (rpmFinto / 12000) * 100 + '%';
                 document.getElementById('rpmNum').innerText = rpmFinto;
-                document.getElementById('speedNum').innerText = Math.floor(Math.random() * (140 - 20) + 20);
+                document.getElementById('speedNum').innerText = Math.floor(Math.random() * (135 - 30) + 30);
             }, 150);
         }
 
         function scollegaDispositivo() {
-            if (bluetoothDevice && bluetoothDevice.gatt.connected) { bluetoothDevice.gatt.disconnect(); }
-            else { ripristinaStatoDisconnesso(); }
+            if (bluetoothDevice && bluetoothDevice.gatt.connected) { bluetoothDevice.gatt.disconnect(); } else { ripristinaStatoDisconnesso(); }
         }
 
         function ripristinaStatoDisconnesso() {
@@ -467,14 +483,10 @@
             document.getElementById('disconnetti-rapido').style.display = 'none';
             document.getElementById('signal-strength').innerText = "DISCONNESSO";
             document.getElementById('proximity-gate').style.display = 'flex';
-            
             document.getElementById('rpmBar').style.width = '0%';
             document.getElementById('rpmNum').innerText = '--'; document.getElementById('speedNum').innerText = '--';
-            document.getElementById('cambiate').innerText = '--'; document.getElementById('fluidita-id').innerText = '--';
-            document.getElementById('lastCut').innerText = '--';
-
+            document.getElementById('cambiate').innerText = '--'; document.getElementById('fluidita-id').innerText = '--'; document.getElementById('lastCut').innerText = '--';
             document.getElementById('gate-title').innerText = "HARDWARE LINK REQUIRED";
-            document.getElementById('gate-desc').innerText = "Avvia prima la connessione Bluetooth wireless con l'ESP32.";
             document.getElementById('btn-gate-text').innerText = "🤝 CONNETTI BLUETOOTH";
             document.getElementById('pass-hardware').style.display = "none";
             document.getElementById('pass-hardware').value = "";
