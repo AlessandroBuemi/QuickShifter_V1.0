@@ -419,32 +419,31 @@
                 if(hardwareSecurityStatus === "NEED_SETUP") {
                     localStorage.removeItem('qs_local_pass'); 
                     document.getElementById('pass-hardware').style.display = "block";
+                    document.getElementById('pass-hardware').value = "";
                     document.getElementById('gate-title').innerText = "SETUP PIN CENTRALINA";
                     document.getElementById('gate-desc').innerText = "L'Arduino è stato formattato dal pulsante fisico. Registra un PIN a 4 cifre:";
                     document.getElementById('btn-gate-text').innerText = "🔒 SALVA PIN DI BLOCCO";
                     document.getElementById('gate-status').innerText = "In attesa di nuovo PIN.";
                 } 
                 else if(hardwareSecurityStatus === "NEED_AUTH") {
+                    // Rendiamo SEMPRE visibile la casella di testo così l'interfaccia non si blocca mai
+                    document.getElementById('pass-hardware').style.display = "block";
+                    document.getElementById('gate-title').innerText = "CENTRALINA CRITTOGRAFATA";
+                    document.getElementById('gate-desc').innerText = "Inserisci il PIN per sbloccare l'interfaccia di configurazione:";
+                    document.getElementById('btn-gate-text').innerText = "🔓 ACCEDI CON PIN";
+        
                     let autoPin = localStorage.getItem('qs_local_pass');
                     if(autoPin && autoPin.length === 4) {
-                        document.getElementById('gate-status').innerText = "Invio PIN memorizzato...";
-                        inviaPacchettoCentralina({type: "auth_pass", pass: autoPin});
+                        // Scriviamo il PIN nella casella così vedi che c'è
+                        document.getElementById('pass-hardware').value = autoPin;
+                        document.getElementById('gate-status').innerText = "Tentativo di sblocco automatico...";
                         
-                        // Forziamo comunque la visibilità del box dopo 1.5 secondi se la centralina 
-                        // non dovesse sbloccarsi subito (es. se il PIN memorizzato fosse errato)
-                        setTimeout(() => {
-                            if(hardwareSecurityStatus !== "UNLOCKED") {
-                                document.getElementById('pass-hardware').style.display = "block";
-                                document.getElementById('btn-gate-text').innerText = "🔓 ACCEDI CON PIN ANCHE SE SALVATO";
-                            }
-                        }, 1500);
+                        // Spediamo il PIN sia come stringa che come numero per essere sicuri al 100% che l'ESP32 lo digerisca
+                        inviaPacchettoCentralina({type: "auth_pass", pass: autoPin});
+                        inviaPacchettoCentralina({type: "auth_pass", pass: parseInt(autoPin)});
                     } else {
-                        // Se non c'è PIN in memoria, mostra IMMEDIATAMENTE i controlli per digitarlo
-                        document.getElementById('pass-hardware').style.display = "block";
-                        document.getElementById('gate-title').innerText = "CENTRALINA CRITTOGRAFATA";
-                        document.getElementById('gate-desc').innerText = "Inserisci il PIN per sbloccare l'interfaccia di configurazione:";
-                        document.getElementById('btn-gate-text').innerText = "🔓 ACCEDI CON PIN";
-                        document.getElementById('gate-status').innerText = "Richiesto sblocco manuale.";
+                        document.getElementById('pass-hardware').value = "";
+                        document.getElementById('gate-status').innerText = "Inserisci il PIN manualmente.";
                     }
                 } 
                 else if(hardwareSecurityStatus === "UNLOCKED") {
@@ -453,7 +452,6 @@
                     document.getElementById('signal-strength').innerText = "CONNESSO GO";
                 } 
                 else if(hardwareSecurityStatus === "AUTH_FAIL") {
-                    // Se fallisce l'autenticazione automatica (o manuale), puliamo e mostriamo l'input
                     localStorage.removeItem('qs_local_pass'); 
                     document.getElementById('pass-hardware').style.display = "block";
                     document.getElementById('pass-hardware').value = "";
