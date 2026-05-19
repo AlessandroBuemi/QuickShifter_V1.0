@@ -23,7 +23,7 @@
             --panel-glow: rgba(255, 102, 0, 0.45);
             --text-main: #f5f0f2;
             --text-muted: #dcd1d5;
-            --btn-bg: rgba(255, 255, 255, 0.06);
+            --btn-bg: rgba(255, 255, 255, 0.07);
             --box-bg: rgba(0, 0, 0, 0.5);
             --bg-gradient: linear-gradient(135deg, #1c0b00 0%, #070300 100%);
             --slider-track: rgba(255, 255, 255, 0.15);
@@ -120,18 +120,8 @@
         * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; font-family: 'Inter', sans-serif; }
         body { background-color: var(--bg-dark); background-image: var(--bg-gradient); background-attachment: fixed; color: var(--text-main); padding: 15px 15px 95px 15px; min-height: 100vh; display: flex; flex-direction: column; transition: all 0.3s ease; }
 
-        /* MODIFICA: I CONTAINER ORA PRENDONO IL COLORE DELLA MOTO DINAMICAMENTE */
-        .header, .card, .bottom-nav, .sidebar, .dashboard-arc-box { 
-            backdrop-filter: blur(30px); 
-            -webkit-backdrop-filter: blur(30px); 
-            border: 2px solid var(--accent) !important; /* Forza il colore della moto sul bordo */
-            border-radius: 18px; 
-            background: var(--panel); 
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 15px var(--panel-glow); /* Bagliore del colore del brand */
-        }
-        
-        .header { border-left: 6px solid var(--accent) !important; padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .header, .card, .bottom-nav, .sidebar { backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid var(--panel-border); border-radius: 18px; background: var(--panel); transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; }
+        .header { border-left: 5px solid var(--accent); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .header-title { font-weight: 900; font-size: 15px; color: var(--text-main); letter-spacing: -0.3px; }
         .header-sub { font-size: 10px; color: var(--text-muted); font-weight: 700; margin-top: 2px; text-transform: uppercase; }
         
@@ -139,7 +129,7 @@
         .btn-disconnect { background: rgba(255, 0, 60, 0.1); border: 1px solid rgba(255, 0, 60, 0.3); color: #ff416c; padding: 8px 12px; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; }
 
         #proximity-gate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); background-image: var(--bg-gradient); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; }
-        .auth-card { background: var(--panel); border: 2px solid var(--accent); padding: 25px; border-radius: 24px; width: 100%; max-width: 340px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); text-align: center; }
+        .auth-card { background: var(--panel); border: 1px solid var(--panel-border); padding: 25px; border-radius: 24px; width: 100%; max-width: 340px; box-shadow: 0 20px 50px rgba(0,0,0,0.2); text-align: center; }
         .input-password { width: 100%; padding: 14px; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--panel-border); border-radius: 10px; color: var(--text-main); font-size: 14px; text-align: center; margin-top: 15px; outline: none; font-weight: 800; letter-spacing: 2px; display: none; }
         body.light-mode .input-password { background: rgba(0, 0, 0, 0.05); }
 
@@ -156,8 +146,7 @@
         .btn-brand-select { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-main); font-size: 10px; font-weight: 700; padding: 11px 4px; border-radius: 10px; cursor: pointer; text-align: center; text-transform: uppercase; }
         .btn-brand-select.selected-brand { border-color: var(--accent); color: var(--accent); font-weight: 900; }
 
-        /* RIVISTO COMPLETO IL DESIGN DEI PRESET BOX */
-        .dashboard-arc-box { padding: 25px 20px; text-align: center; margin-bottom: 15px; }
+        .dashboard-arc-box { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 20px; padding: 25px 20px; text-align: center; margin-bottom: 15px; }
         .arc-contagiri { width: 100%; height: 16px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--panel-border); border-radius: 30px; overflow: hidden; margin-bottom: 18px; position: relative; }
         body.light-mode .arc-contagiri { background: rgba(0,0,0,0.07); }
         .arc-fill { width: 0%; height: 100%; background: var(--accent); transition: width 0.1s linear; border-radius: 30px; }
@@ -170,28 +159,14 @@
         .card-title { font-size: 11px; color: var(--text-muted); letter-spacing: 1.5px; margin-bottom: 16px; text-transform: uppercase; font-weight: 800; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; }
         
         .preset-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 12px; margin-bottom: 18px; }
+        .btn-action { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-main); padding: 16px 10px; font-size: 11px; font-weight: 800; border-radius: 12px; cursor: pointer; transition: background 0.2s, border-color 0.2s, box-shadow 0.2s; }
         
-        /* MODIFICA PULSANTI: DESIGN CURATO E AGGRESSIVO */
-        .btn-action { 
-            background: #1e1e24; 
-            border: 1px solid rgba(255, 255, 255, 0.15); 
-            color: var(--text-main); 
-            padding: 16px 10px; 
-            font-size: 11px; 
-            font-weight: 800; 
-            border-radius: 12px; 
-            cursor: pointer; 
-            text-transform: uppercase;
-            transition: all 0.2s ease; 
-        }
-        body.light-mode .btn-action { background: #f0eced; border: 1px solid rgba(0,0,0,0.1); }
-        
-        .btn-action.active { background: var(--accent) !important; color: var(--btn-active-text) !important; border-color: var(--accent) !important; }
-        body:not(.light-mode) .btn-action.active { box-shadow: 0 0 15px var(--panel-glow); }
+        .btn-action.active { background: var(--accent); color: var(--btn-active-text); border-color: var(--accent); }
+        body:not(.light-mode) .btn-action.active { box-shadow: 0 0 20px var(--panel-glow); filter: drop-shadow(0 0 4px var(--accent)); }
 
-        .sec-btn { background: #1a1a20; border: 1px solid var(--panel-border); color: var(--text-muted); }
-        .sec-btn.lock-active { background: #ff1744 !important; border-color: #ff1744 !important; color: #ffffff !important; box-shadow: 0 0 10px rgba(255,23,68,0.4); }
-        .sec-btn.unlock-active { background: #00E676 !important; border-color: #00E676 !important; color: #000000 !important; box-shadow: 0 0 10px rgba(0,230,118,0.4); }
+        .sec-btn { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-muted); }
+        .sec-btn.lock-active { background: #ff003c; border-color: #ff003c; color: #ffffff; }
+        .sec-btn.unlock-active { background: #00ff66; border-color: #00ff66; color: #000000; }
 
         .slider-container { background: var(--box-bg); padding: 14px; border-radius: 12px; border: 1px solid var(--panel-border); }
         input[type=range] { -webkit-appearance: none; width: 100%; background: var(--slider-track); height: 8px; border-radius: 4px; outline: none; }
@@ -474,11 +449,13 @@
                         const devices = await navigator.bluetooth.getDevices();
                         if (devices.length > 0) bluetoothDevice = devices[0];
                     }
+
                     if (!bluetoothDevice) {
                         bluetoothDevice = await navigator.bluetooth.requestDevice({
                             filters: [{ name: 'Quickshifter_Secure' }], optionalServices: [CENTRALINA_SERVICE_UUID]
                         });
                     }
+
                     bluetoothDevice.addEventListener('gattserverdisconnected', ripristinaStatoDisconnesso);
                     const serverGatt = await bluetoothDevice.gatt.connect();
                     const servizioPrimario = await serverGatt.getPrimaryService(CENTRALINA_SERVICE_UUID);
@@ -526,14 +503,12 @@
             }
         }
 
-        // MODIFICA: RPM E SPEED DISATTIVATI (FISSI A --) NELLA MODALITÀ DEMO
         function avviaModalitaDemo() {
             isDemoMode = true;
             document.getElementById('proximity-gate').style.display = "none";
             document.getElementById('signal-strength').innerText = "MODALITÀ VIRTUAL DEMO";
             document.getElementById('console').innerText = "SYS: Centralina virtuale attiva. Dati fissi.";
             
-            // Manteniamo stabili i trattini originali senza sovrascriverli con numeri random
             document.getElementById('speedNum').innerText = "--";
             document.getElementById('rpmNum').innerText = "--";
             document.getElementById('rpmBar').style.width = "0%";
