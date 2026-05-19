@@ -183,7 +183,7 @@
         .bottom-nav { position: fixed; bottom: 12px; left: 12px; right: 12px; display: grid; grid-template-columns: repeat(2, 1fr); padding: 12px 6px; z-index: 1000; border-radius: 24px; box-shadow: 0 10px 35px rgba(0,0,0,0.1); }
         .nav-item { background: transparent; border: none; color: var(--text-muted); font-size: 12px; font-weight: 800; display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px; }
         .nav-item.active { color: var(--accent); }
-        .nav-item span { font-size: 15px; pointer-events: none; } 
+        .nav-item span { font-size: 15px; pointer-events: none; } /* Impedisce l'errore del tocco mobile sull'emoji */
         
         .menu-item-disabled { padding: 12px; background: rgba(0,0,0,0.15); border-radius: 10px; border: 1px solid var(--panel-border); color: var(--text-muted); font-size: 11px; font-weight: 700; opacity: 0.35; }
         .sidebar-input-bike { width: 100%; padding: 10px; background: rgba(0,0,0,0.2); border: 1px solid var(--panel-border); border-radius: 8px; color: var(--text-main); font-weight: 800; font-size: 12px; outline: none; border-left: 3px solid var(--accent); }
@@ -384,6 +384,7 @@
             const targetBtn = document.getElementById('brand-' + brand);
             if(targetBtn) targetBtn.classList.add('selected-brand');
 
+            // Mappa dei colori per aggiornare il browser e la barra dello smartphone
             const coloriBrand = {
                 'ktm': '#ff6600', 'yamaha': '#005bf6', 'beta': '#ff1e1e',
                 'tm': '#00bfff', 'kawasaki': '#33cc30', 'suzuki': '#f4d000',
@@ -408,11 +409,25 @@
         }
 
         function cambiaTab(idTab, bottoneNav) {
-            document.querySelectorAll('.nav-item').forEach(btn => btn.classList.remove('active'));
-            document.querySelectorAll('.sub-pane').forEach(pane => pane.style.display = 'none');
-            if (bottoneNav) bottoneNav.classList.add('active');
+            // Rimuove la selezione da tutte le voci di navigazione
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Nasconde in modo solido tutti i pannelli (risolve il bug del blocco mobile)
+            document.querySelectorAll('.sub-pane').forEach(pane => {
+                pane.style.display = 'none';
+            });
+            
+            // Attiva il pulsante corrente e mostra lo schermo corretto
+            if (bottoneNav) {
+                bottoneNav.classList.add('active');
+            }
+            
             const targetPane = document.getElementById('pane-' + idTab);
-            if (targetPane) targetPane.style.display = 'block';
+            if (targetPane) {
+                targetPane.style.display = 'block';
+            }
         }
 
         function setMode(ms, bottonePremuto) {
@@ -447,7 +462,9 @@
                 try {
                     if (navigator.bluetooth && navigator.bluetooth.getDevices) {
                         const devices = await navigator.bluetooth.getDevices();
-                        if (devices.length > 0) bluetoothDevice = devices[0];
+                        if (devices.length > 0) {
+                            bluetoothDevice = devices[0];
+                        }
                     }
 
                     if (!bluetoothDevice) {
@@ -466,64 +483,133 @@
                     txCharacteristic.addEventListener('characteristicvaluechanged', smistaPacchettiDatiInIngresso);
 
                     bluetoothConnected = true;
-                    document.getElementById('proximity-gate').style.display = "none";
-                    document.getElementById('signal-strength').innerText = "CONNESSO";
-                    document.getElementById('disconnetti-rapido').style.display = "block";
-                } catch (e) {
-                    document.getElementById('gate-status').innerText = "Errore link BLE: " + e.message;
+                    document.getElementById('gate-status').innerText = "Sincronizzazione di sicurezza...";
+                    
+                    setTimeout(() => {
+                        inviaPacchettoCentralina({type: "ping"});
+                    }, 500);
+                    
+                } catch(e) { 
+                    bluetoothDevice = null;
+                    document.getElementById('gate-status').innerText = "Errore: " + e.message; 
+                    document.getElementById('btn-gate-text').innerText = "🤝 CONNETTI BLUETOOTH";
+                }
+            } else {
+                let pin = document.getElementById('pass-hardware').value.trim();
+                if(pin.length < 4) { document.getElementById('gate-status').innerText = "Inserisci 4 cifre!"; return; }
+                
+                localStorage.setItem('qs_local_pass', pin);
+                inviaPacchettoCentralina({type: "auth_pass", pass: pin});
+            }
+        }
+
+        function smistaPacchettiDatiInIngresso(eventoGatt) {
+            let decoder = new TextDecoder("utf-8");
+            let json = JSON.parse(decoder.decode(eventoGatt.target.value));
+
+            if(json.security !== undefined) {
+                hardwareSecurityStatus = json.security;
+                
+                if(hardwareSecurityStatus === "NEED_SETUP") {
+                    localStorage.removeItem('qs_local_pass'); 
+                    document.getElementById('pass-hardware').style.display = "block";
+                    document.getElementById('pass-hardware').value = "";
+                    document.getElementById('gate-title').innerText = "SETUP PIN CENTRALINA";
+                    document.getElementById('gate-desc').innerText = "L'Arduino è stato formattato dal pulsante fisico. Registra un PIN a 4 cifre:";
+                    document.getElementById('btn-gate-text').innerText = "🔒 SALVA PIN DI BLOCCO";
+                    document.getElementById('gate-status').innerText = "In attesa di nuovo PIN.";
+                } 
+                else if(hardwareSecurityStatus === "NEED_AUTH") {
+                    document.getElementById('pass-hardware').style.display = "block";
+                    document.getElementById('gate-title').innerText = "CENTRALINA CRITTOGRAFATA";
+                    document.getElementById('gate-desc').innerText = "Inserisci il PIN per sbloccare l'interfaccia di configurazione:";
+                    document.getElementById('btn-gate-text').innerText = "🔓 ACCEDI CON PIN";
+
+                    let autoPin = localStorage.getItem('qs_local_pass');
+                    if(autoPin && autoPin.length === 4) {
+                        document.getElementById('pass-hardware').value = autoPin;
+                        document.getElementById('gate-status').innerText = "Sblocco automatico in corso...";
+                        
+                        setTimeout(() => {
+                            inviaPacchettoCentralina({type: "auth_pass", pass: autoPin});
+                        }, 200);
+                    } else {
+                        document.getElementById('pass-hardware').value = "";
+                        document.getElementById('gate-status').innerText = "Inserisci il PIN manualmente.";
+                    }
+                } 
+                else if(hardwareSecurityStatus === "UNLOCKED") {
+                    document.getElementById('proximity-gate').style.display = 'none';
+                    document.getElementById('disconnetti-rapido').style.display = 'block';
+                    document.getElementById('signal-strength').innerText = "CONNESSO GO";
+                } 
+                else if(hardwareSecurityStatus === "AUTH_FAIL") {
+                    localStorage.removeItem('qs_local_pass'); 
+                    document.getElementById('pass-hardware').style.display = "block";
+                    document.getElementById('pass-hardware').value = "";
+                    document.getElementById('gate-title').innerText = "CENTRALINA CRITTOGRAFATA";
+                    document.getElementById('gate-desc').innerText = "Inserisci il PIN per sbloccare l'interfaccia di configurazione:";
+                    document.getElementById('gate-status').innerText = "❌ PIN ERRATO! Inserisci quello corretto:";
+                    document.getElementById('btn-gate-text').innerText = "🔓 RIPROVA ACCESSO";
                 }
             }
-        }
 
-        function smistaPacchettiDatiInIngresso(event) {
-            const enc = new TextDecoder();
-            const stringaJson = enc.decode(event.target.value);
-            try {
-                const dati = JSON.parse(stringaJson);
-                if(dati.contatore !== undefined) document.getElementById('cambiate').innerText = dati.contatore;
-                if(dati.fluidita !== undefined) document.getElementById('fluidita-id').innerText = dati.fluidita + "%";
-                if(dati.cutTime !== undefined) document.getElementById('lastCut').innerText = dati.cutTime + "ms";
-                
-                let p = document.createElement('p');
-                p.innerText = "-> " + stringaJson;
-                const cons = document.getElementById('console');
-                cons.appendChild(p); cons.scrollTop = cons.scrollHeight;
-            } catch(e) {}
-        }
-
-        function inviaPacchettoCentralina(jsonObj) {
-            if(isDemoMode) {
-                console.log("Virtual ECU RX:", jsonObj);
-                return;
-            }
-            if(rxCharacteristic && bluetoothConnected) {
-                const encoder = new TextEncoder();
-                const data = encoder.encode(JSON.stringify(jsonObj));
-                rxCharacteristic.writeValue(data).catch(e => console.log(e));
+            if(hardwareSecurityStatus === "UNLOCKED") {
+                if(json.rpm !== undefined) {
+                    document.getElementById('rpmBar').style.width = (json.rpm / 12000) * 100 + '%';
+                    document.getElementById('rpmNum').innerText = json.rpm;
+                }
+                if(json.speed !== undefined) document.getElementById('speedNum').innerText = json.speed;
+                if(json.contatore !== undefined) document.getElementById('cambiate').innerText = json.contatore;
+                if(json.cutTime !== undefined) document.getElementById('lastCut').innerText = json.cutTime + "ms";
+                if(json.fluidita !== undefined) document.getElementById('fluidita-id').innerText = json.fluidita + "%";
             }
         }
 
         function avviaModalitaDemo() {
-            isDemoMode = true;
-            document.getElementById('proximity-gate').style.display = "none";
-            document.getElementById('signal-strength').innerText = "MODALITÀ VIRTUAL DEMO";
-            document.getElementById('console').innerText = "SYS: Centralina virtuale attiva. Dati fissi.";
-            
-            document.getElementById('speedNum').innerText = "--";
-            document.getElementById('rpmNum').innerText = "--";
-            document.getElementById('rpmBar').style.width = "0%";
+            isDemoMode = true; document.getElementById('proximity-gate').style.display = 'none';
+            document.getElementById('disconnetti-rapido').style.display = 'block';
+            document.getElementById('signal-strength').innerText = "DEMO SIMULATION";
+            document.getElementById('cambiate').innerText = "12"; document.getElementById('fluidita-id').innerText = "98%"; document.getElementById('lastCut').innerText = "75ms";
+            demoLoopInterval = setInterval(() => {
+                let rpmFinto = Math.floor(Math.random() * (10800 - 2000) + 2000);
+                document.getElementById('rpmBar').style.width = (rpmFinto / 12000) * 100 + '%';
+                document.getElementById('rpmNum').innerText = rpmFinto;
+                document.getElementById('speedNum').innerText = Math.floor(Math.random() * (135 - 30) + 30);
+            }, 150);
         }
 
         function scollegaDispositivo() {
-            if(bluetoothDevice && bluetoothDevice.gatt.connected) bluetoothDevice.gatt.disconnect();
+            if (bluetoothDevice && bluetoothDevice.gatt.connected) { bluetoothDevice.gatt.disconnect(); } else { ripristinaStatoDisconnesso(); }
         }
 
         function ripristinaStatoDisconnesso() {
-            bluetoothConnected = false;
-            document.getElementById('proximity-gate').style.display = "flex";
+            rxCharacteristic = null; bluetoothConnected = false; hardwareSecurityStatus = "DISCONNECTED";
+            if(demoLoopInterval) clearInterval(demoLoopInterval);
+            document.getElementById('disconnetti-rapido').style.display = 'none';
             document.getElementById('signal-strength').innerText = "DISCONNESSO";
-            document.getElementById('disconnetti-rapido').style.display = "none";
-            document.getElementById('gate-status').innerText = "Centralina isolata.";
+            document.getElementById('proximity-gate').style.display = 'flex';
+            document.getElementById('rpmBar').style.width = '0%';
+            document.getElementById('rpmNum').innerText = '--'; document.getElementById('speedNum').innerText = '--';
+            document.getElementById('cambiate').innerText = '--'; document.getElementById('fluidita-id').innerText = '--'; document.getElementById('lastCut').innerText = '--';
+            document.getElementById('gate-title').innerText = "HARDWARE LINK REQUIRED";
+            
+            verifcaDispositiviPreassociati().then(() => {
+                if (document.getElementById('btn-gate-text').innerText !== "⚡ RICONNESSIONE RAPIDA") {
+                    document.getElementById('btn-gate-text').innerText = "🤝 CONNETTI BLUETOOTH";
+                }
+            });
+            
+            document.getElementById('pass-hardware').style.display = "block"; 
+            document.getElementById('gate-status').innerText = "Stato: Centralina isolata";
+        }
+
+        async function inviaPacchettoCentralina(oggettoScrittura) {
+            if(isDemoMode || !rxCharacteristic) return;
+            try {
+                let encoder = new TextEncoder('utf-8');
+                await rxCharacteristic.writeValue(encoder.encode(JSON.stringify(oggettoScrittura)));
+            } catch(e) { }
         }
     </script>
 </body>
