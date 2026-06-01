@@ -1,1 +1,639 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>QuickShifter Pro Dashboard v5.2</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght=500;700;900&family=Inter:wght=400;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    
+    <style>
+        :root {
+            --accent: #ff6600;
+            --bg-dark: #0a0507;
+            --panel: rgba(28, 11, 0, 0.65);
+            --panel-border: rgba(255, 255, 255, 0.1);
+            --panel-glow: rgba(255, 102, 0, 0.45);
+            --text-main: #f5f0f2;
+            --text-muted: #dcd1d5;
+            --btn-bg: rgba(255, 255, 255, 0.07);
+            --box-bg: rgba(0, 0, 0, 0.6);
+            --bg-gradient: linear-gradient(135deg, #1c0b00 0%, #070300 100%);
+            --slider-track: rgba(255, 255, 255, 0.15);
+            --btn-active-text: #000000;
+        }
 
+        body.light-mode {
+            --bg-dark: #f4ecef;
+            --panel: rgba(255, 255, 255, 0.9);
+            --panel-border: rgba(0, 0, 0, 0.15);
+            --panel-glow: rgba(0, 0, 0, 0.05);
+            --text-main: #1a0f13;
+            --text-muted: #5c4f54;
+            --btn-bg: rgba(0, 0, 0, 0.06);
+            --box-bg: rgba(240, 230, 235, 0.9);
+            --bg-gradient: linear-gradient(135deg, #fcefe6 0%, #f4ecef 100%);
+            --slider-track: rgba(0, 0, 0, 0.15);
+            --btn-active-text: #ffffff;
+        }
+
+        body.brand-ktm { --accent: #ff6600; --panel-glow: rgba(255, 102, 0, 0.45); }
+        body.brand-yamaha { --accent: #005bf6; --panel-glow: rgba(0, 91, 246, 0.5); }
+        body.brand-beta { --accent: #ff1e1e; --panel-glow: rgba(255, 30, 30, 0.45); }
+        body.brand-tm { --accent: #00bfff; --panel-glow: rgba(0, 191, 255, 0.45); }
+        body.brand-kawasaki { --accent: #33cc30; --panel-glow: rgba(51, 204, 48, 0.4); }
+        body.brand-suzuki { --accent: #f4d000; --panel-glow: rgba(244, 208, 0, 0.4); }
+        body.brand-ducati { --accent: #e50000; --panel-glow: rgba(229, 0, 0, 0.45); }
+        body.brand-nera { --accent: #ffffff; --panel-glow: rgba(255, 255, 255, 0.1); }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; font-family: 'Inter', sans-serif; }
+        body { background-color: var(--bg-dark); background-image: var(--bg-gradient); background-attachment: fixed; color: var(--text-main); padding: 15px 15px 95px 15px; min-height: 100vh; display: flex; flex-direction: column; transition: background 0.3s, color 0.3s; }
+
+        .header, .card, .bottom-nav, .sidebar { backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid var(--panel-border); border-radius: 18px; background: var(--panel); transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; }
+        .header { border-left: 5px solid var(--accent); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .header-title { font-weight: 900; font-size: 15px; color: var(--text-main); letter-spacing: -0.3px; }
+        .header-sub { font-size: 10px; color: var(--text-muted); font-weight: 700; margin-top: 2px; text-transform: uppercase; }
+        
+        .btn-menu-trigger { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-main); font-size: 16px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; }
+        .btn-disconnect { background: rgba(255, 0, 60, 0.1); border: 1px solid rgba(255, 0, 60, 0.3); color: #ff416c; padding: 8px 12px; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; }
+
+        #proximity-gate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); background-image: var(--bg-gradient); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; }
+        .auth-card { background: var(--panel); border: 1px solid var(--panel-border); padding: 25px; border-radius: 24px; width: 100%; max-width: 340px; text-align: center; }
+        
+        .btn-connect-hardware { background: var(--accent); border: none; color: #000; padding: 16px 28px; font-size: 13px; font-weight: 900; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; margin: 20px auto; width: 100%; justify-content: center;}
+
+        .sidebar { position: fixed; top: 0; right: -300px; width: 300px; height: 100%; z-index: 2000; padding: 25px 20px; display: flex; flex-direction: column; gap: 18px; transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: -10px 0 40px rgba(0,0,0,0.15); overflow-y: auto; border-radius: 24px 0 0 24px; }
+        .sidebar.open { right: 0; }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); z-index: 1999; display: none; }
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 12px; }
+        .sidebar-close { background: none; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; font-weight: 800; }
+
+        .brand-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 5px; }
+        .btn-brand-select { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-main); font-size: 9px; font-weight: 700; padding: 10px 2px; border-radius: 8px; cursor: pointer; text-align: center; text-transform: uppercase; }
+
+        .dashboard-arc-box { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 20px; padding: 25px 20px; text-align: center; margin-bottom: 15px; }
+        .arc-contagiri { width: 100%; height: 16px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--panel-border); border-radius: 30px; overflow: hidden; margin-bottom: 18px; position: relative; }
+        .arc-fill { width: 0%; height: 100%; background: var(--accent); transition: width 0.1s linear; border-radius: 30px; }
+        
+        .digital-num { font-family: 'Orbitron', sans-serif; }
+        .speed-heavy { font-size: 86px; font-weight: 900; color: var(--text-main); line-height: 0.85; letter-spacing: -2px; }
+
+        .card { padding: 18px; margin-bottom: 15px; }
+        .card-title { font-size: 11px; color: var(--text-muted); letter-spacing: 1.5px; margin-bottom: 16px; text-transform: uppercase; font-weight: 800; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; }
+        
+        .preset-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 12px; margin-bottom: 15px; }
+        .btn-action { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-main); padding: 14px 10px; font-size: 11px; font-weight: 800; border-radius: 12px; cursor: pointer; transition: all 0.2s; text-align: center; }
+        .btn-action.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 900; }
+        
+        .btn-action.active-locked { background: #ff1e1e !important; color: #fff !important; border-color: #ff1e1e !important; font-weight: 900; }
+
+        .slider-container { background: var(--box-bg); padding: 14px; border-radius: 12px; border: 1px solid var(--panel-border); transition: opacity 0.2s; }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: var(--slider-track); height: 8px; border-radius: 4px; outline: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; background: #ffffff; border: 4px solid var(--accent); cursor: pointer; border-radius: 50%; }
+
+        .tel-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 10px; margin-bottom: 15px; }
+        .tel-box { background: var(--box-bg); padding: 12px 4px; text-align: center; border-radius: 12px; border: 1px solid var(--panel-border); }
+        .tel-num { font-size: 20px; font-weight: 800; color: var(--text-main); }
+        .tel-lbl { font-size: 8px; color: var(--text-muted); margin-top: 6px; font-weight: 800; text-transform: uppercase; }
+        
+        .bottom-nav { position: fixed; bottom: 12px; left: 12px; right: 12px; display: grid; grid-template-columns: repeat(4, 1fr); padding: 12px 2px; z-index: 1000; border-radius: 24px; box-shadow: 0 10px 35px rgba(0,0,0,0.1); }
+        .nav-item { background: transparent; border: none; color: var(--text-muted); font-size: 10px; font-weight: 800; display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px; text-transform: uppercase; }
+        .nav-item.active { color: var(--accent); }
+
+        #map-container { width: 100%; height: 230px; border-radius: 14px; margin-bottom: 15px; border: 1px solid var(--panel-border); z-index: 1; }
+        
+        .odometer-panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
+        .odo-block { background: var(--box-bg); border: 1px solid var(--panel-border); padding: 12px; border-radius: 12px; position: relative; }
+        .odo-block-title { font-size: 8px; color: var(--text-muted); font-weight: 900; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px;}
+        .odo-split { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
+        .odo-split span:first-child { font-size: 9px; color: var(--text-muted); font-weight: 600;}
+        .val-total { font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900; color: var(--text-main); }
+        .val-trip { font-family: 'Orbitron', sans-serif; font-size: 15px; font-weight: 800; color: var(--accent); }
+        .btn-reset-trip { background: rgba(0,0,0,0.15); border: 1px solid var(--panel-border); color: var(--text-main); font-size: 8px; padding: 4px 8px; border-radius: 6px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 4px;}
+
+        /* STILIZZAZIONE INTEGRATA PER ALLINEAMENTO STRUMENTAZIONE MANUALE */
+        .manual-input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .manual-input-box { background: rgba(0, 0, 0, 0.2); border: 1px dashed var(--panel-border); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
+        .manual-input-box label { font-size: 8px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; text-align: left; }
+        .input-row-wrapper { display: flex; gap: 4px; }
+        .input-row-wrapper input { width: 70%; padding: 6px; border-radius: 6px; border: 1px solid var(--panel-border); background: var(--bg-dark); color: var(--text-main); font-family: 'Orbitron', sans-serif; font-size: 12px; text-align: center; outline: none; }
+        .input-row-wrapper button { width: 30%; background: var(--accent); border: none; border-radius: 6px; color: var(--btn-active-text); font-weight: 900; font-size: 10px; cursor: pointer; }
+
+        .wheelie-container { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 15px 0; }
+        .wheelie-dial { width: 160px; height: 160px; border-radius: 50%; border: 4px dashed var(--panel-border); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.3); }
+        .wheelie-degree { font-family: 'Orbitron', sans-serif; font-size: 34px; font-weight: 900; color: var(--text-main); }
+        .sidebar-input-bike { width: 100%; padding: 10px; background: rgba(0,0,0,0.1); border: 1px solid var(--panel-border); border-radius: 8px; color: var(--text-main); font-weight: 800; }
+        
+        .map-checkbox-row { display: flex; align-items: center; gap: 8px; font-size: 11px; font-weight: 700; color: var(--text-main); margin-bottom: 12px; }
+    </style>
+</head>
+<body class="brand-ktm">
+
+    <div id="proximity-gate">
+        <div class="auth-card">
+            <h2 style="font-size:16px; font-weight:900; margin-bottom:5px; color:var(--text-main);">TRACK LOG SYSTEM v5.2</h2>
+            <p style="font-size:11px; color:var(--text-muted);">Sincronizza l'ECU della moto e attiva la telemetria.</p>
+            <button class="btn-connect-hardware" onclick="azionePulsanteCentraleGate()">🤝 CONNETTI DISPOSITIVO</button>
+            <button onclick="avviaModalitaDemo()" style="background:none; border:none; color:var(--text-muted); font-size:10px; text-decoration:underline; margin-top:15px; cursor:pointer;">Demo Simulation</button>
+        </div>
+    </div>
+
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
+    <div class="sidebar" id="sidebarMenu">
+        <div class="sidebar-header"><h3>SETUP CENTRALINA</h3><button class="sidebar-close" onclick="closeSidebar()">✕</button></div>
+        <div>
+            <label style="font-size:10px; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">NOME MOTO</label>
+            <input type="text" id="bikeName" class="sidebar-input-bike" value="La Mia Moto" oninput="aggiornaNomeMotoDinamico(this.value)">
+        </div>
+        <div>
+            <label style="font-size:10px; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">RACING BRAND TEMA</label>
+            <div class="brand-grid">
+                <button class="btn-brand-select" id="brand-ktm" onclick="cambiaBrandTema('ktm')">KTM</button>
+                <button class="btn-brand-select" id="brand-yamaha" onclick="cambiaBrandTema('yamaha')">Yamaha</button>
+                <button class="btn-brand-select" id="brand-beta" onclick="cambiaBrandTema('beta')">Beta</button>
+                <button class="btn-brand-select" id="brand-tm" onclick="cambiaBrandTema('tm')">TM</button>
+                <button class="btn-brand-select" id="brand-kawasaki" onclick="cambiaBrandTema('kawasaki')">Kawasaki</button>
+                <button class="btn-brand-select" id="brand-suzuki" onclick="cambiaBrandTema('suzuki')">Suzuki</button>
+                <button class="btn-brand-select" id="brand-ducati" onclick="cambiaBrandTema('ducati')">Ducati</button>
+                <button class="btn-brand-select" id="brand-nera" onclick="cambiaBrandTema('nera')">Nera</button>
+            </div>
+        </div>
+        <button class="btn-action" onclick="toggleVisionMode()" style="width:100%; margin-top:10px; background:var(--accent); color:var(--btn-active-text);">🌙 TEMA CHIARO/SCURO</button>
+    </div>
+
+    <div class="header">
+        <div>
+            <div class="header-title" id="header-bike-display">La Mia Moto</div>
+            <div id="signal-strength" class="header-sub">DISCONNESSO</div>
+        </div>
+        <div style="display:flex; align-items:center; gap:8px;">
+            <button class="btn-disconnect" id="disconnetti-rapido" onclick="scollegaDispositivo()" style="display:none;">SCOLLEGA</button>
+            <button class="btn-menu-trigger" onclick="openSidebar()">☰</button>
+        </div>
+    </div>
+
+    <div id="pane-home" class="sub-pane">
+        <div class="dashboard-arc-box">
+            <div class="arc-contagiri"><div class="arc-fill" id="rpmBar"></div></div>
+            <div style="display:flex; justify-content:space-between; margin-top:-14px; margin-bottom:15px; font-size:11px; color:var(--text-muted); font-weight:800;">
+                <span>RPM</span>
+                <span id="rpmNum" class="digital-num" style="color:var(--text-main); font-weight:900; font-size:14px;">--</span>
+                <span>12k LIMIT</span>
+            </div>
+            <div class="speed-heavy digital-num" id="speedNum">--</div>
+            <div style="font-size:11px; color:var(--text-muted); font-weight:800; letter-spacing:3px; margin-top:8px;">KM/H SATELLITARI</div>
+        </div>
+        
+        <div class="odometer-panel-grid">
+            <div class="odo-block">
+                <div class="odo-block-title">📊 DISTANZA (KM)</div>
+                <div class="odo-split"><span>Totale:</span><span class="val-total" id="odoTot">0.0</span></div>
+                <div class="odo-split"><span>Trip:</span><span class="val-trip" id="odoParz">0.0</span></div>
+                <button class="btn-reset-trip" onclick="inviaPacchettoCentralina({type:'reset_trip_km'});">RESET TRIP</button>
+            </div>
+            <div class="odo-block">
+                <div class="odo-block-title">⏳ TEMPO MOTORE</div>
+                <div class="odo-split"><span>Totale h:</span><span class="val-total" id="hoursTot">0.0</span></div>
+                <div class="odo-split"><span>Trip h:</span><span class="val-trip" id="hoursParz" style="color:#00ff66;">0.0</span></div>
+                <button class="btn-reset-trip" onclick="inviaPacchettoCentralina({type:'reset_trip_hours'});">RESET TRIP</button>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">⚙️ Allineamento Strumentazione</div>
+            <div class="manual-input-grid">
+                <div class="manual-input-box">
+                    <label>Km Totali</label>
+                    <div class="input-row-wrapper">
+                        <input type="number" id="txtKmTot" step="0.1" placeholder="0.0">
+                        <button onclick="inviaDatoManuale('set_km_tot', 'txtKmTot')">SET</button>
+                    </div>
+                </div>
+                <div class="manual-input-box">
+                    <label>Km Trip</label>
+                    <div class="input-row-wrapper">
+                        <input type="number" id="txtKmTrip" step="0.1" placeholder="0.0">
+                        <button onclick="inviaDatoManuale('set_km_trip', 'txtKmTrip')">SET</button>
+                    </div>
+                </div>
+                <div class="manual-input-box">
+                    <label>Ore Totali</label>
+                    <div class="input-row-wrapper">
+                        <input type="number" id="txtHTot" step="0.1" placeholder="0.0">
+                        <button onclick="inviaDatoManuale('set_h_tot', 'txtHTot')">SET</button>
+                    </div>
+                </div>
+                <div class="manual-input-box">
+                    <label>Ore Trip</label>
+                    <div class="input-row-wrapper">
+                        <input type="number" id="txtHTrip" step="0.1" placeholder="0.0">
+                        <button onclick="inviaDatoManuale('set_h_trip', 'txtHTrip')">SET</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="preset-grid" style="margin-bottom:0;">
+                <button class="btn-action" id="btn-lock-ecu" onclick="cambiaStatoBloccoMoto(true)">🔒 CHIAVE LOCK</button>
+                <button class="btn-action active" id="btn-unlock-ecu" onclick="cambiaStatoBloccoMoto(false)">🔓 CHIAVE UNLOCK</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="pane-shifter" class="sub-pane" style="display:none;">
+        <div class="card">
+            <div class="card-title">Mappatura Cut-off</div>
+            
+            <button class="btn-action" id="btn-dyn-map" onclick="toggleMappaDinamicaGiri()" style="width:100%; margin-bottom:15px; background:rgba(0,191,255,0.08); border-color:#00bfff; color:#00bfff; font-weight:900;">
+                📈 MAPPA CUT-OFF DINAMICA (RPM): DISATTIVATA
+            </button>
+
+            <label style="font-size:10px; color:var(--text-muted); font-weight:800; display:block; text-align:center; margin-bottom:6px;">PRESET DI TAGLIO RAPIDI:</label>
+            <div class="preset-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom:15px;">
+                <button class="btn-action" onclick="impostaPresetCutoffRapido(55)">55 ms</button>
+                <button class="btn-action" onclick="impostaPresetCutoffRapido(65)">65 ms</button>
+                <button class="btn-action" onclick="impostaPresetCutoffRapido(75)">75 ms</button>
+            </div>
+
+            <div id="manual-slider-container" class="slider-container">
+                <input type="range" id="slider" min="30" max="100" value="75" oninput="document.getElementById('liveVal').innerText=this.value" onchange="inviaValoreTimingDiretto(this.value)">
+                <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; margin-top:10px; color:var(--text-muted);">
+                    <span>FINE TUNING MANUALE:</span>
+                    <span><span id="liveVal" class="digital-num">75</span> ms</span>
+                </div>
+            </div>
+            
+            <div class="preset-grid" style="margin-top:15px; margin-bottom:0;">
+                <button class="btn-action" id="btn-pop" onclick="ruotaPopBang(this)" style="width:100%; grid-column: span 2;">💥 POP: OFF</button>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-title">Analisi Shifter</div>
+            <div class="tel-grid">
+                <div class="tel-box"><div class="tel-num digital-num" id="cambiate">0</div><div class="tel-lbl">CAMBIATE</div></div>
+                <div class="tel-box"><div class="tel-num digital-num" style="color:#00ff66" id="fluidita-id">100%</div><div class="tel-lbl">EFFICIENZA</div></div>
+                <div class="tel-box"><div class="tel-num digital-num" id="lastCut">0ms</div><div class="tel-lbl">LAST CUT</div></div>
+            </div>
+        </div>
+    </div>
+
+    <div id="pane-wheelie" class="sub-pane" style="display:none;">
+        <div class="card">
+            <div class="card-title">Wheelie Assist Control</div>
+            <div class="wheelie-container">
+                <div class="wheelie-dial" id="wheelieDialBG">
+                    <div class="wheelie-degree" id="livePitchNum">0°</div>
+                    <div class="wheelie-unit">PITCH ANGLE</div>
+                </div>
+            </div>
+
+            <label style="font-size:10px; color:var(--text-muted); font-weight:800; display:block; text-align:center; margin-bottom:8px;">PRESET RAPIDI ANGOLO DI TAGLIO:</label>
+            <div class="preset-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom:15px;">
+                <button class="btn-action" onclick="impostaGradiRapidiAntiWheelie(15)">🟢 15°</button>
+                <button class="btn-action" onclick="impostaGradiRapidiAntiWheelie(30)">🟡 30°</button>
+                <button class="btn-action" onclick="impostaGradiRapidiAntiWheelie(45)">🔴 45°</button>
+            </div>
+
+            <div class="slider-container" style="margin-bottom:15px;">
+                <input type="range" id="wheelieSlider" min="10" max="90" value="30" oninput="document.getElementById('liveWheelieTarget').innerText=this.value" onchange="inviaLimiteImpennataCentralina(this.value)">
+                <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; margin-top:10px; color:var(--text-muted);">
+                    <span>REGOLAZIONE DI FINE:</span>
+                    <span style="color:#ff3333;"><span id="liveWheelieTarget" class="digital-num">30</span>°</span>
+                </div>
+            </div>
+            <button class="btn-action" onclick="calibraAssiAzzeramento()" style="width:100%; background:rgba(0,191,255,0.1); border-color:#00bfff; color:#00bfff;">🎯 CALIBRA AZZERAMENTO ASSI</button>
+        </div>
+    </div>
+
+    <div id="pane-telemetry" class="sub-pane" style="display:none;">
+        <div id="map-container"></div>
+        
+        <div class="card">
+            <div class="card-title">Setup Mappatura Circuito</div>
+            <div class="map-checkbox-row">
+                <input type="checkbox" id="checkSamePoint" onchange="toggleStessoPuntoPartenzaArrivo(this.checked)">
+                <label for="checkSamePoint">Inizio / Arrivo nello stesso punto (Anello)</label>
+            </div>
+            <div class="preset-grid" style="margin-bottom: 5px;">
+                <button class="btn-action" onclick="fissaTraguardoMappa('start')" style="background:rgba(0,255,102,0.1); color:#00ff66; border-color:#00ff66;">🚩 FISSA PARTENZA</button>
+                <button class="btn-action" id="btn-set-end" onclick="fissaTraguardoMappa('end')" style="background:rgba(255,50,50,0.1); color:#ff3333; border-color:#ff3333;">🏁 FISSA ARRIVO</button>
+            </div>
+            <div class="map-checkbox-row" style="margin-top:12px; margin-bottom:0;">
+                <input type="checkbox" id="checkShowMaxPeaks" checked onchange="toggleVisualizzazionePeaksMappa(this.checked)">
+                <label for="checkShowMaxPeaks">Mostra Marker dei Picchi Massimi sulla mappa</label>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Live Track Features & Peaks</div>
+            <div class="tel-grid" style="grid-template-columns: repeat(2, 1fr);">
+                <div class="tel-box"><div class="tel-num digital-num" id="trackMaxSpeed">0</div><div class="tel-lbl">Vel. Max km/h</div></div>
+                <div class="tel-box"><div class="tel-num digital-num" id="trackMaxRoll">0°</div><div class="tel-lbl">Piega Max (Curva)</div></div>
+                <div class="tel-box"><div class="tel-num digital-num" id="trackMaxPitch">0°</div><div class="tel-lbl">Impennata Max</div></div>
+                <div class="tel-box"><div class="tel-num digital-num" id="trackMaxRpm">0</div><div class="tel-lbl">RPM Massimi</div></div>
+            </div>
+            <div class="tel-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 5px;">
+                <div class="tel-box"><div class="tel-num digital-num" id="trackGAcc">0.00</div><div class="tel-lbl">G Accel.</div></div>
+                <div class="tel-box"><div class="tel-num digital-num" id="trackGFren">0.00</div><div class="tel-lbl">G Staccata</div></div>
+                <div class="tel-box"><div class="tel-num digital-num" id="trackGLat">0.00</div><div class="tel-lbl">G Curva</div></div>
+            </div>
+            
+            <button class="btn-action" onclick="salvaSessioneSuTelefono()" style="width:100%; background:var(--accent); color:#000; font-weight:900; font-size:12px; margin-top:8px;">💾 SALVA REPORT SESSIONE (.JSON)</button>
+        </div>
+
+        <div class="card">
+            <div class="card-title">Lap Timer Satellitare</div>
+            <div class="odometer-panel-grid" style="margin-bottom:0;">
+                <div class="track-box" style="background:var(--box-bg); padding:12px; border-radius:12px; text-align:center;"><div class="track-val digital-num" style="color:#00ff66; font-size:20px;" id="liveLapTime">00:00.00</div><div class="track-lbl" style="font-size:8px; color:var(--text-muted); font-weight:800; margin-top:4px;">Giro Corrente</div></div>
+                <div class="track-box" style="background:var(--box-bg); padding:12px; border-radius:12px; text-align:center;"><div class="track-val digital-num" style="color:var(--accent); font-size:20px;" id="bestLapTime">--:--.--</div><div class="track-lbl" style="font-size:8px; color:var(--text-muted); font-weight:800; margin-top:4px;">Best Lap</div></div>
+            </div>
+        </div>
+    </div>
+
+    <nav class="bottom-nav">
+        <button class="nav-item active" onclick="cambiaTab('home', this)"><span>🏠</span> DASH</button>
+        <button class="nav-item" onclick="cambiaTab('shifter', this)"><span>⚙️</span> CAMBIO</button>
+        <button class="nav-item" onclick="cambiaTab('wheelie', this)"><span>📐</span> ASSIST</button>
+        <button class="nav-item" onclick="cambiaTab('telemetry', this)"><span>📊</span> TELEM</button>
+    </nav>
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+        const CENTRALINA_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
+        const CHAR_RX_UUID = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
+        const CHAR_TX_UUID = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
+
+        let webBleGattServer = null; let webBleRxCharacteristic = null;
+        let bluetoothConnected = false; let isDemoMode = false; let demoLoopInterval = null; 
+        let currentPopMode = 0; let mappaDinamicaAttiva = false;
+        
+        let map = null; let trackPolyline = null; let userMarker = null;
+        let coordinateStorichePunti = []; 
+        let startMarker = null; let endMarker = null;
+        let peakMarkersGroup = [];
+        let stessoPuntoPartenzaArrivo = false;
+        let mostraPeakMarkers = true;
+
+        let sessionStats = {
+            maxSpeed: 0, maxRoll: 0, maxPitch: 0, maxRpm: 0,
+            maxGAcc: 0, maxGFren: 0, maxGLat: 0, telemetriaPunti: []
+        };
+
+        document.addEventListener("DOMContentLoaded", () => {
+            let nomeSalvato = localStorage.getItem('qs_bike') || "La Mia Moto";
+            document.getElementById('bikeName').value = nomeSalvato;
+            document.getElementById('header-bike-display').innerText = nomeSalvato;
+            cambiaBrandTema(localStorage.getItem('qs_brand_theme') || "ktm");
+            
+            map = L.map('map-container', { zoomControl: false }).setView([39.3565, 16.2263], 16); 
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png').addTo(map);
+            
+            trackPolyline = L.polyline([], {color: 'var(--accent)', weight: 5}).addTo(map);
+            userMarker = L.circleMarker([0,0], {radius: 7, color: '#ffffff', fillColor: '#005bf6', fillOpacity: 1}).addTo(map);
+
+            if (navigator.geolocation) {
+                navigator.geolocation.watchPosition((p) => {
+                    if (isDemoMode) return;
+                    registraNuovoPuntoGpsMappa(p.coords.latitude, p.coords.longitude);
+                }, null, {enableHighAccuracy: true});
+            }
+        });
+
+        function registraNuovoPuntoGpsMappa(lat, lng) {
+            let cPos = L.latLng(lat, lng);
+            userMarker.setLatLng(cPos);
+            
+            let sInstant = {
+                lat: lat, lng: lng, timestamp: new Date().toLocaleTimeString(),
+                speed: parseInt(document.getElementById('speedNum').innerText) || 0,
+                roll: parseInt(document.getElementById('trackMaxRoll').innerText) || 0,
+                pitch: parseInt(document.getElementById('livePitchNum').innerText) || 0,
+                gForce: parseFloat(document.getElementById('trackGAcc').innerText) || 0.0
+            };
+            
+            sessionStats.telemetriaPunti.push(sInstant);
+            coordinateStorichePunti.push(cPos);
+            trackPolyline.setLatLngs(coordinateStorichePunti);
+
+            let clickMarker = L.circleMarker(cPos, {radius: 10, stroke: false, fillOpacity: 0})
+                .addTo(map)
+                .bindPopup(`
+                    <div style="color:#000; font-family:'Inter',sans-serif; font-size:11px;">
+                        <b>📊 DATI PUNTO SUL TRACCIATO</b><br>
+                        ⏱️ Ora: ${sInstant.timestamp}<br>
+                        🏍️ Velocità: ${sInstant.speed} km/h<br>
+                        📐 Angolo Piega: ${sInstant.roll}°<br>
+                        🚀 Forza Accelerazione: ${sInstant.gForce} G
+                    </div>
+                `);
+        }
+
+        function smistaPacchettiDatiInIngresso(json) {
+            if(json.rpm !== undefined) { 
+                document.getElementById('rpmBar').style.width = (json.rpm / 12000) * 100 + '%'; 
+                document.getElementById('rpmNum').innerText = json.rpm; 
+            }
+            if(json.contatore !== undefined) document.getElementById('cambiate').innerText = json.contatore;
+            if(json.cutTime !== undefined) document.getElementById('lastCut').innerText = json.cutTime + "ms";
+            
+            if(json.kmTot !== undefined) document.getElementById('odoTot').innerText = json.kmTot.toFixed(1);
+            if(json.kmTrip !== undefined) document.getElementById('odoParz').innerText = json.kmTrip.toFixed(1);
+            if(json.hTot !== undefined) document.getElementById('hoursTot').innerText = json.hTot.toFixed(1);
+            if(json.hTrip !== undefined) document.getElementById('hoursParz').innerText = json.hTrip.toFixed(1);
+            
+            if(json.pitch !== undefined) {
+                document.getElementById('livePitchNum').innerText = json.pitch + "°";
+            }
+
+            if(json.maxRpm !== undefined) { document.getElementById('trackMaxRpm').innerText = json.maxRpm; sessionStats.maxRpm = json.maxRpm; }
+            if(json.maxRoll !== undefined) { document.getElementById('trackMaxRoll').innerText = json.maxRoll + "°"; sessionStats.maxRoll = json.maxRoll; }
+            if(json.maxPitch !== undefined) { document.getElementById('trackMaxPitch').innerText = json.maxPitch + "°"; sessionStats.maxPitch = json.maxPitch; }
+            if(json.maxSpeed !== undefined) { document.getElementById('trackMaxSpeed').innerText = json.maxSpeed; sessionStats.maxSpeed = json.maxSpeed; }
+            if(json.maxGAcc !== undefined) { document.getElementById('trackGAcc').innerText = json.maxGAcc.toFixed(2); sessionStats.maxGAcc = json.maxGAcc; }
+            if(json.maxGFren !== undefined) { document.getElementById('trackGFren').innerText = json.maxGFren.toFixed(2); sessionStats.maxGFren = json.maxGFren; }
+            if(json.maxGLat !== undefined) { document.getElementById('trackGLat').innerText = json.maxGLat.toFixed(2); sessionStats.maxGLat = json.maxGLat; }
+            if(json.speed !== undefined) document.getElementById('speedNum').innerText = json.speed;
+        }
+
+        function impostaPresetCutoffRapido(ms) {
+            document.getElementById('slider').value = ms;
+            document.getElementById('liveVal').innerText = ms;
+            inviaValoreTimingDiretto(ms);
+        }
+
+        function toggleMappaDinamicaGiri() {
+            mappaDinamicaAttiva = !mappaDinamicaAttiva;
+            let btn = document.getElementById('btn-dyn-map');
+            let sliderContainer = document.getElementById('manual-slider-container');
+            if (mappaDinamicaAttiva) {
+                btn.innerText = "📈 MAPPA CUT-OFF DINAMICA (RPM): ATTIVA";
+                btn.style.background = "rgba(0,255,102,0.1)"; btn.style.borderColor = "#00ff66"; btn.style.color = "#00ff66";
+                sliderContainer.style.opacity = "0.4"; sliderContainer.style.pointerEvents = "none";
+            } else {
+                btn.innerText = "📈 MAPPA CUT-OFF DINAMICA (RPM): DISATTIVATA";
+                btn.style.background = "rgba(0,191,255,0.08)"; btn.style.borderColor = "#00bfff"; btn.style.color = "#00bfff";
+                sliderContainer.style.opacity = "1"; sliderContainer.style.pointerEvents = "auto";
+            }
+            inviaPacchettoCentralina({type: "toggle_dyn_map", value: mappaDinamicaAttiva});
+        }
+
+        function impostaGradiRapidiAntiWheelie(gradi) {
+            document.getElementById('wheelieSlider').value = gradi;
+            document.getElementById('liveWheelieTarget').innerText = gradi;
+            inviaLimiteImpennataCentralina(gradi);
+        }
+
+        function toggleStessoPuntoPartenzaArrivo(checked) {
+            stessoPuntoPartenzaArrivo = checked;
+            let btnEnd = document.getElementById('btn-set-end');
+            if(checked) {
+                btnEnd.style.opacity = "0.4"; btnEnd.style.pointerEvents = "none";
+                if(endMarker) { map.removeLayer(endMarker); endMarker = null; }
+            } else {
+                btnEnd.style.opacity = "1"; btnEnd.style.pointerEvents = "auto";
+            }
+        }
+
+        function fissaTraguardoMappa(tipo) {
+            let center = map.getCenter();
+            if(tipo === 'start') {
+                if(startMarker) map.removeLayer(startMarker);
+                startMarker = L.marker(center, {draggable: true}).addTo(map).bindPopup("<b>🏁 LINEA DI PARTENZA</b>").openPopup();
+                if(stessoPuntoPartenzaArrivo) {
+                    startMarker.getPopup().setContent("<b>🏁 TRAGUARDO (INIZIO / ARRIVO)</b>");
+                }
+            } else if(tipo === 'end' && !stessoPuntoPartenzaArrivo) {
+                if(endMarker) map.removeLayer(endMarker);
+                endMarker = L.marker(center, {draggable: true}).addTo(map).bindPopup("<b>🏁 LINEA DI ARRIVO</b>").openPopup();
+            }
+        }
+
+        function toggleVisualizzazionePeaksMappa(checked) {
+            mostraPeakMarkers = checked;
+            peakMarkersGroup.forEach(m => {
+                if(checked) m.addTo(map); else map.removeLayer(m);
+            });
+        }
+
+        function cambiaStatoBloccoMoto(stato) { 
+            let lockBtn = document.getElementById('btn-lock-ecu');
+            let unlockBtn = document.getElementById('btn-unlock-ecu');
+            
+            if(stato) {
+                lockBtn.classList.add('active-locked');
+                unlockBtn.classList.remove('active');
+            } else {
+                lockBtn.classList.remove('active-locked');
+                unlockBtn.classList.add('active');
+            }
+            inviaPacchettoCentralina({type: "ecu_state", status: stato ? "LOCKED" : "UNLOCKED"}); 
+        }
+
+        function inviaDatoManuale(tipoComando, idInput) {
+            const stringaValore = document.getElementById(idInput).value;
+            if(stringaValore === "") {
+                alert("Specifica un numero valido!");
+                return;
+            }
+            const valoreNumerico = parseFloat(stringaValore);
+            inviaPacchettoCentralina({ type: tipoComando, value: valoreNumerico });
+            document.getElementById(idInput).value = ""; 
+        }
+
+        function salvaSessioneSuTelefono() {
+            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sessionStats, null, 2));
+            let downloadAnchor = document.createElement('a');
+            downloadAnchor.setAttribute("href", dataStr);
+            downloadAnchor.setAttribute("download", "Telemetry_Report_" + new Date().toISOString().slice(0,10) + ".json");
+            document.body.appendChild(downloadAnchor);
+            downloadAnchor.click();
+            downloadAnchor.remove();
+        }
+
+        async function azionePulsanteCentraleGate() {
+            try {
+                const dispositivoWeb = await navigator.bluetooth.requestDevice({ 
+                    filters: [{ name: "ESP32S3_SHIFTER_ECU" }],
+                    optionalServices: [CENTRALINA_SERVICE_UUID]
+                });
+                webBleGattServer = await dispositivoWeb.gatt.connect();
+                const servizioWeb = await webBleGattServer.getPrimaryService(CENTRALINA_SERVICE_UUID);
+                webBleRxCharacteristic = await servizioWeb.getCharacteristic(CHAR_RX_UUID);
+                const txChar = await servizioWeb.getCharacteristic(CHAR_TX_UUID);
+                await txChar.startNotifications();
+                txChar.addEventListener('characteristicvaluechanged', (evento) => {
+                    let str = new TextDecoder("utf-8").decode(evento.target.value.buffer);
+                    try { smistaPacchettiDatiInIngresso(JSON.parse(str)); } catch(e){}
+                });
+                bluetoothConnected = true;
+                document.getElementById('proximity-gate').style.display = 'none';
+                document.getElementById('disconnetti-rapido').style.display = 'block';
+                document.getElementById('signal-strength').innerText = "ONLINE - LINK STABILE";
+            } catch(e) { alert("Errore di accoppiamento: " + e.message); }
+        }
+
+        async function inviaPacchettoCentralina(oggettoScrittura) {
+            if(isDemoMode || !bluetoothConnected || !webBleRxCharacteristic) return;
+            try {
+                let encoder = new TextEncoder('utf-8');
+                await webBleRxCharacteristic.writeValue(encoder.encode(JSON.stringify(oggettoScrittura)));
+            } catch(e){}
+        }
+
+        function inviaValoreTimingDiretto(valoreMs) { inviaPacchettoCentralina({type: "slider", value: parseInt(valoreMs)}); }
+        function inviaLimiteImpennataCentralina(g) { inviaPacchettoCentralina({type: "set_wheelie_limit", value: parseInt(g)}); }
+        function calibraAssiAzzeramento() { inviaPacchettoCentralina({type: "reset_axes"}); }
+        function cambiaTab(id, b) { document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active')); b.classList.add('active'); document.querySelectorAll('.sub-pane').forEach(x => x.style.display='none'); document.getElementById('pane-'+id).style.display='block'; if(id==='telemetry'&&map) setTimeout(() => map.invalidateSize(), 200); }
+        
+        function cambiaBrandTema(b) { 
+            document.body.className = document.body.className.replace(/\bbrand-\S+/g, ''); 
+            document.body.classList.add('brand-'+b); 
+            localStorage.setItem('qs_brand_theme', b); 
+        }
+        
+        function openSidebar() { document.getElementById('sidebarMenu').classList.add('open'); document.getElementById('sidebarOverlay').style.display='block'; }
+        function closeSidebar() { document.getElementById('sidebarMenu').classList.remove('open'); document.getElementById('sidebarOverlay').style.display='none'; }
+        function aggiornaNomeMotoDinamico(v) { localStorage.setItem('qs_bike', v); document.getElementById('header-bike-display').innerText=v; }
+        
+        function toggleVisionMode() { 
+            document.body.classList.toggle('light-mode'); 
+        }
+        
+        function ruotaPopBang(b) { currentPopMode++; if(currentPopMode > 2) currentPopMode = 0; b.innerText = currentPopMode === 0 ? "💥 POP: OFF" : (currentPopMode === 1 ? "💥 MOD: SOFT" : "💥 MOD: HARD"); inviaPacchettoCentralina({type: "scoppi", value: currentPopMode}); }
+        function scollegaDispositivo() { location.reload(); }
+
+        function avviaModalitaDemo() {
+            isDemoMode = true;
+            document.getElementById('proximity-gate').style.display = 'none';
+            document.getElementById('disconnetti-rapido').style.display = 'block';
+            document.getElementById('signal-strength').innerText = "VIRTUAL ROAD SIMULATION";
+            let a = 0;
+            let startLat = 39.3565; let startLng = 16.2263;
+
+            if(mostraPeakMarkers) {
+                let p1 = L.marker([39.3575, 16.2273]).addTo(map).bindPopup("🔥 Picco Velocità Massima: 142 km/h");
+                let p2 = L.marker([39.3560, 16.2255]).addTo(map).bindPopup("📐 Piega Massima Curva: 42°");
+                peakMarkersGroup.push(p1, p2);
+            }
+
+            demoLoopInterval = setInterval(() => {
+                a += 0.04;
+                let simLat = startLat + Math.sin(a) * 0.002;
+                let simLng = startLng + Math.cos(a) * 0.002;
+                registraNuovoPuntoGpsMappa(simLat, simLng);
+
+                let r = Math.floor(Math.abs(Math.sin(a)) * 8000 + 2000);
+                smistaPacchettiDatiInIngresso({
+                    rpm: r, speed: Math.floor(Math.abs(Math.sin(a))*120 + 10),
+                    kmTot: 1240.5, kmTrip: 14.2, hTot: 34.2, hTrip: 1.1,
+                    contatore: 14, cutTime: 65, pitch: Math.floor(Math.sin(a)*15),
+                    maxRpm: 10400, maxRoll: 42, maxPitch: 18, maxSpeed: 142,
+                    maxGAcc: 0.85, maxGFren: 1.12, maxGLat: 0.78
+                });
+            }, 250);
+        }
+    </script>
+</body>
+</html>
