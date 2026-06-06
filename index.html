@@ -3,152 +3,164 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QuickShifter Pro Dashboard v6.0</title>
+    <title>QuickShifter Pro Dashboard v5.6</title>
     
-    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght=500;700;900&family=Inter:wght=400;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     
     <style>
         :root {
-            --accent: #ff6600;
-            --bg-dark: #0a0507;
-            --panel: rgba(28, 11, 0, 0.65);
-            --panel-border: rgba(255, 255, 255, 0.1);
-            --panel-glow: rgba(255, 102, 0, 0.45);
-            --text-main: #f5f0f2;
-            --text-muted: #dcd1d5;
-            --btn-bg: rgba(255, 255, 255, 0.07);
-            --box-bg: rgba(0, 0, 0, 0.6);
-            --bg-gradient: linear-gradient(135deg, #1c0b00 0%, #070300 100%);
-            --slider-track: rgba(255, 255, 255, 0.15);
-            --btn-active-text: #000000;
+            --bg-page: #07090e;
+            --bg-gradient: radial-gradient(circle at 50% 0%, #121824 0%, #07090e 100%);
+            --panel-bg: rgba(18, 24, 38, 0.7);
+            --panel-border: rgba(255, 255, 255, 0.06);
+            --panel-box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.37);
+            --box-inner: rgba(255, 255, 255, 0.03);
+            --text-heading: #ffffff;
+            --text-body: #94a3b8;
+            --text-muted: #64748b;
+            --slider-bg: rgba(255, 255, 255, 0.1);
+            --nav-bg: rgba(13, 18, 30, 0.85);
+            --btn-static: rgba(255, 255, 255, 0.05);
+            
+            --brand-color: #ff5000;
+            --brand-glow: rgba(255, 80, 0, 0.25);
+            --text-on-brand: #ffffff;
         }
 
         body.light-mode {
-            --bg-dark: #f4ecef;
-            --panel: rgba(255, 255, 255, 0.9);
-            --panel-border: rgba(0, 0, 0, 0.15);
-            --panel-glow: rgba(0, 0, 0, 0.05);
-            --text-main: #1a0f13;
-            --text-muted: #5c4f54;
-            --btn-bg: rgba(0, 0, 0, 0.06);
-            --box-bg: rgba(240, 230, 235, 0.9);
-            --bg-gradient: linear-gradient(135deg, #fcefe6 0%, #f4ecef 100%) !important;
-            --slider-track: rgba(0, 0, 0, 0.15);
-            --btn-active-text: #ffffff;
+            --bg-page: #f1f5f9;
+            --bg-gradient: linear-gradient(180deg, #e2e8f0 0%, #f1f5f9 100%);
+            --panel-bg: #ffffff;
+            --panel-border: rgba(0, 0, 0, 0.06);
+            --panel-box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05);
+            --box-inner: #f8fafc;
+            --text-heading: #0f172a;
+            --text-body: #334155;
+            --text-muted: #64748b;
+            --slider-bg: rgba(0, 0, 0, 0.08);
+            --nav-bg: rgba(255, 255, 255, 0.9);
+            --btn-static: #f1f5f9;
+            --text-on-brand: #ffffff;
         }
 
-        /* --- GRADIENTI DI SFONDO CORRETTI PER TEMA BRAND --- */
-        body.brand-ktm { --accent: #ff6600; --panel-glow: rgba(255, 102, 0, 0.45); --bg-gradient: linear-gradient(135deg, #1c0b00 0%, #070300 100%); }
-        body.brand-yamaha { --accent: #005bf6; --panel-glow: rgba(0, 91, 246, 0.5); --bg-gradient: linear-gradient(135deg, #001233 0%, #00030a 100%); }
-        body.brand-beta { --accent: #ff1e1e; --panel-glow: rgba(255, 30, 30, 0.45); --bg-gradient: linear-gradient(135deg, #260000 0%, #080000 100%); }
-        body.brand-tm { --accent: #00bfff; --panel-glow: rgba(0, 191, 255, 0.45); --bg-gradient: linear-gradient(135deg, #001c26 0%, #000608 100%); }
-        body.brand-kawasaki { --accent: #33cc30; --panel-glow: rgba(51, 204, 48, 0.4); --bg-gradient: linear-gradient(135deg, #051a04 0%, #010501 100%); }
-        body.brand-suzuki { --accent: #f4d000; --panel-glow: rgba(244, 208, 0, 0.4); --bg-gradient: linear-gradient(135deg, #211c00 0%, #050400 100%); }
-        body.brand-ducati { --accent: #e50000; --panel-glow: rgba(229, 0, 0, 0.45); --bg-gradient: linear-gradient(135deg, #240000 0%, #050000 100%); }
-        body.brand-nera { --accent: #ffffff; --panel-glow: rgba(255, 255, 255, 0.1); --bg-gradient: linear-gradient(135deg, #111111 0%, #000000 100%); }
+        body.brand-ktm { --brand-color: #ff5000; --brand-glow: rgba(255, 80, 0, 0.3); }
+        body.brand-yamaha { --brand-color: #0046cd; --brand-glow: rgba(0, 70, 205, 0.35); }
+        body.brand-beta { --brand-color: #e30613; --brand-glow: rgba(227, 6, 19, 0.3); }
+        body.brand-tm { --brand-color: #00a0e9; --brand-glow: rgba(0, 160, 233, 0.35); }
+        body.brand-kawasaki { --brand-color: #00bc0d; --brand-glow: rgba(0, 188, 13, 0.3); }
+        body.brand-suzuki { --brand-color: #fab900; --brand-glow: rgba(250, 185, 0, 0.3); }
+        body.brand-ducati { --brand-color: #ff0000; --brand-glow: rgba(255, 0, 0, 0.35); }
+        body.brand-nera { --brand-color: #94a3b8; --brand-glow: rgba(148, 163, 184, 0.15); }
+        body.brand-nera:not(.light-mode) { --brand-color: #ffffff; }
+        body.brand-nera.light-mode { --brand-color: #0f172a; }
 
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; font-family: 'Inter', sans-serif; }
-        body { background-color: var(--bg-dark); background-image: var(--bg-gradient); background-attachment: fixed; color: var(--text-main); padding: 15px 15px 95px 15px; min-height: 100vh; display: flex; flex-direction: column; transition: background 0.3s, color 0.3s; }
+        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-user-select: none; font-family: 'Plus Jakarta Sans', sans-serif; }
+        body { background-color: var(--bg-page); background-image: var(--bg-gradient); background-attachment: fixed; color: var(--text-body); padding: 20px 20px 110px 20px; min-height: 100vh; display: flex; flex-direction: column; transition: background 0.4s, color 0.4s; -webkit-font-smoothing: antialiased; }
 
-        .header, .card, .bottom-nav, .sidebar { backdrop-filter: blur(30px); -webkit-backdrop-filter: blur(30px); border: 1px solid var(--panel-border); border-radius: 18px; background: var(--panel); transition: background 0.3s, border-color 0.3s, box-shadow 0.3s; }
-        .header { border-left: 5px solid var(--accent); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
-        .header-title { font-weight: 900; font-size: 15px; color: var(--text-main); letter-spacing: -0.3px; }
-        .header-sub { font-size: 10px; color: var(--text-muted); font-weight: 700; margin-top: 2px; text-transform: uppercase; }
+        .panel, .header, .card, .bottom-nav, .sidebar { background: var(--panel-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border: 1px solid var(--panel-border); border-radius: 24px; box-shadow: var(--panel-box-shadow); transition: background 0.4s, border 0.4s; }
         
-        .btn-menu-trigger { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-main); font-size: 16px; width: 38px; height: 38px; display: flex; align-items: center; justify-content: center; border-radius: 8px; cursor: pointer; }
-        .btn-disconnect { background: rgba(255, 0, 60, 0.1); border: 1px solid rgba(255, 0, 60, 0.3); color: #ff416c; padding: 8px 12px; font-size: 11px; font-weight: 800; border-radius: 8px; cursor: pointer; }
-
-        #proximity-gate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-dark); background-image: var(--bg-gradient); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 30px; }
-        .auth-card { background: var(--panel); border: 1px solid var(--panel-border); padding: 25px; border-radius: 24px; width: 100%; max-width: 340px; text-align: center; }
+        .header { padding: 16px 20px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .header-title { font-family: 'Space Grotesk', sans-serif; font-weight: 700; font-size: 18px; color: var(--text-heading); letter-spacing: -0.5px; }
+        .header-sub { font-size: 10px; color: var(--brand-color); font-weight: 800; margin-top: 3px; letter-spacing: 1px; text-transform: uppercase; }
         
-        .btn-connect-hardware { background: var(--accent); border: none; color: #000; padding: 16px 28px; font-size: 13px; font-weight: 900; border-radius: 50px; cursor: pointer; display: inline-flex; align-items: center; gap: 10px; margin: 20px auto; width: 100%; justify-content: center;}
+        .btn-menu-trigger { background: var(--btn-static); border: none; color: var(--text-heading); font-size: 18px; width: 44px; height: 44px; display: flex; align-items: center; justify-content: center; border-radius: 14px; cursor: pointer; }
+        .btn-disconnect { background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); color: #ef4444; padding: 10px 16px; font-size: 11px; font-weight: 700; border-radius: 12px; cursor: pointer; }
 
-        .sidebar { position: fixed; top: 0; right: -300px; width: 300px; height: 100%; z-index: 2000; padding: 25px 20px; display: flex; flex-direction: column; gap: 18px; transition: right 0.35s cubic-bezier(0.4, 0, 0.2, 1); box-shadow: -10px 0 40px rgba(0,0,0,0.15); overflow-y: auto; border-radius: 24px 0 0 24px; }
+        #proximity-gate { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--bg-page); background-image: var(--bg-gradient); z-index: 9999; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px; }
+        .auth-card { background: var(--panel-bg); border: 1px solid var(--panel-border); padding: 35px 25px; border-radius: 32px; width: 100%; max-width: 360px; text-align: center; box-shadow: var(--panel-box-shadow); }
+        .btn-connect-hardware { background: var(--brand-color); border: none; color: var(--text-on-brand); padding: 18px 30px; font-size: 13px; font-weight: 800; border-radius: 16px; width: 100%; justify-content: center; box-shadow: 0 10px 20px -5px var(--brand-glow); cursor: pointer; }
+
+        .sidebar { position: fixed; top: 0; right: -320px; width: 320px; height: 100%; z-index: 2000; padding: 30px 24px; display: flex; flex-direction: column; gap: 24px; transition: right 0.4s cubic-bezier(0.16, 1, 0.3, 1); border-radius: 32px 0 0 32px; }
         .sidebar.open { right: 0; }
-        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.4); backdrop-filter: blur(5px); z-index: 1999; display: none; }
-        .sidebar-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--panel-border); padding-bottom: 12px; }
-        .sidebar-close { background: none; border: none; color: var(--text-muted); font-size: 18px; cursor: pointer; font-weight: 800; }
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); backdrop-filter: blur(8px); z-index: 1999; display: none; }
+        .sidebar-header { display: flex; justify-content: space-between; align-items: center; }
+        .sidebar-header h3 { font-family: 'Space Grotesk', sans-serif; font-size: 18px; color: var(--text-heading); }
+        .sidebar-close { background: var(--btn-static); border: none; color: var(--text-heading); width: 32px; height: 32px; border-radius: 50%; cursor: pointer; }
 
-        .brand-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 5px; }
-        .btn-brand-select { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-main); font-size: 9px; font-weight: 700; padding: 10px 2px; border-radius: 8px; cursor: pointer; text-align: center; text-transform: uppercase; }
+        .brand-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-top: 8px; }
+        .btn-brand-select { background: var(--btn-static); border: 1px solid var(--panel-border); color: var(--text-heading); font-size: 11px; font-weight: 600; padding: 12px 4px; border-radius: 12px; cursor: pointer; }
 
-        .dashboard-arc-box { background: var(--panel); border: 1px solid var(--panel-border); border-radius: 20px; padding: 25px 20px; text-align: center; margin-bottom: 15px; }
-        .arc-contagiri { width: 100%; height: 16px; background: rgba(0, 0, 0, 0.3); border: 1px solid var(--panel-border); border-radius: 30px; overflow: hidden; margin-bottom: 18px; position: relative; }
-        .arc-fill { width: 0%; height: 100%; background: var(--accent); transition: width 0.1s linear; border-radius: 30px; }
+        .dashboard-arc-box { background: var(--panel-bg); border: 1px solid var(--panel-border); border-radius: 28px; padding: 30px 24px; text-align: center; margin-bottom: 20px; }
+        .arc-contagiri { width: 100%; height: 10px; background: var(--slider-bg); border-radius: 20px; overflow: hidden; margin-bottom: 20px; }
+        .arc-fill { width: 0%; height: 100%; background: var(--brand-color); box-shadow: 0 0 12px var(--brand-color); }
         
-        .digital-num { font-family: 'Orbitron', sans-serif; }
-        .speed-heavy { font-size: 86px; font-weight: 900; color: var(--text-main); line-height: 0.85; letter-spacing: -2px; }
+        .digital-num { font-family: 'Space Grotesk', sans-serif; font-weight: 700; }
+        .speed-heavy { font-size: 96px; font-weight: 700; color: var(--text-heading); line-height: 0.85; letter-spacing: -3px; margin: 10px 0; }
 
-        .card { padding: 18px; margin-bottom: 15px; }
-        .card-title { font-size: 11px; color: var(--text-muted); letter-spacing: 1.5px; margin-bottom: 16px; text-transform: uppercase; font-weight: 800; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; }
+        .card { padding: 22px; margin-bottom: 20px; }
+        .card-title { font-size: 11px; color: var(--text-muted); letter-spacing: 1.5px; margin-bottom: 20px; text-transform: uppercase; font-weight: 800; display: flex; align-items: center; gap: 6px; }
+
+        .preset-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; margin-bottom: 16px; }
+        .btn-action { background: var(--btn-static); border: 1px solid var(--panel-border); color: var(--text-heading); padding: 16px 12px; font-size: 12px; font-weight: 700; border-radius: 16px; cursor: pointer; transition: all 0.2s; text-align: center; }
+        .btn-action.active { background: var(--brand-color); color: var(--text-on-brand); border-color: var(--brand-color); box-shadow: 0 6px 15px -3px var(--brand-glow); }
+        .btn-action.active-locked { background: #ef4444 !important; color: #ffffff !important; border-color: #ef4444 !important; box-shadow: 0 6px 15px -3px rgba(239, 68, 68, 0.4); }
+
+        .toggle-row-control { display: flex; justify-content: space-between; align-items: center; background: var(--box-inner); border: 1px solid var(--panel-border); padding: 14px 18px; border-radius: 18px; margin-bottom: 14px; }
+        .toggle-row-info { display: flex; flex-direction: column; gap: 2px; }
+        .toggle-row-title { font-size: 12px; font-weight: 700; color: var(--text-heading); }
+        .toggle-row-sub { font-size: 10px; color: var(--text-muted); }
+
+        .switch-input-element { position: relative; display: inline-block; width: 46px; height: 24px; }
+        .switch-input-element input { opacity: 0; width: 0; height: 0; }
+        .switch-slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: var(--slider-bg); transition: .3s; border-radius: 24px; }
+        .switch-slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .3s; border-radius: 50%; }
+        input:checked + .switch-slider { background-color: var(--brand-color); }
+        input:checked + .switch-slider:before { transform: translateX(22px); }
+
+        .audio-menu-btn { display: flex; align-items: center; justify-content: space-between; background: var(--box-inner); border: 1px solid var(--panel-border); padding: 14px; border-radius: 16px; cursor: pointer; width: 100%; transition: all 0.3s; }
+        .audio-menu-left { display: flex; align-items: center; gap: 12px; font-weight: 600; font-size: 13px; color: var(--text-heading); }
+        .audio-icon-svg { width: 22px; height: 22px; fill: var(--text-muted); transition: fill 0.3s; }
+        .audio-active .audio-icon-svg { fill: var(--brand-color); filter: drop-shadow(0 0 6px var(--brand-glow)); }
+
+        .slider-container { background: var(--box-inner); padding: 18px; border-radius: 18px; border: 1px solid var(--panel-border); margin-bottom: 12px; }
+        input[type=range] { -webkit-appearance: none; width: 100%; background: var(--slider-bg); height: 6px; border-radius: 10px; outline: none; }
+        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 24px; height: 24px; background: #ffffff; border: 5px solid var(--brand-color); cursor: pointer; border-radius: 50%; }
+
+        .tel-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+        .tel-box { background: var(--box-inner); padding: 16px 8px; text-align: center; border-radius: 16px; border: 1px solid var(--panel-border); }
+        .tel-num { font-size: 22px; font-weight: 700; color: var(--text-heading); }
+        .tel-lbl { font-size: 9px; color: var(--text-muted); margin-top: 5px; font-weight: 700; text-transform: uppercase; }
         
-        .preset-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 12px; margin-bottom: 15px; }
-        .btn-action { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-main); padding: 14px 10px; font-size: 11px; font-weight: 800; border-radius: 12px; cursor: pointer; transition: all 0.2s; text-align: center; }
-        .btn-action.active { background: var(--accent); color: #000; border-color: var(--accent); font-weight: 900; }
+        .odometer-panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 16px; }
+        .odo-block { background: var(--box-inner); border: 1px solid var(--panel-border); padding: 16px; border-radius: 18px; }
+        .odo-block-title { font-size: 9px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; margin-bottom: 10px; }
+        .odo-split { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 6px; }
+        .val-total { font-family: 'Space Grotesk', sans-serif; font-size: 18px; font-weight: 700; color: var(--text-heading); }
+        .val-trip { font-family: 'Space Grotesk', sans-serif; font-size: 16px; font-weight: 700; color: var(--brand-color); }
+        .btn-reset-trip { background: var(--btn-static); border: 1px solid var(--panel-border); color: var(--text-heading); font-size: 9px; padding: 6px 10px; border-radius: 8px; font-weight: 700; cursor: pointer; width: 100%; margin-top: 8px; text-transform: uppercase; }
+
+        .manual-input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .manual-input-box { background: var(--box-inner); border: 1px solid var(--panel-border); border-radius: 16px; padding: 12px; display: flex; flex-direction: column; gap: 8px; }
+        .manual-input-box label { font-size: 9px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; }
+        .input-row-wrapper { display: flex; gap: 6px; }
+        .input-row-wrapper input { width: 65%; padding: 8px; border-radius: 10px; border: 1px solid var(--panel-border); background: var(--bg-page); color: var(--text-heading); font-family: 'Space Grotesk', sans-serif; text-align: center; outline: none; }
+        .input-row-wrapper button { width: 35%; background: var(--brand-color); border: none; border-radius: 10px; color: var(--text-on-brand); font-weight: 700; font-size: 10px; cursor: pointer; }
+
+        .wheelie-container { display: flex; flex-direction: column; align-items: center; justify-content: center; margin: 20px 0; }
+        .wheelie-dial { width: 170px; height: 170px; border-radius: 50%; border: 2px dashed var(--panel-border); display: flex; flex-direction: column; align-items: center; justify-content: center; background: var(--box-inner); transition: transform 0.15s ease-out; }
+        .wheelie-degree { font-family: 'Space Grotesk', sans-serif; font-size: 38px; font-weight: 700; color: var(--text-heading); }
+        .wheelie-unit { font-size: 9px; color: var(--text-muted); font-weight: 800; text-transform: uppercase; }
         
-        .btn-action.active-locked { background: #ff1e1e !important; color: #fff !important; border-color: #ff1e1e !important; font-weight: 900; }
+        .sidebar-input-bike { width: 100%; padding: 12px; background: var(--box-inner); border: 1px solid var(--panel-border); border-radius: 12px; color: var(--text-heading); font-weight: 600; outline: none; }
+        .map-checkbox-row { display: flex; align-items: center; gap: 10px; font-size: 12px; font-weight: 600; color: var(--text-body); margin-bottom: 14px; }
+        #map-container { width: 100%; height: 240px; border-radius: 20px; margin-bottom: 20px; border: 1px solid var(--panel-border); z-index: 1; }
 
-        .slider-container { background: var(--box-bg); padding: 14px; border-radius: 12px; border: 1px solid var(--panel-border); transition: opacity 0.2s; }
-        input[type=range] { -webkit-appearance: none; width: 100%; background: var(--slider-track); height: 8px; border-radius: 4px; outline: none; }
-        input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; width: 26px; height: 26px; background: #ffffff; border: 4px solid var(--accent); cursor: pointer; border-radius: 50%; }
-
-        .tel-grid { display: grid; grid-template-columns: repeat(3, 1fr); grid-gap: 10px; margin-bottom: 15px; }
-        .tel-box { background: var(--box-bg); padding: 12px 4px; text-align: center; border-radius: 12px; border: 1px solid var(--panel-border); }
-        .tel-num { font-size: 20px; font-weight: 800; color: var(--text-main); }
-        .tel-lbl { font-size: 8px; color: var(--text-muted); margin-top: 6px; font-weight: 800; text-transform: uppercase; }
-        
-        .bottom-nav { position: fixed; bottom: 12px; left: 12px; right: 12px; display: grid; grid-template-columns: repeat(4, 1fr); padding: 12px 2px; z-index: 1000; border-radius: 24px; box-shadow: 0 10px 35px rgba(0,0,0,0.1); }
-        .nav-item { background: transparent; border: none; color: var(--text-muted); font-size: 10px; font-weight: 800; display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px; text-transform: uppercase; }
-        .nav-item.active { color: var(--accent); }
-
-        #map-container { width: 100%; height: 230px; border-radius: 14px; margin-bottom: 15px; border: 1px solid var(--panel-border); z-index: 1; }
-        
-        .odometer-panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
-        .odo-block { background: var(--box-bg); border: 1px solid var(--panel-border); padding: 12px; border-radius: 12px; position: relative; }
-        .odo-block-title { font-size: 8px; color: var(--text-muted); font-weight: 900; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px;}
-        .odo-split { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 4px; }
-        .odo-split span:first-child { font-size: 9px; color: var(--text-muted); font-weight: 600;}
-        .val-total { font-family: 'Orbitron', sans-serif; font-size: 18px; font-weight: 900; color: var(--text-main); }
-        .val-trip { font-family: 'Orbitron', sans-serif; font-size: 15px; font-weight: 800; color: var(--accent); }
-        .btn-reset-trip { background: rgba(0,0,0,0.15); border: 1px solid var(--panel-border); color: var(--text-main); font-size: 8px; padding: 4px 8px; border-radius: 6px; font-weight: 800; cursor: pointer; width: 100%; margin-top: 4px;}
-
-        .manual-input-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .manual-input-box { background: rgba(0, 0, 0, 0.2); border: 1px dashed var(--panel-border); border-radius: 10px; padding: 10px; display: flex; flex-direction: column; gap: 6px; }
-        .manual-input-box label { font-size: 8px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; text-align: left; }
-        .input-row-wrapper { display: flex; gap: 4px; }
-        .input-row-wrapper input { width: 70%; padding: 6px; border-radius: 6px; border: 1px solid var(--panel-border); background: var(--bg-dark); color: var(--text-main); font-family: 'Orbitron', sans-serif; font-size: 12px; text-align: center; outline: none; }
-        .input-row-wrapper button { width: 30%; background: var(--accent); border: none; border-radius: 6px; color: var(--btn-active-text); font-weight: 900; font-size: 10px; cursor: pointer; }
-
-        .dual-dial-container { display: flex; justify-content: center; gap: 20px; margin: 15px 0; perspective: 400px; }
-        .inertial-dial { width: 130px; height: 130px; border-radius: 50%; border: 4px dashed var(--panel-border); display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; box-shadow: inset 0 0 20px rgba(0,0,0,0.3); transition: transform 0.1s ease-out; }
-        .inertial-degree { font-family: 'Orbitron', sans-serif; font-size: 26px; font-weight: 900; color: var(--text-main); }
-        .inertial-unit { font-size: 8px; color: var(--text-muted); font-weight: 700; letter-spacing: 1px; margin-top: 2px; text-transform: uppercase; }
-        .sidebar-input-bike { width: 100%; padding: 10px; background: rgba(0,0,0,0.1); border: 1px solid var(--panel-border); border-radius: 8px; color: var(--text-main); font-weight: 800; }
-        
-        .switch-row { display: flex; align-items: center; justify-content: space-between; padding: 8px 0; font-size: 11px; font-weight: 700; color: var(--text-main); border-bottom: 1px solid rgba(255,255,255,0.05); }
-        .switch-row:last-child { border-bottom: none; }
-        .switch-control { position: relative; display: inline-block; width: 46px; height: 24px; }
-        .switch-control input { opacity: 0; width: 0; height: 0; }
-        .slider-switch { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255,255,255,0.15); transition: .3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 24px; border: 1px solid var(--panel-border); }
-        .slider-switch:before { position: absolute; content: ""; height: 16px; width: 16px; left: 3px; bottom: 3px; background-color: white; transition: .3s cubic-bezier(0.4, 0, 0.2, 1); border-radius: 50%; }
-        input:checked + .slider-switch { background-color: var(--accent); }
-        input:checked + .slider-switch:before { transform: translateX(22px); background-color: var(--btn-active-text); }
-        
-        .alarm-status-banner { text-align: center; padding: 10px; border-radius: 10px; font-size: 11px; font-weight: 900; margin-bottom: 12px; display: none; text-transform: uppercase; animation: pulseAlarm 1s infinite alternate; }
-        @keyframes pulseAlarm { from { background: rgba(255,0,0,0.2); } to { background: rgba(255,0,0,0.6); color: #fff; } }
-
-        .pop-adjust-container { margin-top: 12px; background: rgba(0,0,0,0.4); padding: 12px; border-radius: 10px; border: 1px solid var(--panel-border); display: none; flex-direction: column; gap: 10px; }
+        .bottom-nav { position: fixed; bottom: 16px; left: 16px; right: 16px; display: grid; grid-template-columns: repeat(4, 1fr); padding: 14px 4px; z-index: 1000; }
+        .nav-item { background: transparent; border: none; color: var(--text-muted); font-size: 10px; font-weight: 700; display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 6px; text-transform: uppercase; }
+        .nav-item span { font-size: 16px; opacity: 0.6; transition: transform 0.2s, opacity 0.2s; }
+        .nav-item.active { color: var(--brand-color); }
+        .nav-item.active span { transform: translateY(-2px); opacity: 1; filter: drop-shadow(0 2px 8px var(--brand-glow)); }
     </style>
 </head>
 <body class="brand-ktm">
 
     <div id="proximity-gate">
         <div class="auth-card">
-            <h2 style="font-size:16px; font-weight:900; margin-bottom:5px; color:var(--text-main);">TRACK LOG SYSTEM v6.0</h2>
-            <p style="font-size:11px; color:var(--text-muted);">Sincronizza l'ECU della moto e attiva la telemetria.</p>
+            <h2 style="font-family:'Space Grotesk', sans-serif; font-size:18px; font-weight:700; margin-bottom:6px; color:var(--text-heading);">TRACK LOG SYSTEM</h2>
+            <p style="font-size:12px; color:var(--text-muted); margin-bottom:10px;">Sincronizzazione ECU e Telemetria Satellitare.</p>
             <button class="btn-connect-hardware" onclick="azionePulsanteCentraleGate()">🤝 CONNETTI DISPOSITIVO</button>
-            <button onclick="avviaModalitaDemo()" style="background:none; border:none; color:var(--text-muted); font-size:10px; text-decoration:underline; margin-top:15px; cursor:pointer;">Demo Simulation</button>
+            <button onclick="avviaModalitaDemo()" style="background:none; border:none; color:var(--text-muted); font-size:11px; text-decoration:underline; margin-top:16px; cursor:pointer; font-weight:600;">Simulazione Stradale Demo</button>
         </div>
     </div>
 
@@ -156,30 +168,28 @@
     <div class="sidebar" id="sidebarMenu">
         <div class="sidebar-header"><h3>SETUP CENTRALINA</h3><button class="sidebar-close" onclick="closeSidebar()">✕</button></div>
         <div>
-            <label style="font-size:10px; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">NOME MOTO</label>
+            <label style="font-size:10px; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">NOME VEICOLO</label>
             <input type="text" id="bikeName" class="sidebar-input-bike" value="La Mia Moto" oninput="aggiornaNomeMotoDinamico(this.value)">
         </div>
-        
+
         <div>
-            <label style="font-size:10px; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px; letter-spacing: 0.5px;">🎛️ OPZIONI AUDIO CENTRALINA</label>
-            <div class="switch-row">
-                <span>Buzzer su Cambiata (QS)</span>
-                <label class="switch-control">
-                    <input type="checkbox" id="buzzQsCheck" checked onchange="inviaOpzioniBuzzerCentralina()">
-                    <span class="slider-switch"></span>
-                </label>
-            </div>
-            <div class="switch-row">
-                <span>Suoni Comandi e Interfaccia Sito</span>
-                <label class="switch-control">
-                    <input type="checkbox" id="buzzParamCheck" checked onchange="inviaOpzioniBuzzerCentralina()">
-                    <span class="slider-switch"></span>
-                </label>
+            <label style="font-size:10px; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">AUDIO ECU FEEDBACK</label>
+            <div id="btn-toggle-audio-menu" class="audio-menu-btn audio-active" onclick="toggleMutoGeneraleHardware()">
+                <div class="audio-menu-left">
+                    <svg class="audio-icon-svg" viewBox="0 0 24 24">
+                        <path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/>
+                    </svg>
+                    <span id="lbl-audio-menu">Suoni ed Effetti: ON</span>
+                </div>
+                <div class="switch-input-element">
+                    <input type="checkbox" id="chkAudioMenuFake" checked style="pointer-events: none;">
+                    <span class="switch-slider"></span>
+                </div>
             </div>
         </div>
 
         <div>
-            <label style="font-size:10px; color:var(--text-muted); font-weight:800; display:block; margin-bottom:4px;">RACING BRAND TEMA</label>
+            <label style="font-size:10px; color:var(--text-muted); font-weight:800; display:block; margin-bottom:6px;">RACING BRAND TEMA</label>
             <div class="brand-grid">
                 <button class="btn-brand-select" id="brand-ktm" onclick="cambiaBrandTema('ktm')">KTM</button>
                 <button class="btn-brand-select" id="brand-yamaha" onclick="cambiaBrandTema('yamaha')">Yamaha</button>
@@ -191,7 +201,7 @@
                 <button class="btn-brand-select" id="brand-nera" onclick="cambiaBrandTema('nera')">Nera</button>
             </div>
         </div>
-        <button class="btn-action" onclick="toggleVisionMode()" style="width:100%; margin-top:10px; background:var(--accent); color:var(--btn-active-text);">🌙 TEMA CHIARO/SCURO</button>
+        <button class="btn-action" onclick="toggleVisionMode()" style="width:100%; margin-top:15px; background:var(--brand-color); color:var(--text-on-brand);">☀️ INTERFACCIA GIORNO / NOTTE</button>
     </div>
 
     <div class="header">
@@ -199,248 +209,214 @@
             <div class="header-title" id="header-bike-display">La Mia Moto</div>
             <div id="signal-strength" class="header-sub">DISCONNESSO</div>
         </div>
-        <div style="display:flex; align-items:center; gap:8px;">
+        <div style="display:flex; align-items:center; gap:10px;">
             <button class="btn-disconnect" id="disconnetti-rapido" onclick="scollegaDispositivo()" style="display:none;">SCOLLEGA</button>
             <button class="btn-menu-trigger" onclick="openSidebar()">☰</button>
         </div>
     </div>
 
+    <!-- TAB PRINCIPALE: DASHBOARD -->
     <div id="pane-home" class="sub-pane">
         <div class="dashboard-arc-box">
             <div class="arc-contagiri"><div class="arc-fill" id="rpmBar"></div></div>
-            <div style="display:flex; justify-content:space-between; margin-top:-14px; margin-bottom:15px; font-size:11px; color:var(--text-muted); font-weight:800;">
+            <div style="display:flex; justify-content:space-between; margin-top:-14px; margin-bottom:10px; font-size:14px; color:var(--text-muted); font-weight:800;">
                 <span>RPM</span>
-                <span id="rpmNum" class="digital-num" style="color:var(--text-main); font-weight:900; font-size:14px;">--</span>
+                <span id="rpmNum" class="digital-num" style="color:var(--brand-color); font-size:14px;">--</span>
                 <span>12k LIMIT</span>
             </div>
             <div class="speed-heavy digital-num" id="speedNum">--</div>
-            <div style="font-size:11px; color:var(--text-muted); font-weight:800; letter-spacing:3px; margin-top:8px;">KM/H SATELLITARI</div>
+            <div style="font-size:10px; color:var(--text-muted); font-weight:800; letter-spacing:2px; text-transform:uppercase;">KM/H GPS Satellitari</div>
         </div>
-
-        <div id="alarm-banner-ui" class="alarm-status-banner">🚨 ALLARME IN CORSO: RILEVATO MOVIMENTO!</div>
         
         <div class="odometer-panel-grid">
             <div class="odo-block">
                 <div class="odo-block-title">📊 DISTANZA (KM)</div>
                 <div class="odo-split"><span>Totale:</span><span class="val-total" id="odoTot">0.0</span></div>
                 <div class="odo-split"><span>Trip:</span><span class="val-trip" id="odoParz">0.0</span></div>
-                <button class="btn-reset-trip" onclick="emettiSuonoClick(); inviaPacchettoCentralina({type:'reset_trip_km'});">RESET TRIP</button>
+                <button class="btn-reset-trip" onclick="inviaPacchettoCentralina({type:'reset_trip_km'});">RESET TRIP</button>
             </div>
             <div class="odo-block">
-                <div class="odo-block-title">⏳ TEMPO MOTORE</div>
-                <div class="odo-split"><span>Totale h:</span><span class="val-total" id="hoursTot">0.0</span></div>
-                <div class="odo-split"><span>Trip h:</span><span class="val-trip" id="hoursParz" style="color:#00ff66;">0.0</span></div>
-                <button class="btn-reset-trip" onclick="emettiSuonoClick(); inviaPacchettoCentralina({type:'reset_trip_hours'});">RESET TRIP</button>
+                <div class="odo-block-title">⏳ OPERATIVITÀ MOTORE</div>
+                <div class="odo-split"><span>Totale ore:</span><span class="val-total" id="hoursTot">0.0</span></div>
+                <div class="odo-split"><span>Trip ore:</span><span class="val-trip" id="hoursParz" style="color:#00bc0d;">0.0</span></div>
+                <button class="btn-reset-trip" onclick="inviaPacchettoCentralina({type:'reset_trip_hours'});">RESET TRIP</button>
             </div>
         </div>
 
         <div class="card">
-            <div class="card-title">⚙️ Allineamento Strumentazione</div>
+            <div class="card-title">📊 Allineamento Strumentazione</div>
             <div class="manual-input-grid">
                 <div class="manual-input-box">
                     <label>Km Totali</label>
                     <div class="input-row-wrapper">
                         <input type="number" id="txtKmTot" step="0.1" placeholder="0.0">
-                        <button onclick="emettiSuonoClick(); inviaDatoManuale('set_km_tot', 'txtKmTot')">SET</button>
+                        <button onclick="inviaDatoManuale('set_km_tot', 'txtKmTot')">SET</button>
                     </div>
                 </div>
                 <div class="manual-input-box">
                     <label>Km Trip</label>
                     <div class="input-row-wrapper">
                         <input type="number" id="txtKmTrip" step="0.1" placeholder="0.0">
-                        <button onclick="emettiSuonoClick(); inviaDatoManuale('set_km_trip', 'txtKmTrip')">SET</button>
+                        <button onclick="inviaDatoManuale('set_km_trip', 'txtKmTrip')">SET</button>
                     </div>
                 </div>
                 <div class="manual-input-box">
                     <label>Ore Totali</label>
                     <div class="input-row-wrapper">
                         <input type="number" id="txtHTot" step="0.1" placeholder="0.0">
-                        <button onclick="emettiSuonoClick(); inviaDatoManuale('set_h_tot', 'txtHTot')">SET</button>
+                        <button onclick="inviaDatoManuale('set_h_tot', 'txtHTot')">SET</button>
                     </div>
                 </div>
                 <div class="manual-input-box">
                     <label>Ore Trip</label>
                     <div class="input-row-wrapper">
                         <input type="number" id="txtHTrip" step="0.1" placeholder="0.0">
-                        <button onclick="emettiSuonoClick(); inviaDatoManuale('set_h_trip', 'txtHTrip')">SET</button>
+                        <button onclick="inviaDatoManuale('set_h_trip', 'txtHTrip')">SET</button>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="card">
-            <div class="card-title">🔐 Sicurezza & Gestione Chiave</div>
-            <div class="switch-row" style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 12px; margin-bottom: 15px; border: 1px solid var(--panel-border);">
-                <span style="font-size:12px; font-weight:800; color:#ff416c;">🔊 AUDIO SIRENA ALLARME</span>
-                <label class="switch-control">
-                    <input type="checkbox" id="alarmSirenSoundCheck" checked onchange="toggleSuonoSirenaAllarmeLocale(this.checked)">
-                    <span class="slider-switch"></span>
+            <div class="card-title">🔐 Sicurezza e Antifurto Perimetrale</div>
+            <div class="toggle-row-control">
+                <div class="toggle-row-info">
+                    <div class="toggle-row-title">Sirena Allarme in Blocco</div>
+                    <div class="toggle-row-sub">Suona per 5 min a intermittenza se spostata</div>
+                </div>
+                <label class="switch-input-element">
+                    <input type="checkbox" id="chkSirenaAllarmeEsterna" checked onchange="toggleSirenaAllarmeHardware(this.checked)">
+                    <span class="switch-slider"></span>
                 </label>
             </div>
             <div class="preset-grid" style="margin-bottom:0;">
-                <button class="btn-action" id="btn-lock-ecu" onclick="emettiSuonoClick(); cambiaStatoBloccoMoto(true)">🔒 CHIAVE LOCK</button>
-                <button class="btn-action active" id="btn-unlock-ecu" onclick="emettiSuonoClick(); cambiaStatoBloccoMoto(false)">🔓 CHIAVE UNLOCK</button>
+                <button class="btn-action" id="btn-lock-ecu" onclick="cambiaStatoBloccoMoto(true)">🔒 CHIAVE LOCK</button>
+                <button class="btn-action active" id="btn-unlock-ecu" onclick="cambiaStatoBloccoMoto(false)">🔓 CHIAVE UNLOCK</button>
             </div>
         </div>
     </div>
 
+    <!-- TAB: SETUP QUICK SHIFTER -->
     <div id="pane-shifter" class="sub-pane" style="display:none;">
         <div class="card">
-            <div class="card-title">Mappatura Cut-off</div>
-            
-            <button class="btn-action" id="btn-dyn-map" onclick="emettiSuonoClick(); toggleMappaDinamicaGiri()" style="width:100%; margin-bottom:15px; background:rgba(0,191,255,0.08); border-color:#00bfff; color:#00bfff; font-weight:900;">
+            <div class="card-title">Mappatura Cut-off Tempi</div>
+            <button class="btn-action" id="btn-dyn-map" onclick="toggleMappaDinamicaGiri()" style="width:100%; margin-bottom:16px; color:#00a0e9; background:rgba(0,160,233,0.05);">
                 📈 MAPPA CUT-OFF DINAMICA (RPM): DISATTIVATA
             </button>
-
-            <label style="font-size:10px; color:var(--text-muted); font-weight:800; display:block; text-align:center; margin-bottom:6px;">PRESET DI TAGLIO RAPIDI:</label>
-            <div class="preset-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom:15px;">
-                <button class="btn-action" onclick="emettiSuonoClick(); impostaPresetCutoffRapido(55)">55 ms</button>
-                <button class="btn-action" onclick="emettiSuonoClick(); impostaPresetCutoffRapido(65)">65 ms</button>
-                <button class="btn-action" onclick="emettiSuonoClick(); impostaPresetCutoffRapido(75)">75 ms</button>
+            <label style="font-size:10px; color:var(--text-muted); font-weight:800; display:block; text-align:center; margin-bottom:8px;">PRESET DI TAGLIO RAPIDI</label>
+            <div class="preset-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom:16px;">
+                <button class="btn-action" onclick="impostaPresetCutoffRapido(55)">55 ms</button>
+                <button class="btn-action" onclick="impostaPresetCutoffRapido(65)">65 ms</button>
+                <button class="btn-action" onclick="impostaPresetCutoffRapido(75)">75 ms</button>
             </div>
-
             <div id="manual-slider-container" class="slider-container">
-                <input type="range" id="slider" min="30" max="100" value="75" oninput="document.getElementById('liveVal').innerText=this.value" onchange="emettiSuonoClick(); inviaValoreTimingDiretto(this.value)">
-                <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; margin-top:10px; color:var(--text-muted);">
-                    <span>FINE TUNING MANUALE:</span>
-                    <span><span id="liveVal" class="digital-num">75</span> ms</span>
+                <input type="range" id="slider" min="30" max="100" value="75" oninput="document.getElementById('liveVal').innerText=this.value" onchange="inviaValoreTimingDiretto(this.value)">
+                <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; margin-top:12px; color:var(--text-body);">
+                    <span>REGOLAZIONE MANUALE:</span>
+                    <span><span id="liveVal" class="digital-num" style="color:var(--brand-color);">75</span> ms</span>
                 </div>
             </div>
-            
-            <div class="preset-grid" style="margin-top:15px; margin-bottom:0;">
-                <button class="btn-action" id="btn-pop" onclick="emettiSuonoClick(); ruotaPopBang(this)" style="width:100%; grid-column: span 2;">💥 POP: OFF</button>
+            <div class="preset-grid" style="margin-top:16px; margin-bottom:4px;">
+                <button class="btn-action" id="btn-pop" onclick="togglePopBangState(this)" style="width:100%; grid-column: span 2;">💥 POP & BANG: DISATTIVATO</button>
             </div>
-
-            <div class="pop-adjust-container" id="popSettingsArea">
-                <div style="font-size:10px; font-weight:800; color:var(--accent); text-align:left; text-transform:uppercase;">⚙️ Configurazione Tempi Doppia Cambiata</div>
-                
-                <div>
-                    <div style="display:flex; justify-content:space-between; font-size:10px; margin-bottom:4px; color:var(--text-muted);">
-                        <span>TEMPO PRIMO STACCO (POP 1):</span>
-                        <span style="font-weight:700; color:#fff;"><span id="livePop1Val" class="digital-num">60</span> ms</span>
+            <div id="popbang-sliders-group" style="display:none; margin-top:16px;">
+                <div class="slider-container">
+                    <input type="range" id="sliderPopDelay" min="15" max="80" value="40" oninput="document.getElementById('livePopDelay').innerText=this.value" onchange="inviaDatoPopSlider('set_pop_delay', this.value)">
+                    <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; margin-top:12px; color:var(--text-body);">
+                        <span>CUT-OFF PRIMO SCOPPIO:</span>
+                        <span><span id="livePopDelay" class="digital-num">40</span> ms</span>
                     </div>
-                    <input type="range" id="pop1Slider" min="10" max="150" value="60" oninput="document.getElementById('livePop1Val').innerText=this.value" onchange="inviaTempiFiniStacchiPop()">
                 </div>
-
-                <div>
-                    <div style="display:flex; justify-content:space-between; font-size:10px; margin-bottom:4px; color:var(--text-muted);">
-                        <span>TEMPO SECONDO STACCO (POP 2):</span>
-                        <span style="font-weight:700; color:#fff;"><span id="livePop2Val" class="digital-num">40</span> ms</span>
+                <div class="slider-container">
+                    <input type="range" id="sliderPopIntensity" min="15" max="80" value="40" oninput="document.getElementById('livePopIntensity').innerText=this.value" onchange="inviaDatoPopSlider('set_pop_intensity', this.value)">
+                    <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; margin-top:12px; color:var(--text-body);">
+                        <span>CUT-OFF SECONDO SCOPPIO:</span>
+                        <span><span id="livePopIntensity" class="digital-num">40</span> ms</span>
                     </div>
-                    <input type="range" id="pop2Slider" min="10" max="150" value="40" oninput="document.getElementById('livePop2Val').innerText=this.value" onchange="inviaTempiFiniStacchiPop()">
                 </div>
             </div>
         </div>
         <div class="card">
-            <div class="card-title">Analisi Shifter</div>
+            <div class="card-title">Analisi Cambiata Realtime</div>
             <div class="tel-grid">
                 <div class="tel-box"><div class="tel-num digital-num" id="cambiate">0</div><div class="tel-lbl">CAMBIATE</div></div>
-                <div class="tel-box"><div class="tel-num digital-num" style="color:#00ff66" id="fluidita-id">100%</div><div class="tel-lbl">EFFICIENZA</div></div>
+                <div class="tel-box"><div class="tel-num digital-num" style="color:#00bc0d" id="fluidita-id">100%</div><div class="tel-lbl">EFFICIENZA</div></div>
                 <div class="tel-box"><div class="tel-num digital-num" id="lastCut">0ms</div><div class="tel-lbl">LAST CUT</div></div>
             </div>
         </div>
     </div>
 
+    <!-- TAB: ASSISTENZA IMPENNATA (MODIFICATO CON AGGIUNTA DELLO SWITCH IN CIMA) -->
     <div id="pane-wheelie" class="sub-pane" style="display:none;">
         <div class="card">
-            <div class="card-title">Inerziale & Assistenza Assetto</div>
+            <div class="card-title">📐 Wheelie Assist Control</div>
             
-            <div class="switch-row" style="background: rgba(255,255,255,0.03); padding: 12px; border-radius: 10px; margin-bottom: 15px;">
-                <span style="font-size:12px; font-weight:800; color:var(--accent);">🛡️ CONTROLLO ANTI-IMPENNATA (AWC)</span>
-                <label class="switch-control">
-                    <input type="checkbox" id="awcGlobalSwitch" checked onchange="emettiSuonoClick(); toggleControlloAntiImpennataCentr(this.checked)">
-                    <span class="slider-switch"></span>
+            <!-- NUOVO INTERRUTTORE DI ABILITAZIONE/DISABILITAZIONE ANTI-WHEELIE -->
+            <div class="toggle-row-control">
+                <div class="toggle-row-info">
+                    <div class="toggle-row-title">Sistema Anti-Wheelie</div>
+                    <div class="toggle-row-sub">Taglia corrente se superi i gradi limite</div>
+                </div>
+                <label class="switch-input-element">
+                    <input type="checkbox" id="chkAntiWheelieAttivo" checked onchange="toggleAntiWheelieHardware(this.checked)">
+                    <span class="switch-slider"></span>
                 </label>
             </div>
 
-            <div class="dual-dial-container">
-                <div class="inertial-dial" id="wheelieDialBG">
-                    <div class="inertial-degree" id="livePitchNum">0°</div>
-                    <div class="inertial-unit">Impennata</div>
-                </div>
-                <div class="inertial-dial" id="rollDialBG" style="border-style: solid;">
-                    <div class="inertial-degree" id="liveRollNum">0°</div>
-                    <div class="inertial-unit">Piega (Roll)</div>
+            <div class="wheelie-container">
+                <div class="wheelie-dial" id="wheelieDialBG">
+                    <div class="wheelie-degree" id="livePitchNum">0°</div>
+                    <div class="wheelie-unit">PITCH ANGLE</div>
                 </div>
             </div>
 
-            <div id="awc-settings-area">
-                <label style="font-size:10px; color:var(--text-muted); font-weight:800; display:block; text-align:center; margin-bottom:8px;">PRESET RAPIDI ANGOLO DI TAGLIO:</label>
-                <div class="preset-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom:15px;">
-                    <button class="btn-action" onclick="emettiSuonoClick(); impostaGradiRapidiAntiWheelie(15)">🟢 15°</button>
-                    <button class="btn-action" onclick="emettiSuonoClick(); impostaGradiRapidiAntiWheelie(30)">🟡 30°</button>
-                    <button class="btn-action" onclick="emettiSuonoClick(); impostaGradiRapidiAntiWheelie(45)">🔴 45°</button>
-                </div>
+            <label style="font-size:10px; color:var(--text-muted); font-weight:800; display:block; text-align:center; margin-bottom:10px;">ANGOLO DI REINTERVENTO RAPIDO</label>
+            <div class="preset-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom:16px;">
+                <button class="btn-action" onclick="impostaGradiRapidiAntiWheelie(15)">🟢 15°</button>
+                <button class="btn-action" onclick="impostaGradiRapidiAntiWheelie(30)">🟡 30°</button>
+                <button class="btn-action" onclick="impostaGradiRapidiAntiWheelie(45)">🔴 45°</button>
+            </div>
 
-                <div class="slider-container" style="margin-bottom:15px;">
-                    <input type="range" id="wheelieSlider" min="10" max="90" value="30" oninput="document.getElementById('liveWheelieTarget').innerText=this.value" onchange="emettiSuonoClick(); inviaLimiteImpennataCentralina(this.value)">
-                    <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; margin-top:10px; color:var(--text-muted);">
-                        <span>REGOLAZIONE DI FINE:</span>
-                        <span style="color:#ff3333;"><span id="liveWheelieTarget" class="digital-num">30</span>°</span>
-                    </div>
+            <div class="slider-container" style="margin-bottom:16px;">
+                <input type="range" id="wheelieSlider" min="10" max="90" value="30" oninput="document.getElementById('liveWheelieTarget').innerText=this.value" onchange="inviaLimiteImpennataCentralina(this.value)">
+                <div style="display:flex; justify-content:space-between; font-size:11px; font-weight:700; margin-top:12px; color:var(--text-body);">
+                    <span>LIMITATORE ANGOLO MAX:</span>
+                    <span style="color:#ef4444;"><span id="liveWheelieTarget" class="digital-num">30</span>°</span>
                 </div>
             </div>
-            
-            <button class="btn-action" onclick="emettiSuonoClick(); calibraAssiAzzeramento()" style="width:100%; background:rgba(0,191,255,0.1); border-color:#00bfff; color:#00bfff;">🎯 CALIBRA AZZERAMENTO ASSI</button>
+            <button class="btn-action" onclick="calibraAssiAzzeramento()" style="width:100%; color:#00a0e9; background:rgba(0,160,233,0.1);">🎯 AZZERAMENTO ASSI IMU (CALIBRAZIONE)</button>
         </div>
     </div>
 
+    <!-- TAB: TELEMETRIA -->
     <div id="pane-telemetry" class="sub-pane" style="display:none;">
         <div id="map-container"></div>
-        
         <div class="card">
-            <div class="card-title">Setup Mappatura Circuito</div>
-            <div class="switch-row">
-                <span>Ininizio / Arrivo nello stesso punto (Anello)</span>
-                <label class="switch-control">
-                    <input type="checkbox" id="checkSamePoint" onchange="emettiSuonoClick(); toggleStessoPuntoPartenzaArrivo(this.checked)">
-                    <span class="slider-switch"></span>
-                </label>
+            <div class="card-title">Mappatura Circuito Gps</div>
+            <div class="map-checkbox-row">
+                <input type="checkbox" id="checkSamePoint" onchange="toggleStessoPuntoPartenzaArrivo(this.checked)">
+                <label for="checkSamePoint">Circuito Chiuso</label>
             </div>
-            <div class="preset-grid" style="margin-top: 10px; margin-bottom: 5px;">
-                <button class="btn-action" onclick="emettiSuonoClick(); fissaTraguardoMappa('start')" style="background:rgba(0,255,102,0.1); color:#00ff66; border-color:#00ff66;">🚩 FISSA PARTENZA</button>
-                <button class="btn-action" id="btn-set-end" onclick="emettiSuonoClick(); fissaTraguardoMappa('end')" style="background:rgba(255,50,50,0.1); color:#ff3333; border-color:#ff3333;">🏁 FISSA ARRIVO</button>
-            </div>
-            <div class="switch-row" style="margin-top:12px;">
-                <span>Mostra Marker dei Picchi Massimi sulla mappa</span>
-                <label class="switch-control">
-                    <input type="checkbox" id="checkShowMaxPeaks" checked onchange="emettiSuonoClick(); toggleVisualizzazionePeaksMappa(this.checked)">
-                    <span class="slider-switch"></span>
-                </label>
+            <div class="preset-grid">
+                <button class="btn-action" onclick="fissaTraguardoMappa('start')" style="color:#00bc0d;">🚩 PARTENZA</button>
+                <button class="btn-action" id="btn-set-end" onclick="fissaTraguardoMappa('end')" style="color:#ef4444;">🏁 ARRIVO</button>
             </div>
         </div>
-
         <div class="card">
-            <div class="card-title">Live Track Features & Peaks</div>
+            <div class="card-title">Live Track Peaks & Forze G</div>
             <div class="tel-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <div class="tel-box"><div class="tel-num digital-num" id="trackMaxSpeed">0</div><div class="tel-lbl">Vel. Max km/h</div></div>
-                <div class="tel-box"><div class="tel-num digital-num" id="trackMaxRoll">0°</div><div class="tel-lbl">Piega Max (Curva)</div></div>
-                <div class="tel-box"><div class="tel-num digital-num" id="trackMaxPitch">0°</div><div class="tel-lbl">Impennata Max</div></div>
-                <div class="tel-box"><div class="tel-num digital-num" id="trackMaxRpm">0</div><div class="tel-lbl">RPM Massimi</div></div>
+                <div class="tel-box"><div class="tel-num digital-num" id="trackMaxRoll">0°</div><div class="tel-lbl">Piega Max</div></div>
             </div>
-            <div class="tel-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom: 5px;">
-                <div class="tel-box"><div class="tel-num digital-num" id="trackGAcc">0.00</div><div class="tel-lbl">G Accel.</div></div>
-                <div class="tel-box"><div class="tel-num digital-num" id="trackGFren">0.00</div><div class="tel-lbl">G Staccata</div></div>
-                <div class="tel-box"><div class="tel-num digital-num" id="trackGLat">0.00</div><div class="tel-lbl">G Curva</div></div>
-            </div>
-            
-            <button class="btn-action" onclick="emettiSuonoClick(); salvaSessioneSuTelefono()" style="width:100%; background:var(--accent); color:#000; font-weight:900; font-size:12px; margin-top:8px;">💾 SALVA REPORT SESSIONE (.JSON)</button>
-        </div>
-
-        <div class="card">
-            <div class="card-title">Lap Timer Satellitare</div>
-            <div class="odometer-panel-grid" style="margin-bottom:0;">
-                <div class="track-box" style="background:var(--box-bg); padding:12px; border-radius:12px; text-align:center;"><div class="track-val digital-num" style="color:#00ff66; font-size:20px;" id="liveLapTime">00:00.00</div><div class="track-lbl" style="font-size:8px; color:var(--text-muted); font-weight:800; margin-top:4px;">Giro Corrente</div></div>
-                <div class="track-box" style="background:var(--box-bg); padding:12px; border-radius:12px; text-align:center;"><div class="track-val digital-num" style="color:var(--accent); font-size:20px;" id="bestLapTime">--:--.--</div><div class="track-lbl" style="font-size:8px; color:var(--text-muted); font-weight:800; margin-top:4px;">Best Lap</div></div>
-            </div>
+            <button class="btn-action" onclick="salvaSessioneSuTelefono()" style="width:100%; background:var(--brand-color); color:var(--text-on-brand);">💾 ESPORTA DATA REPORT (.JSON)</button>
         </div>
     </div>
 
     <nav class="bottom-nav">
-        <button class="nav-item active" onclick="cambiaTab('home', this)"><span>🏠</span> DASH</button>
-        <button class="nav-item" onclick="cambiaTab('shifter', this)"><span>⚙️</span> CAMBIO</button>
-        <button class="nav-item" onclick="cambiaTab('wheelie', this)"><span>📐</span> ASSIST</button>
-        <button class="nav-item" onclick="cambiaTab('telemetry', this)"><span>📊</span> TELEM</button>
+        <button class="nav-item active" id="nav-home" onclick="cambiaTab('home', this)"><span>🏠</span> DASH</button>
+        <button class="nav-item" id="nav-shifter" onclick="cambiaTab('shifter', this)"><span>⚙️</span> CAMBIO</button>
+        <button class="nav-item" id="nav-wheelie" onclick="cambiaTab('wheelie', this)"><span>📐</span> ASSIST</button>
+        <button class="nav-item" id="nav-telemetry" onclick="cambiaTab('telemetry', this)"><span>📊</span> TELEM</button>
     </nav>
 
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
@@ -454,118 +430,42 @@
         let currentPopMode = 0; let mappaDinamicaAttiva = false;
         
         let map = null; let trackPolyline = null; let userMarker = null;
-        let coordinateStorichePunti = []; 
-        let startMarker = null; let endMarker = null;
-        let peakMarkersGroup = [];
+        let coordinateStorichePunti = []; let startMarker = null; let endMarker = null;
         let stessoPuntoPartenzaArrivo = false;
-        let mostraPeakMarkers = true;
-
-        // Gestione Logica Audio Allarme Locale
-        let audioSirenaAbilitatoCentralina = true;
-
-        let alarmActive = false;
-        let alarmTimer = null;
-        const COSTANTE_DURATA_ALLARME = 300000; 
-
-        let sessionStats = {
-            maxSpeed: 0, maxRoll: 0, maxPitch: 0, maxRpm: 0,
-            maxGAcc: 0, maxGFren: 0, maxGLat: 0, telemetriaPunti: []
-        };
-
-        // Generatore Audio Web API per il feedback dei pulsanti sul sito
-        let audioCtx = null;
-        function emettiSuonoClick() {
-            const feedbackSitoAttivo = document.getElementById('buzzParamCheck').checked;
-            if (!feedbackSitoAttivo) return;
-            try {
-                if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-                let osc = audioCtx.createOscillator();
-                let gain = audioCtx.createGain();
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(1000, audioCtx.currentTime); // 1kHz beep
-                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
-                gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + 0.08);
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
-                osc.start();
-                osc.stop(audioCtx.currentTime + 0.08);
-            } catch(e){}
-        }
+        
+        let audioGeneraleVal = true; 
 
         document.addEventListener("DOMContentLoaded", () => {
             let nomeSalvato = localStorage.getItem('qs_bike') || "La Mia Moto";
             document.getElementById('bikeName').value = nomeSalvato;
             document.getElementById('header-bike-display').innerText = nomeSalvato;
+            
             cambiaBrandTema(localStorage.getItem('qs_brand_theme') || "ktm");
-            
-            map = L.map('map-container', { zoomControl: false }).setView([39.3565, 16.2263], 16); 
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png').addTo(map);
-            
-            trackPolyline = L.polyline([], {color: 'var(--accent)', weight: 5}).addTo(map);
-            userMarker = L.circleMarker([0,0], {radius: 7, color: '#ffffff', fillColor: '#005bf6', fillOpacity: 1}).addTo(map);
+            let lastTab = localStorage.getItem('qs_last_tab') || "home";
+            let targetNavBtn = document.getElementById('nav-' + lastTab) || document.getElementById('nav-home');
+            cambiaTab(lastTab, targetNavBtn);
 
-            if (navigator.geolocation) {
-                navigator.geolocation.watchPosition((p) => {
-                    if (isDemoMode) return;
-                    registraNuovoPuntoGpsMappa(p.coords.latitude, p.coords.longitude);
-                }, null, {enableHighAccuracy: true});
+            if(localStorage.getItem('qs_audio_general') === "false") {
+                audioGeneraleVal = false;
+                document.getElementById('btn-toggle-audio-menu').classList.remove('audio-active');
+                document.getElementById('lbl-audio-menu').innerText = "Suoni ed Effetti: OFF";
+                document.getElementById('chkAudioMenuFake').checked = false;
             }
+
+            map = L.map('map-container', { zoomControl: false }).setView([39.3565, 16.2263], 16); 
+            aggiornaMappaStileLayer();
+            
+            trackPolyline = L.polyline([], {color: 'var(--brand-color)', weight: 5}).addTo(map);
+            userMarker = L.circleMarker([39.3565, 16.2263], {radius: 7, color: '#ffffff', fillColor: '#0046cd', fillOpacity: 1}).addTo(map);
         });
 
-        function registraNuovoPuntoGpsMappa(lat, lng) {
-            let cPos = L.latLng(lat, lng);
-            userMarker.setLatLng(cPos);
-            
-            let sInstant = {
-                lat: lat, lng: lng, timestamp: new Date().toLocaleTimeString(),
-                speed: parseInt(document.getElementById('speedNum').innerText) || 0,
-                roll: parseInt(document.getElementById('liveRollNum').innerText) || 0,
-                pitch: parseInt(document.getElementById('livePitchNum').innerText) || 0,
-                gForce: parseFloat(document.getElementById('trackGAcc').innerText) || 0.0
-            };
-            
-            sessionStats.telemetriaPunti.push(sInstant);
-            coordinateStorichePunti.push(cPos);
-            trackPolyline.setLatLngs(coordinateStorichePunti);
-        }
-
-        function attivaOEstendiAllarmeSirena() {
-            if (!alarmActive) {
-                alarmActive = true;
-                document.getElementById('alarm-banner-ui').style.display = "block";
-                
-                // Invia alla centralina tenendo conto se l'utente vuole far suonare la sirena o no
-                inviaPacchettoCentralina({
-                    type: "hardware_alarm_siren", 
-                    state: "START",
-                    soundEnabled: audioSirenaAbilitatoCentralina
-                });
+        function aggiornaMappaStileLayer() {
+            if(!map) return;
+            map.eachLayer((l) => { if(l instanceof L.TileLayer) map.removeLayer(l); });
+            if(document.body.classList.contains('light-mode')) {
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png').addTo(map);
             } else {
-                clearTimeout(alarmTimer);
-            }
-
-            alarmTimer = setTimeout(() => {
-                disattivaAllarmeSirenaFineTempo();
-            }, COSTANTE_DURATA_ALLARME);
-        }
-
-        function disattivaAllarmeSirenaFineTempo() {
-            alarmActive = false;
-            document.getElementById('alarm-banner-ui').style.display = "none";
-            inviaPacchettoCentralina({type: "hardware_alarm_siren", state: "STOP"});
-        }
-
-        function toggleSuonoSirenaAllarmeLocale(checked) {
-            audioSirenaAbilitatoCentralina = checked;
-            emettiSuonoClick();
-            inviaPacchettoCentralina({type: "config_alarm_sound", soundEnabled: checked});
-            if(alarmActive) {
-                // Se l'allarme è già in corso, aggiorna lo stato acustico al volo
-                inviaPacchettoCentralina({
-                    type: "hardware_alarm_siren", 
-                    state: "START",
-                    soundEnabled: checked
-                });
+                L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png').addTo(map);
             }
         }
 
@@ -576,7 +476,7 @@
             }
             if(json.contatore !== undefined) document.getElementById('cambiate').innerText = json.contatore;
             if(json.cutTime !== undefined) document.getElementById('lastCut').innerText = json.cutTime + "ms";
-            
+            if(json.speed !== undefined) document.getElementById('speedNum').innerText = json.speed;
             if(json.kmTot !== undefined) document.getElementById('odoTot').innerText = json.kmTot.toFixed(1);
             if(json.kmTrip !== undefined) document.getElementById('odoParz').innerText = json.kmTrip.toFixed(1);
             if(json.hTot !== undefined) document.getElementById('hoursTot').innerText = json.hTot.toFixed(1);
@@ -586,29 +486,74 @@
                 document.getElementById('livePitchNum').innerText = json.pitch + "°";
                 document.getElementById('wheelieDialBG').style.transform = `rotateX(${json.pitch}deg)`;
             }
-            if(json.roll !== undefined) {
-                document.getElementById('liveRollNum').innerText = json.roll + "°";
-                document.getElementById('rollDialBG').style.transform = `rotateZ(${-json.roll}deg)`;
+
+            // Allineamento dello switch dell'antifurto
+            if(json.almStatus !== undefined) {
+                document.getElementById('chkSirenaAllarmeEsterna').checked = json.almStatus;
             }
 
-            if(json.bikeMovedEvent === true) {
-                attivaOEstendiAllarmeSirena();
+            // Sincronizzazione realtime dello switch Anti-Wheelie in base alla risposta dell'hardware
+            if(json.awStatus !== undefined) {
+                document.getElementById('chkAntiWheelieAttivo').checked = json.awStatus;
+                let dialContainer = document.getElementById('wheelieDialBG');
+                if(!json.awStatus) {
+                    dialContainer.style.opacity = "0.25"; // Rende opaco l'indicatore grafico se disattivato
+                } else {
+                    dialContainer.style.opacity = "1";
+                }
             }
+
+            if(json.audGenStatus !== undefined) {
+                audioGeneraleVal = json.audGenStatus;
+                let btnAudio = document.getElementById('btn-toggle-audio-menu');
+                document.getElementById('chkAudioMenuFake').checked = audioGeneraleVal;
+                if(audioGeneraleVal) {
+                    btnAudio.classList.add('audio-active');
+                    document.getElementById('lbl-audio-menu').innerText = "Suoni ed Effetti: ON";
+                } else {
+                    btnAudio.classList.remove('audio-active');
+                    document.getElementById('lbl-audio-menu').innerText = "Suoni ed Effetti: OFF";
+                }
+            }
+        }
+
+        // --- INVIO DELLO SWITCH ANTI-WHEELIE ---
+        function toggleAntiWheelieHardware(isChecked) {
+            let dialContainer = document.getElementById('wheelieDialBG');
+            dialContainer.style.opacity = isChecked ? "1" : "0.25";
+            inviaPacchettoCentralina({type: "toggle_wheelie_system", value: isChecked});
+        }
+
+        function toggleSirenaAllarmeHardware(isChecked) {
+            inviaPacchettoCentralina({type: "toggle_alarm_system", value: isChecked});
+        }
+
+        function toggleMutoGeneraleHardware() {
+            audioGeneraleVal = !audioGeneraleVal;
+            localStorage.setItem('qs_audio_general', audioGeneraleVal);
             
-            if(json.speed !== undefined) document.getElementById('speedNum').innerText = json.speed;
+            let btnAudio = document.getElementById('btn-toggle-audio-menu');
+            document.getElementById('chkAudioMenuFake').checked = audioGeneraleVal;
+            if(audioGeneraleVal) {
+                btnAudio.classList.add('audio-active');
+                document.getElementById('lbl-audio-menu').innerText = "Suoni ed Effetti: ON";
+            } else {
+                btnAudio.classList.remove('audio-active');
+                document.getElementById('lbl-audio-menu').innerText = "Suoni ed Effetti: OFF";
+            }
+            inviaPacchettoCentralina({type: "toggle_general_audio", value: audioGeneraleVal});
+        }
 
-            if(json.maxRpm !== undefined) document.getElementById('trackMaxRpm').innerText = json.maxRpm; 
-            if(json.maxRoll !== undefined) document.getElementById('trackMaxRoll').innerText = json.maxRoll + "°"; 
-            if(json.maxPitch !== undefined) document.getElementById('trackMaxPitch').innerText = json.maxPitch + "°"; 
-            if(json.maxSpeed !== undefined) document.getElementById('trackMaxSpeed').innerText = json.maxSpeed; 
-            if(json.maxGAcc !== undefined) document.getElementById('trackGAcc').innerText = json.maxGAcc.toFixed(2); 
-            if(json.maxGFren !== undefined) document.getElementById('trackGFren').innerText = json.maxGFren.toFixed(2); 
-            if(json.maxGLat !== undefined) document.getElementById('trackGLat').innerText = json.maxGLat.toFixed(2);
-
-            if(json.maxSpeed > sessionStats.maxSpeed) sessionStats.maxSpeed = json.maxSpeed;
-            if(json.maxRoll > sessionStats.maxRoll) sessionStats.maxRoll = json.maxRoll;
-            if(json.maxPitch > sessionStats.maxPitch) sessionStats.maxPitch = json.maxPitch;
-            if(json.maxRpm > sessionStats.maxRpm) sessionStats.maxRpm = json.maxRpm;
+        function cambiaStatoBloccoMoto(statoCompletoLock) { 
+            let lockBtn = document.getElementById('btn-lock-ecu');
+            let unlockBtn = document.getElementById('btn-unlock-ecu');
+            if(statoCompletoLock) {
+                lockBtn.classList.add('active-locked'); unlockBtn.classList.remove('active');
+                inviaPacchettoCentralina({type: "ecu_state", status: "LOCKED"});
+            } else {
+                lockBtn.classList.remove('active-locked'); unlockBtn.classList.add('active');
+                inviaPacchettoCentralina({type: "ecu_state", status: "UNLOCKED"});
+            }
         }
 
         function impostaPresetCutoffRapido(ms) {
@@ -623,35 +568,33 @@
             let sliderContainer = document.getElementById('manual-slider-container');
             if (mappaDinamicaAttiva) {
                 btn.innerText = "📈 MAPPA CUT-OFF DINAMICA (RPM): ATTIVA";
-                btn.style.background = "rgba(0,255,102,0.1)"; btn.style.borderColor = "#00ff66"; btn.style.color = "#00ff66";
-                sliderContainer.style.opacity = "0.4"; sliderContainer.style.pointerEvents = "none";
+                btn.style.background = "rgba(0,188,13,0.1)"; btn.style.color = "#00bc0d";
+                sliderContainer.style.opacity = "0.3"; sliderContainer.style.pointerEvents = "none";
             } else {
                 btn.innerText = "📈 MAPPA CUT-OFF DINAMICA (RPM): DISATTIVATA";
-                btn.style.background = "rgba(0,191,255,0.08)"; btn.style.borderColor = "#00bfff"; btn.style.color = "#00bfff";
+                btn.style.background = "rgba(0,160,233,0.05)"; btn.style.color = "#00a0e9";
                 sliderContainer.style.opacity = "1"; sliderContainer.style.pointerEvents = "auto";
             }
             inviaPacchettoCentralina({type: "toggle_dyn_map", value: mappaDinamicaAttiva});
         }
 
-        function toggleControlloAntiImpennataCentr(attivo) {
-            let areaImpostazioni = document.getElementById('awc-settings-area');
-            if(attivo) {
-                areaImpostazioni.style.opacity = "1";
-                areaImpostazioni.style.pointerEvents = "auto";
+        function togglePopBangState(btn) {
+            currentPopMode = currentPopMode === 0 ? 1 : 0;
+            const groupSliders = document.getElementById('popbang-sliders-group');
+            if (currentPopMode === 1) {
+                btn.innerText = "💥 POP & BANG: ATTIVO"; btn.style.background = "rgba(255,80,0,0.12)";
+                groupSliders.style.display = "block";
             } else {
-                areaImpostazioni.style.opacity = "0.3";
-                areaImpostazioni.style.pointerEvents = "none";
+                btn.innerText = "💥 POP & BANG: DISATTIVATO"; btn.style.background = "var(--btn-static)";
+                groupSliders.style.display = "none";
             }
-            inviaPacchettoCentralina({type: "toggle_awc", enabled: attivo});
+            inviaPacchettoCentralina({type: "scoppi", value: currentPopMode});
         }
 
-        function inviaOpzioniBuzzerCentralina() {
-            emettiSuonoClick();
-            inviaPacchettoCentralina({
-                type: "config_buzzer",
-                onQuickshift: document.getElementById('buzzQsCheck').checked,
-                onParamUpdate: document.getElementById('buzzParamCheck').checked
-            });
+        function inviaDatoPopSlider(tipoSld, val) {
+            if (tipoSld === 'set_pop_delay') document.getElementById('livePopDelay').innerText = val;
+            else if (tipoSld === 'set_pop_intensity') document.getElementById('livePopIntensity').innerText = val;
+            inviaPacchettoCentralina({type: tipoSld, value: parseInt(val)});
         }
 
         function impostaGradiRapidiAntiWheelie(gradi) {
@@ -660,88 +603,34 @@
             inviaLimiteImpennataCentralina(gradi);
         }
 
-        function toggleStessoPuntoPartenzaArrivo(checked) {
-            stessoPuntoPartenzaArrivo = checked;
-            let btnEnd = document.getElementById('btn-set-end');
-            if(checked) {
-                btnEnd.style.opacity = "0.4"; btnEnd.style.pointerEvents = "none";
-                if(endMarker) { map.removeLayer(endMarker); endMarker = null; }
-            } else {
-                btnEnd.style.opacity = "1"; btnEnd.style.pointerEvents = "auto";
-            }
-        }
-
-        function fissaTraguardoMappa(tipo) {
-            let center = map.getCenter();
-            if(tipo === 'start') {
-                if(startMarker) map.removeLayer(startMarker);
-                startMarker = L.marker(center, {draggable: true}).addTo(map).bindPopup("<b>🏁 LINEA DI PARTENZA</b>").openPopup();
-            } else if(tipo === 'end' && !stessoPuntoPartenzaArrivo) {
-                if(endMarker) map.removeLayer(endMarker);
-                endMarker = L.marker(center, {draggable: true}).addTo(map).bindPopup("<b>🏁 LINEA DI ARRIVO</b>").openPopup();
-            }
-        }
-
-        function toggleVisualizzazionePeaksMappa(checked) {
-            mostraPeakMarkers = checked;
-            peakMarkersGroup.forEach(m => {
-                if(checked) m.addTo(map); else map.removeLayer(m);
-            });
-        }
-
-        function cambiaStatoBloccoMoto(stato) { 
-            let lockBtn = document.getElementById('btn-lock-ecu');
-            let unlockBtn = document.getElementById('btn-unlock-ecu');
-            
-            if(stato) {
-                lockBtn.classList.add('active-locked');
-                unlockBtn.classList.remove('active');
-            } else {
-                lockBtn.classList.remove('active-locked');
-                unlockBtn.classList.add('active');
-                if(alarmActive) disattivaAllarmeSirenaFineTempo(); 
-            }
-            inviaPacchettoCentralina({type: "ecu_state", status: stato ? "LOCKED" : "UNLOCKED"}); 
-        }
-
         function inviaDatoManuale(tipoComando, idInput) {
             const stringaValore = document.getElementById(idInput).value;
             if(stringaValore === "") return;
-            const valoreNumerico = parseFloat(stringaValore);
-            inviaPacchettoCentralina({ type: tipoComando, value: valoreNumerico });
+            inviaPacchettoCentralina({ type: tipoComando, value: parseFloat(stringaValore) });
             document.getElementById(idInput).value = ""; 
-        }
-
-        function salvaSessioneSuTelefono() {
-            let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sessionStats, null, 2));
-            let downloadAnchor = document.createElement('a');
-            downloadAnchor.setAttribute("href", dataStr);
-            downloadAnchor.setAttribute("download", "Telemetry_Report.json");
-            document.body.appendChild(downloadAnchor);
-            downloadAnchor.click();
-            downloadAnchor.remove();
         }
 
         async function azionePulsanteCentraleGate() {
             try {
                 const dispositivoWeb = await navigator.bluetooth.requestDevice({ 
-                    filters: [{ name: "ESP32S3_SHIFTER_ECU" }],
-                    optionalServices: [CENTRALINA_SERVICE_UUID]
+                    filters: [{ name: "ESP32S3_SHIFTER_ECU" }], optionalServices: [CENTRALINA_SERVICE_UUID]
                 });
                 webBleGattServer = await dispositivoWeb.gatt.connect();
                 const servizioWeb = await webBleGattServer.getPrimaryService(CENTRALINA_SERVICE_UUID);
                 webBleRxCharacteristic = await servizioWeb.getCharacteristic(CHAR_RX_UUID);
                 const txChar = await servizioWeb.getCharacteristic(CHAR_TX_UUID);
                 await txChar.startNotifications();
+                
                 txChar.addEventListener('characteristicvaluechanged', (evento) => {
-                    let str = new TextDecoder("utf-8").decode(evento.target.value.buffer);
+                    let str = new TextDecoder("utf-8").decode(evento.target.value);
                     try { smistaPacchettiDatiInIngresso(JSON.parse(str)); } catch(e){}
                 });
+                
                 bluetoothConnected = true;
                 document.getElementById('proximity-gate').style.display = 'none';
                 document.getElementById('disconnetti-rapido').style.display = 'block';
                 document.getElementById('signal-strength').innerText = "ONLINE - LINK STABILE";
-            } catch(e) { alert("Errore connessione: " + e.message); }
+            } catch(e) { alert("Errore Bluetooth: " + e.message); }
         }
 
         async function inviaPacchettoCentralina(oggettoScrittura) {
@@ -757,62 +646,25 @@
         function calibraAssiAzzeramento() { inviaPacchettoCentralina({type: "reset_axes"}); }
         
         function cambiaTab(id, b) { 
+            if(!b) return;
             document.querySelectorAll('.nav-item').forEach(x => x.classList.remove('active')); 
             b.classList.add('active'); 
             document.querySelectorAll('.sub-pane').forEach(x => x.style.display='none'); 
             document.getElementById('pane-'+id).style.display='block'; 
-            if(id==='telemetry'&&map) setTimeout(() => map.invalidateSize(), 200); 
-            
-            // Invia evento di navigazione alla centralina
-            inviaPacchettoCentralina({type: "ui_navigation_alert", tab: id});
+            localStorage.setItem('qs_last_tab', id); 
+            if(id==='telemetry'&&map) setTimeout(() => { map.invalidateSize(); }, 200); 
         }
         
         function cambiaBrandTema(b) { 
-            // Inietta la classe corretta e forza la sostituzione dello sfondo
             document.body.className = document.body.className.replace(/\bbrand-\S+/g, ''); 
             document.body.classList.add('brand-'+b); 
             localStorage.setItem('qs_brand_theme', b); 
-            emettiSuonoClick();
         }
         
         function openSidebar() { document.getElementById('sidebarMenu').classList.add('open'); document.getElementById('sidebarOverlay').style.display='block'; }
         function closeSidebar() { document.getElementById('sidebarMenu').classList.remove('open'); document.getElementById('sidebarOverlay').style.display='none'; }
         function aggiornaNomeMotoDinamico(v) { localStorage.setItem('qs_bike', v); document.getElementById('header-bike-display').innerText=v; }
-        function toggleVisionMode() { document.body.classList.toggle('light-mode'); emettiSuonoClick(); }
-        
-        function ruotaPopBang(b) { 
-            currentPopMode++; 
-            if(currentPopMode > 2) currentPopMode = 0; 
-            
-            let areaRegolazioni = document.getElementById('popSettingsArea');
-            
-            if(currentPopMode === 0) {
-                b.innerText = "💥 POP: OFF";
-                areaRegolazioni.style.display = "none";
-            } else if(currentPopMode === 1) {
-                b.innerText = "💥 MOD: POP 1 (SOFT)";
-                areaRegolazioni.style.display = "flex";
-            } else {
-                b.innerText = "💥 MOD: POP 2 (HARD)";
-                areaRegolazioni.style.display = "flex";
-            }
-            
-            inviaPacchettoCentralina({type: "scoppi", mode: currentPopMode}); 
-            inviaTempiFiniStacchiPop();
-        }
-
-        function inviaTempiFiniStacchiPop() {
-            let t1 = parseInt(document.getElementById('pop1Slider').value);
-            let t2 = parseInt(document.getElementById('pop2Slider').value);
-            
-            inviaPacchettoCentralina({
-                type: "config_pop_timings",
-                popModeActive: currentPopMode,
-                pop1Time: t1,
-                pop2Time: t2
-            });
-        }
-
+        function toggleVisionMode() { document.body.classList.toggle('light-mode'); aggiornaMappaStileLayer(); }
         function scollegaDispositivo() { location.reload(); }
 
         function avviaModalitaDemo() {
@@ -821,33 +673,14 @@
             document.getElementById('disconnetti-rapido').style.display = 'block';
             document.getElementById('signal-strength').innerText = "VIRTUAL ROAD SIMULATION";
             let a = 0;
-            let startLat = 39.3565; let startLng = 16.2263;
-
-            if(mostraPeakMarkers) {
-                let p1 = L.marker([39.3575, 16.2273]).addTo(map).bindPopup("🔥 Picco Velocità Massima: 142 km/h");
-                let p2 = L.marker([39.3560, 16.2255]).addTo(map).bindPopup("📐 Piega Massima Curva: 42°");
-                peakMarkersGroup.push(p1, p2);
-            }
-
-            setTimeout(() => {
-                attivaOEstendiAllarmeSirena();
-            }, 4000);
-
             demoLoopInterval = setInterval(() => {
                 a += 0.04;
-                let simLat = startLat + Math.sin(a) * 0.002;
-                let simLng = startLng + Math.cos(a) * 0.002;
-                registraNuovoPuntoGpsMappa(simLat, simLng);
-
-                let r = Math.floor(Math.abs(Math.sin(a)) * 8000 + 2000);
                 smistaPacchettiDatiInIngresso({
-                    rpm: r, speed: Math.floor(Math.abs(Math.sin(a))*120 + 10),
+                    rpm: Math.floor(Math.abs(Math.sin(a)) * 8000 + 2000), 
+                    speed: Math.floor(Math.abs(Math.sin(a))*120 + 10),
                     kmTot: 1240.5, kmTrip: 14.2, hTot: 34.2, hTrip: 1.1,
-                    contatore: 14, cutTime: 65, 
-                    pitch: Math.floor(Math.sin(a)*18), 
-                    roll: Math.floor(Math.cos(a)*35),  
-                    maxRpm: 10400, maxRoll: 42, maxPitch: 18, maxSpeed: 142,
-                    maxGAcc: 0.85, maxGFren: 1.12, maxGLat: 0.78
+                    contatore: 14, cutTime: 65, pitch: Math.floor(Math.sin(a)*15),
+                    almStatus: true, awStatus: true, audGenStatus: audioGeneraleVal
                 });
             }, 250);
         }
