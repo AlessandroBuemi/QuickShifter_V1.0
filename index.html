@@ -215,7 +215,6 @@
         </div>
     </div>
 
-    <!-- TAB PRINCIPALE: DASHBOARD -->
     <div id="pane-home" class="sub-pane">
         <div class="dashboard-arc-box">
             <div class="arc-contagiri"><div class="arc-fill" id="rpmBar"></div></div>
@@ -296,7 +295,6 @@
         </div>
     </div>
 
-    <!-- TAB: SETUP QUICK SHIFTER -->
     <div id="pane-shifter" class="sub-pane" style="display:none;">
         <div class="card">
             <div class="card-title">Mappatura Cut-off Tempi</div>
@@ -346,12 +344,10 @@
         </div>
     </div>
 
-    <!-- TAB: ASSISTENZA IMPENNATA (MODIFICATO CON AGGIUNTA DELLO SWITCH IN CIMA) -->
     <div id="pane-wheelie" class="sub-pane" style="display:none;">
         <div class="card">
             <div class="card-title">📐 Wheelie Assist Control</div>
             
-            <!-- NUOVO INTERRUTTORE DI ABILITAZIONE/DISABILITAZIONE ANTI-WHEELIE -->
             <div class="toggle-row-control">
                 <div class="toggle-row-info">
                     <div class="toggle-row-title">Sistema Anti-Wheelie</div>
@@ -388,9 +384,16 @@
         </div>
     </div>
 
-    <!-- TAB: TELEMETRIA -->
     <div id="pane-telemetry" class="sub-pane" style="display:none;">
+        <div class="card" style="margin-bottom: 14px; padding: 16px;">
+            <div class="preset-grid" style="margin-bottom:0;">
+                <button class="btn-action" id="btn-start-gps" onclick="startGpsTracking();" style="color:#ffffff; font-weight:800; background:rgba(239,68,68,0.15); border-color:rgba(239,68,68,0.3);">🔴 REC LIVE</button>
+                <button class="btn-action" id="btn-stop-gps" onclick="stopGpsTracking();" style="color:#ffffff; font-weight:800;">⏹️ STOP REC</button>
+            </div>
+        </div>
+
         <div id="map-container"></div>
+        
         <div class="card">
             <div class="card-title">Mappatura Circuito Gps</div>
             <div class="map-checkbox-row">
@@ -398,16 +401,23 @@
                 <label for="checkSamePoint">Circuito Chiuso</label>
             </div>
             <div class="preset-grid">
-                <button class="btn-action" onclick="fissaTraguardoMappa('start')" style="color:#00bc0d;">🚩 PARTENZA</button>
-                <button class="btn-action" id="btn-set-end" onclick="fissaTraguardoMappa('end')" style="color:#ef4444;">🏁 ARRIVO</button>
+                <button class="btn-action" onclick="fissaTraguardoMappa('start')" style="color:#00bc0d;">🚩 TRAGUARDO VIA</button>
+                <button class="btn-action" id="btn-set-end" onclick="fissaTraguardoMappa('end')" style="color:#ef4444;">🏁 TRAGUARDO FINE</button>
             </div>
         </div>
+        
         <div class="card">
             <div class="card-title">Live Track Peaks & Forze G</div>
             <div class="tel-grid" style="grid-template-columns: repeat(2, 1fr);">
                 <div class="tel-box"><div class="tel-num digital-num" id="trackMaxSpeed">0</div><div class="tel-lbl">Vel. Max km/h</div></div>
                 <div class="tel-box"><div class="tel-num digital-num" id="trackMaxRoll">0°</div><div class="tel-lbl">Piega Max</div></div>
             </div>
+            
+            <div id="zero-cento-container" style="background:var(--box-inner); padding:14px; border-radius:16px; border:1px solid var(--panel-border); margin-bottom:16px; text-align:center;">
+                <div style="font-size:9px; color:var(--text-muted); font-weight:800; text-transform:uppercase; letter-spacing:1px;">⏱️ TEST ACCELERAZIONE AUTO 0-100 KM/H</div>
+                <div id="lbl-zero-cento-live" class="digital-num" style="font-size:24px; color:var(--brand-color); margin-top:6px;">PRONTO AL LANCIO</div>
+            </div>
+
             <button class="btn-action" onclick="salvaSessioneSuTelefono()" style="width:100%; background:var(--brand-color); color:var(--text-on-brand);">💾 ESPORTA DATA REPORT (.JSON)</button>
         </div>
     </div>
@@ -435,6 +445,34 @@
         
         let audioGeneraleVal = true; 
 
+        // ==========================================
+        // STATO TELEMETRIA AVANZATA E ARCHIVIAZIONE
+        // ==========================================
+        let trackingAttivo = false;
+        let sessioneCorrente = {
+            nome: "",
+            punti: [], // Struttura: { lat, lng, speed, roll, pitch, rpm, timestamp }
+            tempoZeroCento: null,
+            velMax: 0,
+            piegaMax: 0
+        };
+
+        let cronometroZeroCentoAttivo = false;
+        let tempoInizioZeroCento = 0;
+        let testZeroCentoCompletato = false;
+        let databasePiste = JSON.parse(localStorage.getItem('qs_database_piste')) || [];
+
+        let traguardoPartenza = null; 
+        let traguardoArrivo = null;
+        let raggioRilevamentoTraguardo = 15; // Tolleranza di vicinanza in metri al traguardo
+
+        let datiIstantaneiESP32 = {
+            rpm: 0,
+            roll: 0,
+            pitch: 0,
+            speedEcu: 0
+        };
+
         document.addEventListener("DOMContentLoaded", () => {
             let nomeSalvato = localStorage.getItem('qs_bike') || "La Mia Moto";
             document.getElementById('bikeName').value = nomeSalvato;
@@ -455,8 +493,8 @@
             map = L.map('map-container', { zoomControl: false }).setView([39.3565, 16.2263], 16); 
             aggiornaMappaStileLayer();
             
-            trackPolyline = L.polyline([], {color: 'var(--brand-color)', weight: 5}).addTo(map);
-            userMarker = L.circleMarker([39.3565, 16.2263], {radius: 7, color: '#ffffff', fillColor: '#0046cd', fillOpacity: 1}).addTo(map);
+            trackPolyline = L.polyline([], {color: 'var(--brand-color)', weight: 6, opacity: 0.85}).addTo(map);
+            userMarker = L.circleMarker([39.3565, 16.2263], {radius: 7, color: '#ffffff', fillColor: '#0046cd', fillOpacity: 1, weight: 2}).addTo(map);
         });
 
         function aggiornaMappaStileLayer() {
@@ -473,10 +511,17 @@
             if(json.rpm !== undefined) { 
                 document.getElementById('rpmBar').style.width = (json.rpm / 12000) * 100 + '%'; 
                 document.getElementById('rpmNum').innerText = json.rpm; 
+                datiIstantaneiESP32.rpm = json.rpm;
             }
             if(json.contatore !== undefined) document.getElementById('cambiate').innerText = json.contatore;
             if(json.cutTime !== undefined) document.getElementById('lastCut').innerText = json.cutTime + "ms";
-            if(json.speed !== undefined) document.getElementById('speedNum').innerText = json.speed;
+            
+            if(json.speed !== undefined) {
+                document.getElementById('speedNum').innerText = json.speed;
+                datiIstantaneiESP32.speedEcu = json.speed;
+                gestisciTestAccelerazione(json.speed);
+            }
+            
             if(json.kmTot !== undefined) document.getElementById('odoTot').innerText = json.kmTot.toFixed(1);
             if(json.kmTrip !== undefined) document.getElementById('odoParz').innerText = json.kmTrip.toFixed(1);
             if(json.hTot !== undefined) document.getElementById('hoursTot').innerText = json.hTot.toFixed(1);
@@ -485,22 +530,22 @@
             if(json.pitch !== undefined) {
                 document.getElementById('livePitchNum').innerText = json.pitch + "°";
                 document.getElementById('wheelieDialBG').style.transform = `rotateX(${json.pitch}deg)`;
+                datiIstantaneiESP32.pitch = json.pitch;
             }
 
-            // Allineamento dello switch dell'antifurto
+            if(json.roll !== undefined) {
+                datiIstantaneiESP32.roll = Math.abs(json.roll);
+            }
+
             if(json.almStatus !== undefined) {
                 document.getElementById('chkSirenaAllarmeEsterna').checked = json.almStatus;
             }
 
-            // Sincronizzazione realtime dello switch Anti-Wheelie in base alla risposta dell'hardware
             if(json.awStatus !== undefined) {
                 document.getElementById('chkAntiWheelieAttivo').checked = json.awStatus;
                 let dialContainer = document.getElementById('wheelieDialBG');
-                if(!json.awStatus) {
-                    dialContainer.style.opacity = "0.25"; // Rende opaco l'indicatore grafico se disattivato
-                } else {
-                    dialContainer.style.opacity = "1";
-                }
+                if(!json.awStatus) dialContainer.style.opacity = "0.25";
+                else dialContainer.style.opacity = "1";
             }
 
             if(json.audGenStatus !== undefined) {
@@ -517,7 +562,155 @@
             }
         }
 
-        // --- INVIO DELLO SWITCH ANTI-WHEELIE ---
+        // ==========================================
+        // LOGICA LIVE GPS TRACKING
+        // ==========================================
+        let idWatchGps = null;
+
+        function startGpsTracking() {
+            if (!navigator.geolocation) {
+                alert("Il GPS non è supportato o abilitato sul tuo smartphone.");
+                return;
+            }
+
+            trackingAttivo = true;
+            sessioneCorrente.punti = [];
+            sessioneCorrente.velMax = 0;
+            sessioneCorrente.piegaMax = 0;
+            testZeroCentoCompletato = false;
+            trackPolyline.setLatLngs([]);
+            
+            document.getElementById('btn-start-gps').style.background = '#ef4444';
+            document.getElementById('btn-start-gps').innerText = "🔴 IN REGISTRAZIONE";
+
+            idWatchGps = navigator.geolocation.watchPosition(
+                (position) => {
+                    if (!trackingAttivo) return;
+
+                    const lat = position.coords.latitude;
+                    const lng = position.coords.longitude;
+                    
+                    // Priorità alla velocità calcolata dall'ESP32, altrimenti usa il sensore GPS
+                    const velocitaAttuale = (datiIstantaneiESP32.speedEcu > 0) ? datiIstantaneiESP32.speedEcu : (position.coords.speed * 3.6 || 0);
+                    const velocitaArrotondata = Math.round(velocitaAttuale);
+
+                    if (velocitaArrotondata > sessioneCorrente.velMax) {
+                        sessioneCorrente.velMax = velocitaArrotondata;
+                        document.getElementById('trackMaxSpeed').innerText = sessioneCorrente.velMax;
+                    }
+                    if (datiIstantaneiESP32.roll > sessioneCorrente.piegaMax) {
+                        sessioneCorrente.piegaMax = datiIstantaneiESP32.roll;
+                        document.getElementById('trackMaxRoll').innerText = sessioneCorrente.piegaMax + "°";
+                    }
+
+                    const puntoMappa = {
+                        lat: lat,
+                        lng: lng,
+                        speed: velocitaArrotondata,
+                        roll: datiIstantaneiESP32.roll,
+                        pitch: datiIstantaneiESP32.pitch,
+                        rpm: datiIstantaneiESP32.rpm,
+                        timestamp: Date.now()
+                    };
+
+                    sessioneCorrente.punti.push(puntoMappa);
+
+                    const nuovaCoordinata = [lat, lng];
+                    trackPolyline.addLatLng(nuovaCoordinata);
+                    userMarker.setLatLng(nuovaCoordinata);
+                    map.panTo(nuovaCoordinata);
+
+                    controllaPassaggioTraguardo(lat, lng);
+                },
+                (error) => { console.error("Rilevamento GPS fallito: ", error); },
+                { enableHighAccuracy: true, maximumAge: 0, timeout: 4000 }
+            );
+        }
+
+        function stopGpsTracking() {
+            if (idWatchGps) {
+                navigator.geolocation.clearWatch(idWatchGps);
+                trackingAttivo = false;
+                document.getElementById('btn-start-gps').style.background = 'var(--btn-static)';
+                document.getElementById('btn-start-gps').innerText = "🔴 REC LIVE";
+                alert(`Sessione interrotta.\nVelocità Max registrata: ${sessioneCorrente.velMax} km/h.\nPiega massima: ${sessioneCorrente.piegaMax}°.`);
+            }
+        }
+
+        // ==========================================
+        // SISTEMA DI TRAGUARDO E CIRCUITO CHIUSO
+        // ==========================================
+        function toggleStessoPuntoPartenzaArrivo(isChecked) {
+            stessoPuntoPartenzaArrivo = isChecked;
+            const btnArrivo = document.getElementById('btn-set-end');
+            if(isChecked) {
+                btnArrivo.style.opacity = "0.25";
+                btnArrivo.style.pointerEvents = "none";
+                if(traguardoPartenza) traguardoArrivo = traguardoPartenza;
+            } else {
+                btnArrivo.style.opacity = "1";
+                btnArrivo.style.pointerEvents = "auto";
+            }
+        }
+
+        function fissaTraguardoMappa(tipo) {
+            const posizioneAttuale = userMarker.getLatLng();
+            
+            if (tipo === 'start') {
+                traguardoPartenza = posizioneAttuale;
+                if(startMarker) map.removeLayer(startMarker);
+                startMarker = L.marker(posizioneAttuale, {title: "Partenza"}).addTo(map).bindPopup("🚩 Traguardo impostato qui!").openPopup();
+                if(stessoPuntoPartenzaArrivo) traguardoArrivo = traguardoPartenza;
+            } else if (tipo === 'end' && !stessoPuntoPartenzaArrivo) {
+                traguardoArrivo = posizioneAttuale;
+                if(endMarker) map.removeLayer(endMarker);
+                endMarker = L.marker(posizioneAttuale, {title: "Arrivo"}).addTo(map).bindPopup("🏁 Fine circuito impostata qui!").openPopup();
+            }
+        }
+
+        function controllaPassaggioTraguardo(lat, lng) {
+            if (!traguardoPartenza) return;
+            const distanzaVia = map.distance([lat, lng], traguardoPartenza);
+            
+            if (distanzaVia < raggioRilevamentoTraguardo) {
+                console.log("⏱️ Passaggio sul traguardo rilevato!");
+            }
+        }
+
+        // ==========================================
+        // AUTOMAZIONE CRONOMETRO 0-100 KM/H
+        // ==========================================
+        function gestisciTestAccelerazione(velocitaKmh) {
+            if (velocitaKmh === 0 && !cronometroZeroCentoAttivo && !testZeroCentoCompletato) {
+                cronometroZeroCentoAttivo = true;
+                tempoInizioZeroCento = window.performance.now();
+                document.getElementById('lbl-zero-cento-live').innerText = "READY... ACCELERA!";
+                document.getElementById('lbl-zero-cento-live').style.color = "#00bc0d";
+            }
+            
+            if (cronometroZeroCentoAttivo && velocitaKmh > 2 && !testZeroCentoCompletato) {
+                let tempoPassato = ((window.performance.now() - tempoInizioZeroCento) / 1000).toFixed(2);
+                document.getElementById('lbl-zero-cento-live').innerText = tempoPassato + "s";
+                document.getElementById('lbl-zero-cento-live').style.color = "var(--brand-color)";
+            }
+
+            if (velocitaKmh >= 100 && cronometroZeroCentoAttivo && !testZeroCentoCompletato) {
+                cronometroZeroCentoAttivo = false;
+                testZeroCentoCompletato = true;
+                let tempoFinale = ((window.performance.now() - tempoInizioZeroCento) / 1000).toFixed(2);
+                sessioneCorrente.tempoZeroCento = tempoFinale;
+                document.getElementById('lbl-zero-cento-live').innerText = `🔥 ${tempoFinale}s !`;
+                document.getElementById('lbl-zero-cento-live').style.color = "#00a0e9";
+            }
+
+            if (velocitaKmh < 4 && testZeroCentoCompletato) {
+                testZeroCentoCompletato = false;
+            }
+        }
+
+        // ==========================================
+        // STRUTTURE HARDWARE E PRESET ESISTENTI
+        // ==========================================
         function toggleAntiWheelieHardware(isChecked) {
             let dialContainer = document.getElementById('wheelieDialBG');
             dialContainer.style.opacity = isChecked ? "1" : "0.25";
@@ -667,6 +860,27 @@
         function toggleVisionMode() { document.body.classList.toggle('light-mode'); aggiornaMappaStileLayer(); }
         function scollegaDispositivo() { location.reload(); }
 
+        // ==========================================
+        // MODALITÀ ESPORTAZIONE DATA REPORT
+        // ==========================================
+        function salvaSessioneSuTelefono() {
+            if(sessioneCorrente.punti.length === 0) {
+                alert("Nessun dato di telemetria memorizzato. Avvia prima una sessione con 'REC LIVE'!");
+                return;
+            }
+            sessioneCorrente.nome = "TrackReport_" + new Date().toISOString().slice(0,19).replace(/:/g, '-');
+            databasePiste.push(sessioneCorrente);
+            localStorage.setItem('qs_database_piste', JSON.stringify(databasePiste));
+
+            const stringData = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sessioneCorrente, null, 2));
+            const downloadElement = document.createElement('a');
+            downloadElement.setAttribute("href", stringData);
+            downloadElement.setAttribute("download", `${sessioneCorrente.nome}.json`);
+            document.body.appendChild(downloadElement);
+            downloadElement.click();
+            downloadElement.remove();
+        }
+
         function avviaModalitaDemo() {
             isDemoMode = true;
             document.getElementById('proximity-gate').style.display = 'none';
@@ -675,13 +889,42 @@
             let a = 0;
             demoLoopInterval = setInterval(() => {
                 a += 0.04;
+                let randomRpm = Math.floor(Math.abs(Math.sin(a)) * 8000 + 2000);
+                let randomSpeed = Math.floor(Math.abs(Math.sin(a)) * 120 + 10);
+                let randomPitch = Math.floor(Math.sin(a) * 15);
+                let randomRoll = Math.floor(Math.cos(a) * 38);
+
                 smistaPacchettiDatiInIngresso({
-                    rpm: Math.floor(Math.abs(Math.sin(a)) * 8000 + 2000), 
-                    speed: Math.floor(Math.abs(Math.sin(a))*120 + 10),
+                    rpm: randomRpm, 
+                    speed: randomSpeed,
                     kmTot: 1240.5, kmTrip: 14.2, hTot: 34.2, hTrip: 1.1,
-                    contatore: 14, cutTime: 65, pitch: Math.floor(Math.sin(a)*15),
+                    contatore: 14, cutTime: 65, pitch: randomPitch, roll: randomRoll,
                     almStatus: true, awStatus: true, audGenStatus: audioGeneraleVal
                 });
+
+                if(trackingAttivo) {
+                    let centroMappa = userMarker.getLatLng();
+                    let simulazioneLat = centroMappa.lat + (Math.sin(a) * 0.0001);
+                    let simulazioneLng = centroMappa.lng + (Math.cos(a) * 0.0001);
+                    
+                    if (randomSpeed > sessioneCorrente.velMax) {
+                        sessioneCorrente.velMax = randomSpeed;
+                        document.getElementById('trackMaxSpeed').innerText = sessioneCorrente.velMax;
+                    }
+                    if (Math.abs(randomRoll) > sessioneCorrente.piegaMax) {
+                        sessioneCorrente.piegaMax = Math.abs(randomRoll);
+                        document.getElementById('trackMaxRoll').innerText = sessioneCorrente.piegaMax + "°";
+                    }
+
+                    sessioneCorrente.punti.push({
+                        lat: simulazioneLat, lng: simulazioneLng,
+                        speed: randomSpeed, roll: Math.abs(randomRoll), pitch: randomPitch, rpm: randomRpm,
+                        timestamp: Date.now()
+                    });
+
+                    trackPolyline.addLatLng([simulazioneLat, simulazioneLng]);
+                    userMarker.setLatLng([simulazioneLat, simulazioneLng]);
+                }
             }, 250);
         }
     </script>
