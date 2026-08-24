@@ -110,7 +110,19 @@
         .bottom-nav { position: fixed; bottom: 12px; left: 12px; right: 12px; display: grid; grid-template-columns: repeat(5, 1fr); padding: 12px 2px; z-index: 1000; border-radius: 24px; box-shadow: 0 10px 35px rgba(0,0,0,0.15); }
         .nav-item { background: transparent; border: none; color: var(--text-muted-on-panel); font-size: 9px; font-weight: 800; display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px; text-transform: uppercase; }
         .nav-item.active { color: var(--accent); background: rgba(255,255,255,0.12); border-radius: 14px; padding: 4px 0; }
-        #map-container { width: 100%; height: 220px; border-radius: 14px; margin-bottom: 15px; border: 1px solid var(--panel-border); z-index: 1; }
+        #map-container { width: 100%; height: 220px; border-radius: 14px; border: 1px solid var(--panel-border); z-index: 1; }
+        .map-wrap { position: relative; margin-bottom: 15px; }
+        .map-search-overlay { position: absolute; top: 10px; left: 10px; right: 10px; z-index: 500; display: flex; gap: 6px; }
+        .map-search-overlay input { flex: 1; min-width: 0; background: var(--box-bg); backdrop-filter: blur(8px); border: 1px solid var(--panel-border); border-radius: 10px; color: var(--text-on-panel); padding: 10px 12px; font-size: 12px; font-weight: 600; }
+        .map-search-overlay input::placeholder { color: var(--text-muted-on-panel); opacity: 0.8; }
+        .map-search-overlay button { background: var(--accent); color: var(--btn-active-text); border: none; border-radius: 10px; width: 40px; font-size: 15px; cursor: pointer; flex-shrink: 0; }
+        .map-search-results { position: absolute; top: 54px; left: 10px; right: 10px; z-index: 500; background: var(--panel); backdrop-filter: blur(12px); border: 1px solid var(--panel-border); border-radius: 12px; max-height: 180px; overflow-y: auto; }
+        .search-result-item { padding: 10px 12px; font-size: 11px; font-weight: 600; border-bottom: 1px solid var(--panel-border); cursor: pointer; color: var(--text-on-panel); }
+        .search-result-item:last-child { border-bottom: none; }
+        .search-result-item:active { background: var(--btn-bg); }
+        .map-fab-col { position: absolute; bottom: 10px; right: 10px; z-index: 500; display: flex; flex-direction: column; gap: 8px; }
+        .map-fab-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--panel); backdrop-filter: blur(10px); border: 1px solid var(--panel-border); color: var(--text-on-panel); font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
+        .map-fab-btn:active { transform: scale(0.92); }
         .odometer-panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .odo-block { background: var(--box-bg); border: 1px solid var(--panel-border); padding: 12px; border-radius: 12px; position: relative; }
         .odo-block-title { font-size: 8px; font-weight: 900; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; color: var(--text-muted-on-panel); }
@@ -324,6 +336,17 @@
 
     <div id="pane-shifter" class="sub-pane" style="display:none;">
         <div class="card">
+            <div class="card-title">⚙️ Tipo Alimentazione Motore</div>
+            <div class="preset-grid" style="margin-bottom: 10px;">
+                <button class="btn-action active" id="btn-mode-carb" onclick="inviaModalitaAlimentazione(false)">🔧 CARBURATORE</button>
+                <button class="btn-action" id="btn-mode-efi" onclick="inviaModalitaAlimentazione(true)">⚡ INIEZIONE (EFI)</button>
+            </div>
+            <div style="font-size:10px; opacity:0.65; text-align:center; line-height:1.5;">
+                Carburatore: il taglio avviene mandando a massa la candela/bobina.<br>
+                Iniezione (EFI): il taglio avviene interrompendo l'alimentazione positiva (rele' su contatto NC), come richiesto dalla maggior parte delle centraline a iniezione. Verifica il collegamento del modulo prima di cambiare modalità.
+            </div>
+        </div>
+        <div class="card">
             <div class="card-title">Mappatura Cut-off</div>
             <button class="btn-action" id="btn-dyn-map" onclick="toggleMappaDinamicaGiri()" style="width:100%; margin-bottom:15px;">📈 MAPPA CUT-OFF DINAMICA (RPM): DISATTIVATA</button>
             <label style="font-size:10px; font-weight:800; display:block; text-align:center; margin-bottom:6px;">PRESET DI TAGLIO RAPIDI:</label>
@@ -413,7 +436,18 @@
     </div>
 
     <div id="pane-telemetry" class="sub-pane" style="display:none;">
-        <div id="map-container"></div>
+        <div class="map-wrap">
+            <div id="map-container"></div>
+            <div class="map-search-overlay">
+                <input type="text" id="inputRicercaLuogo" placeholder="Cerca città, via, indirizzo..." onkeydown="if(event.key==='Enter'){event.preventDefault(); cercaLuogoSuMappa();}">
+                <button onclick="cercaLuogoSuMappa()">🔎</button>
+            </div>
+            <div id="risultatiRicercaLuogo" class="map-search-results" style="display:none;"></div>
+            <div class="map-fab-col">
+                <button class="map-fab-btn" onclick="ricentraMappaSuGPS()" title="Centra sulla mia posizione">🎯</button>
+                <button class="map-fab-btn" onclick="aggiungiSegnapostoSuMappa()" title="Aggiungi segnaposto">📍</button>
+            </div>
+        </div>
         <div class="card">
             <div class="card-title">🏁 Cronometro Giri</div>
             <div class="lap-hero">
@@ -529,6 +563,14 @@
         /* ============================== GESTIONE PISTE (satellite + curve) ============================== */
         const CORNER_RADIUS_METRI = 25; // raggio entro cui una curva viene "riconosciuta" durante il giro
         let mapDarkLayer = null, mapSatLayer = null, vistaSatelliteAttiva = false;
+
+        // Segnaposto personalizzati sulla mappa (persistenti su localStorage)
+        let segnapostiSalvati = JSON.parse(localStorage.getItem('qs_pins') || "[]");
+        let segnapostiMarkers = [];
+
+        // Ricerca luoghi (geocoding) e marker temporaneo del risultato scelto
+        let ultimiRisultatiRicerca = [];
+        let searchResultMarker = null;
         let pisteSalvate = JSON.parse(localStorage.getItem('qs_tracks') || "[]");
         let pistaAttivaId = localStorage.getItem('qs_active_track') || "";
         let modalitaCreazionePista = false;
@@ -590,6 +632,7 @@
             trackPolyline = L.polyline([], {color: getComputedStyle(document.body).getPropertyValue('--accent') || '#ff6600', weight: 5}).addTo(map);
             userMarker = L.circleMarker(map.getCenter(), {radius: 7, color: '#ffffff', fillColor: '#005bf6', fillOpacity: 1}).addTo(map);
             map.on('click', (e) => { if(modalitaCreazionePista) aggiungiPuntoCreazionePista(e.latlng); });
+            renderSegnaposti();
 
             aggiornaSelettorePiste();
             if(pistaAttivaId) caricaPista(pistaAttivaId);
@@ -764,6 +807,7 @@
             if(json.awStatus !== undefined) document.getElementById('toggleAntiWheelieActive').checked = json.awStatus;
             if(json.almStatus !== undefined) document.getElementById('toggleEnableMoveAlarm').checked = json.almStatus;
             if(json.audGenStatus !== undefined) document.getElementById('toggleSoundBeepChange').checked = json.audGenStatus;
+            if(json.efiMode !== undefined) aggiornaVistaModalitaAlimentazione(json.efiMode);
             if(json.locked !== undefined) aggiornaVistaBloccoMoto(json.locked);
             if(json.dynMap !== undefined) aggiornaVistaMappaDinamica(json.dynMap);
             if(json.popMode !== undefined) aggiornaVistaPopBang(!!json.popMode);
@@ -1175,6 +1219,65 @@
         }
         function fermaTracciamentoGPS() { if(geoWatchId !== null) { navigator.geolocation.clearWatch(geoWatchId); geoWatchId = null; } if(lapTickInterval) { clearInterval(lapTickInterval); lapTickInterval = null; } }
 
+        /* ============================== RICENTRAMENTO MAPPA SU GPS ============================== */
+        function ricentraMappaSuGPS() {
+            if(!userMarker || (!bluetoothConnected && !isDemoMode)) { toast("Nessuna posizione GPS disponibile", "error"); return; }
+            map.setView(userMarker.getLatLng(), Math.max(map.getZoom(), 16), { animate: true });
+        }
+
+        /* ============================== SEGNAPOSTO PERSONALIZZATI ============================== */
+        function renderSegnaposti() {
+            segnapostiMarkers.forEach(m => map.removeLayer(m)); segnapostiMarkers = [];
+            segnapostiSalvati.forEach(p => {
+                const m = L.marker([p.lat, p.lng]).addTo(map)
+                    .bindPopup(`<b>📍 ${p.nome}</b><br><button onclick="rimuoviSegnaposto('${p.id}')" style="margin-top:6px; background:#ff1e1e; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:11px; cursor:pointer;">Elimina</button>`);
+                segnapostiMarkers.push(m);
+            });
+        }
+        function aggiungiSegnapostoSuMappa() {
+            const punto = (userMarker && (bluetoothConnected || isDemoMode)) ? userMarker.getLatLng() : map.getCenter();
+            const nome = prompt("Nome del segnaposto:", "Punto " + (segnapostiSalvati.length + 1));
+            if(!nome) return;
+            segnapostiSalvati.push({ id: 'pin_' + Date.now(), nome, lat: punto.lat, lng: punto.lng });
+            localStorage.setItem('qs_pins', JSON.stringify(segnapostiSalvati));
+            renderSegnaposti();
+            toast("Segnaposto \"" + nome + "\" aggiunto 📍", "success");
+        }
+        function rimuoviSegnaposto(id) {
+            segnapostiSalvati = segnapostiSalvati.filter(p => p.id !== id);
+            localStorage.setItem('qs_pins', JSON.stringify(segnapostiSalvati));
+            renderSegnaposti();
+            toast("Segnaposto eliminato", "info");
+        }
+
+        /* ============================== RICERCA LUOGHI (geocoding OpenStreetMap/Nominatim) ============================== */
+        async function cercaLuogoSuMappa() {
+            const campo = document.getElementById('inputRicercaLuogo');
+            const query = campo.value.trim();
+            const box = document.getElementById('risultatiRicercaLuogo');
+            if(!query) return;
+            box.style.display = 'block';
+            box.innerHTML = '<div style="font-size:11px; opacity:0.6; padding:10px;">Ricerca in corso...</div>';
+            try {
+                const risposta = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=6&q=${encodeURIComponent(query)}`);
+                const dati = await risposta.json();
+                if(!dati.length) { box.innerHTML = '<div style="font-size:11px; opacity:0.6; padding:10px;">Nessun risultato trovato.</div>'; return; }
+                ultimiRisultatiRicerca = dati;
+                box.innerHTML = dati.map((r, i) => `<div class="search-result-item" onclick="selezionaRisultatoRicerca(${i})">${r.display_name}</div>`).join('');
+            } catch(e) {
+                box.innerHTML = '<div style="font-size:11px; opacity:0.6; padding:10px;">Ricerca non riuscita (serve connessione dati).</div>';
+            }
+        }
+        function selezionaRisultatoRicerca(indice) {
+            const r = ultimiRisultatiRicerca[indice]; if(!r) return;
+            const lat = parseFloat(r.lat), lng = parseFloat(r.lon);
+            map.setView([lat, lng], 16, { animate: true });
+            if(searchResultMarker) map.removeLayer(searchResultMarker);
+            searchResultMarker = L.marker([lat, lng]).addTo(map).bindPopup(r.display_name).openPopup();
+            document.getElementById('risultatiRicercaLuogo').style.display = 'none';
+            document.getElementById('inputRicercaLuogo').value = '';
+        }
+
         /* ============================== ECU LOCK / TOGGLES (protocollo corretto) ============================== */
         function aggiornaVistaBloccoMoto(stato) {
             let lockBtn = document.getElementById('btn-lock-ecu'); let unlockBtn = document.getElementById('btn-unlock-ecu');
@@ -1182,6 +1285,15 @@
             else { lockBtn.classList.remove('active-locked'); unlockBtn.classList.add('active'); }
         }
         function cambiaStatoBloccoMoto(stato) { aggiornaVistaBloccoMoto(stato); inviaPacchettoCentralina({type: "ecu_state", status: stato ? "LOCKED" : "UNLOCKED"}); }
+        function inviaModalitaAlimentazione(isEfi) {
+            inviaPacchettoCentralina({type: "set_power_mode", value: isEfi});
+            aggiornaVistaModalitaAlimentazione(isEfi);
+            toast(isEfi ? "Modalità INIEZIONE (EFI) attiva ⚡" : "Modalità CARBURATORE attiva 🔧", "success");
+        }
+        function aggiornaVistaModalitaAlimentazione(isEfi) {
+            document.getElementById('btn-mode-carb').classList.toggle('active', !isEfi);
+            document.getElementById('btn-mode-efi').classList.toggle('active', isEfi);
+        }
         function inviaToggleWheelieSystem(attivo) { inviaPacchettoCentralina({type: "toggle_wheelie_system", value: attivo}); }
         function inviaToggleAllarme(attivo) { inviaPacchettoCentralina({type: "toggle_alarm_system", value: attivo}); }
         function inviaToggleAudioGenerale(attivo) { inviaPacchettoCentralina({type: "toggle_general_audio", value: attivo}); }
