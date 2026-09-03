@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>QuickShifter Pro Dashboard v7.0</title>
+    <title>QuickShifter Pro Dashboard v8.0</title>
 
     <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Inter:wght@400;600;700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
@@ -38,8 +38,8 @@
         body { background-color: var(--bg-dark); background-image: var(--bg-gradient); background-attachment: fixed; color: var(--text-main); padding: 15px 15px 95px 15px; min-height: 100vh; display: flex; flex-direction: column; transition: background 0.3s ease, color 0.3s ease; }
         body:focus-within .btn-action:focus-visible, button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-        .header, .card, .bottom-nav, .sidebar { backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid var(--panel-border); border-radius: 18px; background: var(--panel); transition: all 0.3s; color: var(--text-on-panel); }
-        .header { border-left: 5px solid var(--accent); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .header, .card, .bottom-nav, .sidebar { backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid var(--panel-border); border-radius: 18px; background: var(--panel); transition: all 0.3s; color: var(--text-on-panel); }
+        .header { border-left: 3px solid var(--accent); padding: 12px 14px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
         .header-title { font-weight: 900; font-size: 15px; letter-spacing: -0.3px; }
         .header-sub-row { display:flex; align-items:center; gap:6px; margin-top: 3px; }
         .header-sub { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--text-muted-on-panel); }
@@ -67,19 +67,45 @@
         .btn-brand-select.current { background: var(--accent); color: var(--btn-active-text); border-color: var(--accent); }
         .sidebar-firmware-box { background: var(--box-bg); border: 1px solid var(--panel-border); border-radius: 10px; padding: 10px; font-size: 9px; color: var(--text-muted-on-panel); display:flex; justify-content:space-between; }
 
-        .dashboard-arc-box { border-radius: 20px; padding: 22px 20px; text-align: center; margin-bottom: 15px; box-shadow: 0 10px 30px var(--panel-glow); background: var(--panel); position: relative; overflow: hidden; }
-        .dashboard-arc-box.redline::after { content:""; position:absolute; inset:0; border-radius:20px; box-shadow: inset 0 0 40px rgba(255,30,30,0.55); animation: pulseGlow .35s infinite; pointer-events:none; }
-        .shift-light-row { display:flex; gap: 3px; margin-bottom: 10px; }
-        .shift-led { flex:1; height: 7px; border-radius: 3px; background: rgba(255,255,255,0.08); transition: background .06s, box-shadow .06s; }
-        .shift-led.lit-g { background:#00ff66; box-shadow:0 0 8px #00ff66; }
-        .shift-led.lit-y { background:#ffcc00; box-shadow:0 0 8px #ffcc00; }
-        .shift-led.lit-r { background:#ff1e1e; box-shadow:0 0 10px #ff1e1e; }
-        .arc-contagiri { width: 100%; height: 16px; background: rgba(0, 0, 0, 0.25); border: 1px solid var(--panel-border); border-radius: 30px; overflow: hidden; margin-bottom: 18px; }
+        .dashboard-arc-box { border-radius: 20px; padding: 20px 20px 18px; text-align: center; margin-bottom: 14px; box-shadow: 0 6px 18px var(--panel-glow); background: var(--panel); position: relative; overflow: hidden; }
+        .dashboard-arc-box.redline { box-shadow: 0 6px 18px var(--panel-glow), 0 0 0 2px rgba(255,30,30,.6); }
+        .shift-light-row { display:flex; gap: 2px; margin-bottom: 9px; }
+        .shift-led { flex:1; height: 4px; border-radius: 2px; background: rgba(255,255,255,0.08); transition: background .06s; }
+        .shift-led.lit-g { background:#00ff66; }
+        .shift-led.lit-y { background:#ffcc00; }
+        .shift-led.lit-r { background:#ff1e1e; box-shadow:0 0 6px #ff1e1e; }
+        .arc-contagiri { width: 100%; height: 10px; background: rgba(0, 0, 0, 0.25); border-radius: 30px; overflow: hidden; margin-bottom: 14px; }
         .arc-fill { width: 0%; height: 100%; background: linear-gradient(90deg, var(--accent), var(--accent-2)); transition: width 0.1s linear; border-radius: 30px; }
         .digital-num { font-family: 'Orbitron', sans-serif; }
-        .speed-heavy { font-size: 84px; font-weight: 900; line-height: 0.85; letter-spacing: -2px; }
-        .card { padding: 18px; margin-bottom: 15px; }
-        .card-title { font-size: 11px; letter-spacing: 1.5px; margin-bottom: 16px; text-transform: uppercase; font-weight: 800; border-bottom: 1px solid var(--panel-border); padding-bottom: 8px; color: var(--text-muted-on-panel); display:flex; justify-content:space-between; align-items:center; }
+        .speed-heavy { font-size: 76px; font-weight: 900; line-height: 0.85; letter-spacing: -2px; }
+        .card { padding: 16px; margin-bottom: 12px; }
+        .card-title { font-size: 10px; letter-spacing: 1.2px; margin-bottom: 12px; text-transform: uppercase; font-weight: 800; color: var(--text-muted-on-panel); display:flex; justify-content:space-between; align-items:center; }
+        .card-subnote { font-size: 9px; opacity: .65; margin-top: 8px; line-height: 1.4; }
+
+        /* --- Pulsanti pillola (azioni immediate in cima alla Dashboard) --- */
+        .pill-btn { display:flex; align-items:center; justify-content:center; gap:8px; width:100%; padding:15px; border-radius:16px; font-weight:900; font-size:13px; cursor:pointer; border:1px solid transparent; transition: transform .12s, background .2s, color .2s; margin-bottom: 12px; letter-spacing:.3px; }
+        .pill-btn:active { transform: scale(0.97); }
+        .pill-btn.pill-ok { background: rgba(0,255,102,0.12); color:#00ff66; border-color: rgba(0,255,102,0.3); }
+        .pill-btn.pill-danger { background: rgba(255,30,30,0.14); color:#ff3333; border-color: rgba(255,30,30,0.35); }
+
+        /* --- Righe "Comandi Rapidi": niente box-dentro-box, solo separatori sottili --- */
+        .qc-row { display:flex; align-items:center; justify-content:space-between; padding:11px 2px; border-bottom: 1px solid var(--panel-border); gap: 10px; }
+        .qc-row:last-child { border-bottom: none; padding-bottom: 2px; }
+        .qc-left { display:flex; align-items:center; gap:11px; min-width: 0; }
+        .qc-icon { font-size:16px; width:20px; text-align:center; flex-shrink:0; }
+        .qc-text { min-width: 0; }
+        .qc-label { font-size: 12px; font-weight: 700; display:block; }
+        .qc-sub { font-size: 9px; color: var(--text-muted-on-panel); margin-top: 2px; display:block; }
+        .qc-state-btn { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-on-panel); font-size: 9px; font-weight: 900; padding: 7px 12px; border-radius: 20px; cursor:pointer; flex-shrink:0; text-transform:uppercase; }
+        .qc-state-btn.state-warn { background: rgba(255,102,0,0.16); border-color: var(--accent); color: var(--accent); }
+        .qc-state-btn.state-danger { background: rgba(255,30,30,0.15); border-color:#ff1e1e; color:#ff1e1e; }
+
+        /* --- Griglia statistiche pulita (odometro) --- */
+        .stat-grid-2 { display:grid; grid-template-columns: 1fr 1fr; gap: 16px 10px; text-align:center; margin-bottom: 12px; }
+        .stat-label { font-size: 9px; font-weight: 700; text-transform: uppercase; color: var(--text-muted-on-panel); margin-bottom: 3px; }
+        .stat-val { font-family:'Orbitron',sans-serif; font-size: 21px; font-weight: 900; }
+        .stat-val.accent { color: var(--accent); }
+        .btn-ghost-sm { flex:1; background: var(--box-bg); border: 1px solid var(--panel-border); color: var(--text-on-panel); font-size: 9px; font-weight: 800; padding: 9px; border-radius: 10px; cursor: pointer; text-transform: uppercase; }
         .preset-grid { display: grid; grid-template-columns: repeat(2, 1fr); grid-gap: 12px; margin-bottom: 15px; }
         .btn-action { background: var(--btn-bg); border: 1px solid var(--panel-border); color: var(--text-on-panel); padding: 14px 10px; font-size: 11px; font-weight: 800; border-radius: 12px; cursor: pointer; text-align: center; transition: transform .1s, background .2s, border-color .2s, color .2s; }
         .btn-action:active { transform: scale(0.96); }
@@ -110,19 +136,7 @@
         .bottom-nav { position: fixed; bottom: 12px; left: 12px; right: 12px; display: grid; grid-template-columns: repeat(5, 1fr); padding: 12px 2px; z-index: 1000; border-radius: 24px; box-shadow: 0 10px 35px rgba(0,0,0,0.15); }
         .nav-item { background: transparent; border: none; color: var(--text-muted-on-panel); font-size: 9px; font-weight: 800; display: flex; flex-direction: column; align-items: center; cursor: pointer; gap: 4px; text-transform: uppercase; }
         .nav-item.active { color: var(--accent); background: rgba(255,255,255,0.12); border-radius: 14px; padding: 4px 0; }
-        #map-container { width: 100%; height: 220px; border-radius: 14px; border: 1px solid var(--panel-border); z-index: 1; }
-        .map-wrap { position: relative; margin-bottom: 15px; }
-        .map-search-overlay { position: absolute; top: 10px; left: 10px; right: 10px; z-index: 500; display: flex; gap: 6px; }
-        .map-search-overlay input { flex: 1; min-width: 0; background: var(--box-bg); backdrop-filter: blur(8px); border: 1px solid var(--panel-border); border-radius: 10px; color: var(--text-on-panel); padding: 10px 12px; font-size: 12px; font-weight: 600; }
-        .map-search-overlay input::placeholder { color: var(--text-muted-on-panel); opacity: 0.8; }
-        .map-search-overlay button { background: var(--accent); color: var(--btn-active-text); border: none; border-radius: 10px; width: 40px; font-size: 15px; cursor: pointer; flex-shrink: 0; }
-        .map-search-results { position: absolute; top: 54px; left: 10px; right: 10px; z-index: 500; background: var(--panel); backdrop-filter: blur(12px); border: 1px solid var(--panel-border); border-radius: 12px; max-height: 180px; overflow-y: auto; }
-        .search-result-item { padding: 10px 12px; font-size: 11px; font-weight: 600; border-bottom: 1px solid var(--panel-border); cursor: pointer; color: var(--text-on-panel); }
-        .search-result-item:last-child { border-bottom: none; }
-        .search-result-item:active { background: var(--btn-bg); }
-        .map-fab-col { position: absolute; bottom: 10px; right: 10px; z-index: 500; display: flex; flex-direction: column; gap: 8px; }
-        .map-fab-btn { width: 40px; height: 40px; border-radius: 50%; background: var(--panel); backdrop-filter: blur(10px); border: 1px solid var(--panel-border); color: var(--text-on-panel); font-size: 16px; display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.3); }
-        .map-fab-btn:active { transform: scale(0.92); }
+        #map-container { width: 100%; height: 220px; border-radius: 14px; margin-bottom: 15px; border: 1px solid var(--panel-border); z-index: 1; }
         .odometer-panel-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 15px; }
         .odo-block { background: var(--box-bg); border: 1px solid var(--panel-border); padding: 12px; border-radius: 12px; position: relative; }
         .odo-block-title { font-size: 8px; font-weight: 900; text-transform: uppercase; margin-bottom: 6px; letter-spacing: 0.5px; color: var(--text-muted-on-panel); }
@@ -147,29 +161,10 @@
         .maint-progress-fill.warn { background: #ffaa00; }
         .maint-progress-fill.danger { background: #ff1e1e; animation: pulseGlow 1.5s infinite; }
         .maint-footer-row { display: flex; justify-content: space-between; align-items: center; margin-top: 6px; font-size: 10px; }
-        .maint-item.maint-disattivo { opacity: 0.45; }
-        .maint-item.maint-disattivo .maint-progress-bar { display: none; }
-        .track-select-row { display:flex; gap:6px; margin-bottom:10px; }
-        .track-select-row select { flex:1; background: var(--box-bg); color: var(--text-on-panel); border:1px solid var(--panel-border); border-radius:8px; padding:8px; font-size:11px; }
-        .corner-tag { background: rgba(255,255,255,0.08); border:1px solid var(--panel-border); border-radius:8px; padding:6px 8px; font-size:10px; display:flex; justify-content:space-between; align-items:center; margin-bottom:4px; }
-        .corner-tag button { background:none; border:none; color:#ff416c; font-weight:900; cursor:pointer; font-size:12px; }
-        .lap-history-item { display:flex; justify-content:space-between; align-items:center; font-size:11px; padding:8px 10px; border-bottom:1px solid var(--panel-border); }
-        .lap-history-item:last-child { border-bottom:none; }
-        .lap-history-item .lh-time { font-family:'Orbitron',sans-serif; font-weight:800; }
-        .lap-history-item .lh-best { color:#00ff66 !important; }
-        .lap-history-corners { font-size:9px; color: var(--text-muted-on-panel); margin-top:2px; }
-        .dyn-map-wrap { color: var(--text-on-panel); }
-        .dyn-map-svg-box { width:100%; touch-action:none; border-radius:12px; background: rgba(0,0,0,0.15); border:1px solid var(--panel-border); }
-        .dyn-map-svg-box .dm-punto { fill: var(--accent); stroke:#fff; stroke-width:1.5; cursor:grab; }
-        .dyn-map-svg-box .dm-punto:active { cursor:grabbing; }
-        .dyn-map-svg-box .dm-linea { fill:none; stroke: var(--accent); stroke-width:2.5; }
-        .dyn-map-svg-box .dm-griglia { stroke: currentColor; opacity:0.12; }
-        .dyn-map-svg-box .dm-testo { fill: currentColor; opacity:0.55; font-size:6.5px; font-family:'Inter',sans-serif; }
-        .dyn-map-svg-box .dm-elimina { fill:#ff416c; font-size:9px; font-weight:900; cursor:pointer; }
-        .dyn-map-live-readout { text-align:center; font-family:'Orbitron',sans-serif; font-size:12px; font-weight:800; color: var(--accent); min-height:16px; margin-top:6px; }
-        .dyn-map-hint { font-size:9px; color: var(--text-muted-on-panel); text-align:center; margin-top:4px; }
-        .dyn-map-actions { display:flex; gap:8px; margin-top:10px; }
         .btn-reset-maint { background: var(--accent); border: none; color: var(--btn-active-text); font-size: 9px; padding: 5px 10px; border-radius: 6px; font-weight: 900; cursor: pointer; }
+        .maint-item.disabled { opacity: .45; }
+        .maint-elapsed-row { display: flex; align-items: center; gap: 6px; margin-top: 8px; padding-top: 8px; border-top: 1px dashed var(--panel-border); }
+        .switch.mini { transform: scale(0.78); transform-origin: right center; }
         @keyframes pulseGlow { 0% { opacity: 0.6; } 50% { opacity: 1; } 100% { opacity: 0.6; } }
 
         /* --- Orizzonte artificiale Wheelie (sostituisce il vecchio rotateX distorto) --- */
@@ -222,7 +217,7 @@
     <div id="proximity-gate">
         <div class="auth-card">
             <div class="auth-logo">QS//PRO</div>
-            <h2 style="font-size:15px; font-weight:900; margin-bottom:5px;">TRACK LOG SYSTEM v7.0</h2>
+            <h2 style="font-size:15px; font-weight:900; margin-bottom:5px;">TRACK LOG SYSTEM v8.0</h2>
             <p style="font-size:11px; opacity:.85;">Sincronizza l'ECU della moto e attiva la telemetria.</p>
             <button class="btn-connect-hardware" onclick="azionePulsanteCentraleGate()">🤝 CONNETTI DISPOSITIVO</button>
             <button onclick="avviaModalitaDemo()" class="btn-demo-link">Demo Simulation</button>
@@ -275,45 +270,54 @@
     </div>
 
     <div id="pane-home" class="sub-pane">
+        <button class="pill-btn pill-ok" id="btn-lock-toggle" onclick="toggleBloccoMoto()">🔓 MOTO ATTIVA — TOCCA PER BLOCCARE</button>
+
         <div class="dashboard-arc-box" id="rpmArcBox">
             <div class="shift-light-row" id="shiftLightRow"></div>
             <div class="arc-contagiri"><div class="arc-fill" id="rpmBar"></div></div>
-            <div style="display:flex; justify-content:space-between; margin-top:-14px; margin-bottom:15px; font-size:11px; font-weight:800;">
-                <span>RPM</span>
-                <span id="rpmNum" class="digital-num" style="font-weight:900; font-size:14px;">--</span>
+            <div style="display:flex; justify-content:space-between; margin-top:-10px; margin-bottom:12px; font-size:10px; font-weight:800; opacity:.8;">
+                <span>RPM <span id="rpmNum" class="digital-num" style="font-weight:900; opacity:1;">--</span></span>
                 <span>11.5k LIMIT</span>
             </div>
             <div class="speed-heavy digital-num" id="speedNum">--</div>
-            <div style="font-size:11px; font-weight:800; letter-spacing:3px; margin-top:8px;">KM/H SATELLITARI</div>
+            <div style="font-size:10px; font-weight:800; letter-spacing:2px; margin-top:6px; opacity:.75;">KM/H SATELLITARI</div>
         </div>
 
-        <div class="odometer-panel-grid">
-            <div class="odo-block">
-                <div class="odo-block-title">📊 DISTANZA (KM)</div>
-                <div class="odo-split"><span>Totale:</span><span class="val-total" id="odoTot">0.0</span></div>
-                <div class="odo-split"><span>Trip:</span><span class="val-trip" id="odoParz">0.0</span></div>
-                <button class="btn-reset-trip" onclick="resetContatoreOdo('km_trip');">RESET TRIP</button>
+        <div class="card">
+            <div class="card-title">⚡ Comandi Rapidi</div>
+            <div class="qc-row">
+                <div class="qc-left"><span class="qc-icon">⚙️</span><div class="qc-text"><span class="qc-label">Cambio Elettronico</span><span class="qc-sub" id="qsEnabledSubtitle">Attivo: taglia il motore ad ogni cambiata</span></div></div>
+                <label class="switch"><input type="checkbox" id="toggleQuickshifterEnabled" checked onchange="inviaToggleQuickshifter(this.checked)"><span class="slider-switch"></span></label>
             </div>
-            <div class="odo-block">
-                <div class="odo-block-title">⏳ TEMPO MOTORE</div>
-                <div class="odo-split"><span>Totale h:</span><span class="val-total" id="hoursTot">0.0</span></div>
-                <div class="odo-split"><span>Trip h:</span><span class="val-trip" id="hoursParz" style="color:#00ff66 !important;">0.0</span></div>
-                <button class="btn-reset-trip" onclick="resetContatoreOdo('hours_trip');">RESET TRIP</button>
+            <div class="qc-row">
+                <div class="qc-left"><span class="qc-icon">🛡️</span><div class="qc-text"><span class="qc-label">Anti-Impennata (WAC)</span></div></div>
+                <label class="switch"><input type="checkbox" id="toggleAntiWheelieActive" checked onchange="inviaToggleWheelieSystem(this.checked)"><span class="slider-switch"></span></label>
+            </div>
+            <div class="qc-row">
+                <div class="qc-left"><span class="qc-icon">🔔</span><div class="qc-text"><span class="qc-label">Allarme se Moto Mossa</span></div></div>
+                <label class="switch"><input type="checkbox" id="toggleEnableMoveAlarm" checked onchange="inviaToggleAllarme(this.checked)"><span class="slider-switch"></span></label>
+            </div>
+            <div class="qc-row">
+                <div class="qc-left"><span class="qc-icon">📈</span><div class="qc-text"><span class="qc-label">Mappa Cut-off Dinamica</span></div></div>
+                <label class="switch"><input type="checkbox" id="toggleDynMap" onchange="inviaToggleDynMap(this.checked)"><span class="slider-switch"></span></label>
+            </div>
+            <div class="qc-row">
+                <div class="qc-left"><span class="qc-icon">💥</span><div class="qc-text"><span class="qc-label">Pop & Bang</span></div></div>
+                <button class="qc-state-btn popbang-btn" onclick="togglePopBangState()">OFF</button>
             </div>
         </div>
 
         <div class="card">
-            <div class="card-title">🔒 Gestione Sicurezza ed ECU</div>
-            <div class="preset-grid" style="margin-bottom: 12px;">
-                <button class="btn-action" id="btn-lock-ecu" onclick="cambiaStatoBloccoMoto(true)">🔒 CHIAVE LOCK</button>
-                <button class="btn-action active" id="btn-unlock-ecu" onclick="cambiaStatoBloccoMoto(false)">🔓 CHIAVE UNLOCK</button>
+            <div class="card-title">Distanza & Tempo Motore</div>
+            <div class="stat-grid-2">
+                <div><div class="stat-label">Km Totali</div><div class="stat-val" id="odoTot">0.0</div></div>
+                <div><div class="stat-label">Km Trip</div><div class="stat-val accent" id="odoParz">0.0</div></div>
+                <div><div class="stat-label">Ore Totali</div><div class="stat-val" id="hoursTot">0.0</div></div>
+                <div><div class="stat-label">Ore Trip</div><div class="stat-val accent" id="hoursParz">0.0</div></div>
             </div>
-            <div class="toggle-row">
-                <span class="toggle-label">🔊 Attiva Allarme se la Moto viene Mossa</span>
-                <label class="switch">
-                    <input type="checkbox" id="toggleEnableMoveAlarm" checked onchange="inviaToggleAllarme(this.checked)">
-                    <span class="slider-switch"></span>
-                </label>
+            <div style="display:flex; gap:8px;">
+                <button class="btn-ghost-sm" onclick="resetContatoreOdo('km_trip')">Reset Km Trip</button>
+                <button class="btn-ghost-sm" onclick="resetContatoreOdo('hours_trip')">Reset Ore Trip</button>
             </div>
         </div>
     </div>
@@ -336,19 +340,8 @@
 
     <div id="pane-shifter" class="sub-pane" style="display:none;">
         <div class="card">
-            <div class="card-title">⚙️ Tipo Alimentazione Motore</div>
-            <div class="preset-grid" style="margin-bottom: 10px;">
-                <button class="btn-action active" id="btn-mode-carb" onclick="inviaModalitaAlimentazione(false)">🔧 CARBURATORE</button>
-                <button class="btn-action" id="btn-mode-efi" onclick="inviaModalitaAlimentazione(true)">⚡ INIEZIONE (EFI)</button>
-            </div>
-            <div style="font-size:10px; opacity:0.65; text-align:center; line-height:1.5;">
-                Carburatore: il taglio avviene mandando a massa la candela/bobina.<br>
-                Iniezione (EFI): il taglio avviene interrompendo l'alimentazione positiva (rele' su contatto NC), come richiesto dalla maggior parte delle centraline a iniezione. Verifica il collegamento del modulo prima di cambiare modalità.
-            </div>
-        </div>
-        <div class="card">
             <div class="card-title">Mappatura Cut-off</div>
-            <button class="btn-action" id="btn-dyn-map" onclick="toggleMappaDinamicaGiri()" style="width:100%; margin-bottom:15px;">📈 MAPPA CUT-OFF DINAMICA (RPM): DISATTIVATA</button>
+            <div class="card-subnote" style="margin-top:0; margin-bottom:14px;">📈 La mappa dinamica RPM si attiva/disattiva dalla Dashboard (Comandi Rapidi).</div>
             <label style="font-size:10px; font-weight:800; display:block; text-align:center; margin-bottom:6px;">PRESET DI TAGLIO RAPIDI:</label>
             <div class="preset-grid" style="grid-template-columns: repeat(3, 1fr); margin-bottom:15px;">
                 <button class="btn-action" onclick="impostaPresetCutoffRapido(55)">55 ms</button>
@@ -359,39 +352,29 @@
                 <input type="range" id="slider" min="30" max="100" value="75" oninput="document.getElementById('liveVal').innerText=this.value" onchange="inviaValoreTimingDiretto(this.value)">
                 <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; margin-top:10px;"><span>FINE TUNING MANUALE:</span><span><span id="liveVal" class="digital-num">75</span> ms</span></div>
             </div>
-            <div id="dyn-map-editor-container" class="dyn-map-wrap" style="margin-top:14px; opacity:0.4; pointer-events:none;">
-                <label style="font-size:10px; font-weight:800; display:block; text-align:center; margin-bottom:8px;">CURVA MAPPA DINAMICA (RPM ↔ ms):</label>
-                <svg id="dynMapSvg" class="dyn-map-svg-box" viewBox="0 0 300 180"></svg>
-                <div class="dyn-map-live-readout" id="dynMapLiveReadout"></div>
-                <div class="dyn-map-hint">Trascina un punto per spostarlo · doppio tap sulla curva per aggiungerne uno · tocca la ✖ per eliminarlo</div>
-                <div class="dyn-map-actions">
-                    <button class="btn-action" style="width:100%;" onclick="resetMappaDinamicaDefault()">↺ RIPRISTINA DEFAULT</button>
-                </div>
+            <div style="display:flex; align-items:center; justify-content:space-between; margin-top:15px; margin-bottom:10px; background: var(--box-bg); border:1px solid var(--panel-border); border-radius:12px; padding:12px 14px;">
+                <span style="font-size:12px; font-weight:800;">💥 Modalità Pop & Bang</span>
+                <button class="qc-state-btn popbang-btn" onclick="togglePopBangState()">OFF</button>
             </div>
-            <div class="preset-grid" style="margin-top:15px; margin-bottom:10px;"><button class="btn-action" id="btn-pop" onclick="togglePopBangState()" style="width:100%; grid-column: span 2;">💥 POP & BANG: DISATTIVATO</button></div>
             <div id="popbang-sliders-group" style="display:none; margin-top:15px;">
                 <div class="slider-container">
-                    <input type="range" id="sliderPopDelay" min="15" max="150" value="45" oninput="document.getElementById('livePopDelay').innerText=this.value" onchange="inviaDatoPopSlider('set_pop_delay', this.value)">
-                    <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; margin-top:10px;"><span>ATTESA PRIMA DELLO SCOPPIO:</span><span><span id="livePopDelay" class="digital-num">45</span> ms</span></div>
+                    <input type="range" id="sliderPopDelay" min="15" max="80" value="40" oninput="document.getElementById('livePopDelay').innerText=this.value" onchange="inviaDatoPopSlider('set_pop_delay', this.value)">
+                    <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; margin-top:10px;"><span>PAUSA PRIMA DELLO SCOPPIO:</span><span><span id="livePopDelay" class="digital-num">40</span> ms</span></div>
                 </div>
                 <div class="slider-container">
                     <input type="range" id="sliderPopIntensity" min="15" max="80" value="40" oninput="document.getElementById('livePopIntensity').innerText=this.value" onchange="inviaDatoPopSlider('set_pop_intensity', this.value)">
-                    <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; margin-top:10px;"><span>DURATA SCOPPIO:</span><span><span id="livePopIntensity" class="digital-num">40</span> ms</span></div>
+                    <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; margin-top:10px;"><span>DURATA TAGLIO SCOPPIO:</span><span><span id="livePopIntensity" class="digital-num">40</span> ms</span></div>
+                    <div style="font-size:9px; opacity:.7; margin-top:6px; line-height:1.4;">Il 1° taglio è sempre quello normale del cambio. Questi due slider regolano solo la pausa e il taglio dello scoppio successivo.</div>
                 </div>
             </div>
         </div>
         <div class="card">
-            <div class="card-title">🚀 Launch Control</div>
-            <div class="toggle-row" style="margin-bottom: 15px;">
-                <span class="toggle-label" style="font-size: 12px; color: var(--accent) !important;">🚀 ARMA LAUNCH CONTROL</span>
-                <label class="switch"><input type="checkbox" id="toggleLaunchArm" onchange="inviaToggleLaunchControl(this.checked)"><span class="slider-switch"></span></label>
+            <div class="card-title">Delay Minimo Tra Due Cambiate</div>
+            <div class="slider-container">
+                <input type="range" id="sliderMinShiftGap" min="100" max="500" step="10" value="180" oninput="document.getElementById('liveMinShiftGap').innerText=this.value" onchange="inviaMinDelayCambiate(this.value)">
+                <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; margin-top:10px;"><span>TEMPO MINIMO DI ATTESA:</span><span><span id="liveMinShiftGap" class="digital-num">180</span> ms</span></div>
             </div>
-            <div class="slider-container" style="margin-bottom:10px;">
-                <input type="range" id="sliderLaunchRpm" min="3000" max="11000" step="100" value="8000" oninput="document.getElementById('liveLaunchRpm').innerText=this.value" onchange="inviaTargetRpmLaunch(this.value)">
-                <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; margin-top:10px;"><span>REGIME TARGET:</span><span><span id="liveLaunchRpm" class="digital-num">8000</span> rpm</span></div>
-            </div>
-            <div class="lap-status-pill" id="launchStatusPill" style="width:100%; text-align:center; box-sizing:border-box;">DISARMATO</div>
-            <div style="font-size:10px; opacity:0.6; margin-top:8px; text-align:center;">Arma con moto ferma, frizione tirata e gas a fondo. Si disattiva da solo appena rilevata la partenza reale.</div>
+            <div style="font-size:9px; opacity:.7; margin-top:2px; line-height:1.4;">Se cambi troppo velocemente, una seconda pressione entro questo tempo viene ignorata. Alzalo se senti "doppi tagli" involontari, abbassalo se cambi molto rapido in pista.</div>
         </div>
         <div class="card">
             <div class="card-title">Analisi Shifter</div>
@@ -405,11 +388,8 @@
 
     <div id="pane-wheelie" class="sub-pane" style="display:none;">
         <div class="card">
-            <div class="card-title">Wheelie Assist Control</div>
-            <div class="toggle-row" style="margin-bottom: 15px;">
-                <span class="toggle-label" style="font-size: 12px; color: var(--accent) !important;">🛡️ SISTEMA ANTI-IMPENNATA (WAC)</span>
-                <label class="switch"><input type="checkbox" id="toggleAntiWheelieActive" checked onchange="inviaToggleWheelieSystem(this.checked)"><span class="slider-switch"></span></label>
-            </div>
+            <div class="card-title">Wheelie Assist Control <span class="lap-status-pill" id="imuStatusBadge" style="margin:0;">IMU: N/D</span></div>
+            <div class="card-subnote" style="margin-top:0; margin-bottom:14px;">🛡️ Il sistema Anti-Impennata si attiva/disattiva dalla Dashboard (Comandi Rapidi). Qui regoli solo l'angolo di intervento.</div>
             <div class="wheelie-container">
                 <div class="horizon-clip" id="horizonClip">
                     <div class="horizon-sky" id="horizonSky"></div>
@@ -427,27 +407,12 @@
                 <input type="range" id="wheelieSlider" min="10" max="90" value="30" oninput="document.getElementById('liveWheelieTarget').innerText=this.value" onchange="inviaLimiteImpennataCentralina(this.value)">
                 <div style="display:flex; justify-content:space-between; font-size:10px; font-weight:700; margin-top:10px;"><span>REGOLAZIONE DI FINE:</span><span style="color:#ff3333 !important;"><span id="liveWheelieTarget" class="digital-num">30</span>°</span></div>
             </div>
-            <div class="preset-grid" style="grid-template-columns: repeat(2, 1fr); margin-bottom:10px;">
-                <button class="btn-action state-info" onclick="calibraAssiAzzeramento()">🎯 AZZERA ASSI</button>
-                <button class="btn-action" onclick="ruotaOrientamentoImu()">🔄 RUOTA ASSI 90°</button>
-            </div>
-            <div class="lap-status-pill" id="imuStatusPill" style="width:100%; text-align:center; box-sizing:border-box;">SENSORE IMU: --</div>
+            <button class="btn-action state-info" onclick="calibraAssiAzzeramento()" style="width:100%;">🎯 CALIBRA AZZERAMENTO ASSI</button>
         </div>
     </div>
 
     <div id="pane-telemetry" class="sub-pane" style="display:none;">
-        <div class="map-wrap">
-            <div id="map-container"></div>
-            <div class="map-search-overlay">
-                <input type="text" id="inputRicercaLuogo" placeholder="Cerca città, via, indirizzo..." onkeydown="if(event.key==='Enter'){event.preventDefault(); cercaLuogoSuMappa();}">
-                <button onclick="cercaLuogoSuMappa()">🔎</button>
-            </div>
-            <div id="risultatiRicercaLuogo" class="map-search-results" style="display:none;"></div>
-            <div class="map-fab-col">
-                <button class="map-fab-btn" onclick="ricentraMappaSuGPS()" title="Centra sulla mia posizione">🎯</button>
-                <button class="map-fab-btn" onclick="aggiungiSegnapostoSuMappa()" title="Aggiungi segnaposto">📍</button>
-            </div>
-        </div>
+        <div id="map-container"></div>
         <div class="card">
             <div class="card-title">🏁 Cronometro Giri</div>
             <div class="lap-hero">
@@ -462,33 +427,11 @@
         </div>
         <div class="card">
             <div class="card-title">Setup Mappatura Circuito</div>
-            <div class="track-select-row">
-                <select id="selectPista" onchange="caricaPista(this.value)">
-                    <option value="">-- Nessuna pista caricata --</option>
-                </select>
-                <button class="btn-action state-danger" style="width:auto; padding:0 12px;" onclick="eliminaPistaAttiva()">🗑️</button>
-            </div>
-            <button class="btn-action" id="btn-satellite" onclick="toggleVistaSatellite()" style="width:100%; margin-bottom:12px;">🛰️ VISTA SATELLITE: OFF</button>
-
             <div class="map-checkbox-row"><input type="checkbox" id="checkSamePoint" onchange="toggleStessoPuntoPartenzaArrivo(this.checked)"><label for="checkSamePoint">Inizio / Arrivo nello stesso punto (Anello)</label></div>
             <div class="preset-grid" style="margin-bottom: 5px;">
                 <button class="btn-action state-ok" onclick="fissaTraguardoMappa('start')">🚩 FISSA PARTENZA</button>
                 <button class="btn-action state-danger" id="btn-set-end" onclick="fissaTraguardoMappa('end')">🏁 FISSA ARRIVO</button>
             </div>
-
-            <button class="btn-action" id="btn-crea-pista" onclick="toggleModalitaCreazionePista()" style="width:100%; margin-top:10px;">✏️ CREA NUOVA PISTA (tocca la mappa)</button>
-            <div id="crea-pista-box" style="display:none; margin-top:10px;">
-                <div style="font-size:10px; color:var(--text-muted-on-panel); margin-bottom:8px;">Il 1° punto toccato è la Partenza, ogni tocco successivo aggiunge una Curva da monitorare (piega/velocità).</div>
-                <div id="lista-curve-in-costruzione"></div>
-                <div class="preset-grid" style="grid-template-columns: repeat(2, 1fr); margin-top:8px;">
-                    <button class="btn-action state-ok" onclick="salvaPistaCreata()">💾 SALVA PISTA</button>
-                    <button class="btn-action state-danger" onclick="annullaCreazionePista()">✖ ANNULLA</button>
-                </div>
-            </div>
-        </div>
-        <div class="card">
-            <div class="card-title">🏆 Storico Tempi Pista</div>
-            <div id="lista-storico-giri"><div style="font-size:11px; opacity:0.6; padding:8px;">Nessuna pista caricata.</div></div>
         </div>
         <div class="card">
             <div class="card-title">G-Meter Live</div>
@@ -500,11 +443,6 @@
                     <div class="gmeter-dot" id="gmeterDot"></div>
                 </div>
                 <div class="gmeter-lbl-set"><span>◀ Frenata</span><span>Accel. ▶</span></div>
-            </div>
-            <div class="tel-grid" style="grid-template-columns: repeat(3, 1fr); margin-top:10px;">
-                <div class="tel-box"><div class="tel-num digital-num" id="liveGLong" style="color:#00ff66 !important;">0.00g</div><div class="tel-lbl">G Long.</div></div>
-                <div class="tel-box"><div class="tel-num digital-num" id="liveGLat">0.00g</div><div class="tel-lbl">G Piega</div></div>
-                <div class="tel-box"><div class="tel-num digital-num" id="imuStatusMini">--</div><div class="tel-lbl">IMU</div></div>
             </div>
         </div>
         <div class="card">
@@ -538,47 +476,12 @@
 
         let webBleGattServer = null; let webBleRxCharacteristic = null;
         let bluetoothConnected = false; let isDemoMode = false; let demoLoopInterval = null;
-        let currentPopMode = false; let mappaDinamicaAttiva = false;
+        let currentPopMode = 0; let mappaDinamicaAttiva = false; let bloccoMotoAttivo = false;
         let map = null; let trackPolyline = null; let userMarker = null;
         let startMarker = null; let endMarker = null;
         let stessoPuntoPartenzaArrivo = false;
         let statoSincronizzatoDaECU = false;
         let geoWatchId = null; let demoGpsAngle = 0;
-
-        // Cache ultimo roll ricevuto (serve per l'analisi piega in curva)
-        let ultimoRollRicevuto = 0;
-
-        /* ============================== MAPPA CUT-OFF DINAMICA (editor grafico) ============================== */
-        const DM_RPM_MAX = 12000;        // scala massima asse RPM del grafico
-        const DM_CUTOFF_MIN = 20, DM_CUTOFF_MAX = 110; // scala asse ms del grafico
-        const DM_VB_W = 300, DM_VB_H = 180; // deve combaciare col viewBox dell'SVG
-        const DM_MARGIN_L = 26, DM_MARGIN_R = 8, DM_MARGIN_T = 8, DM_MARGIN_B = 20;
-        const DM_PLOT_W = DM_VB_W - DM_MARGIN_L - DM_MARGIN_R;
-        const DM_PLOT_H = DM_VB_H - DM_MARGIN_T - DM_MARGIN_B;
-        const MAPPA_DINAMICA_DEFAULT = [ {r:1500,c:80}, {r:4000,c:75}, {r:6500,c:65}, {r:9000,c:55}, {r:11500,c:50} ];
-        let mappaCutoffPunti = JSON.parse(localStorage.getItem('qs_dyn_map') || JSON.stringify(MAPPA_DINAMICA_DEFAULT));
-        let puntoInTrascinamentoIndex = -1;
-        let debounceInvioMappaDinamica = null;
-
-        /* ============================== GESTIONE PISTE (satellite + curve) ============================== */
-        const CORNER_RADIUS_METRI = 25; // raggio entro cui una curva viene "riconosciuta" durante il giro
-        let mapDarkLayer = null, mapSatLayer = null, vistaSatelliteAttiva = false;
-
-        // Segnaposto personalizzati sulla mappa (persistenti su localStorage)
-        let segnapostiSalvati = JSON.parse(localStorage.getItem('qs_pins') || "[]");
-        let segnapostiMarkers = [];
-
-        // Ricerca luoghi (geocoding) e marker temporaneo del risultato scelto
-        let ultimiRisultatiRicerca = [];
-        let searchResultMarker = null;
-        let pisteSalvate = JSON.parse(localStorage.getItem('qs_tracks') || "[]");
-        let pistaAttivaId = localStorage.getItem('qs_active_track') || "";
-        let modalitaCreazionePista = false;
-        let puntiPistaInCostruzione = []; // punti temporanei durante la creazione
-        let markerCreazionePista = []; // marker leaflet temporanei
-        let cornerMarkers = []; // marker leaflet delle curve della pista attiva caricata
-        let datiCurveGiroCorrente = {}; // {indiceCurva: {maxRoll, maxSpeed, inZona}}
-        let velMaxGiroCorrente = 0;
 
         // Cronometro giri
         let lapState = 'idle'; // idle | running
@@ -596,12 +499,12 @@
         let centralinaDati = { km_total: 124.5, km_trip: 12.4, hours_total: 45.2, hours_trip: 2.1 };
 
         let pianoManutenzione = [
-            { id: "filtro", nome: "Pulizia Filtro Aria", tipo: "hours", intervallo: 10, lastDone: 40.0, attivo: true },
-            { id: "olio", nome: "Cambio Olio Motore", tipo: "hours", intervallo: 15, lastDone: 35.0, attivo: true },
-            { id: "pistone", nome: "Sostituzione Pistone", tipo: "hours", intervallo: 40, lastDone: 0.0, attivo: true },
-            { id: "biella", nome: "Ispezione/Cambio Biella", tipo: "hours", intervallo: 80, lastDone: 0.0, attivo: true },
-            { id: "candela", nome: "Sostituzione Candela", tipo: "hours", intervallo: 20, lastDone: 35.0, attivo: true },
-            { id: "forcelle", nome: "Revisione Olio Forcelle", tipo: "km", intervallo: 1000, lastDone: 0.0, attivo: true }
+            { id: "filtro", nome: "Pulizia Filtro Aria", tipo: "hours", intervallo: 10, lastDone: 40.0, enabled: true },
+            { id: "olio", nome: "Cambio Olio Motore", tipo: "hours", intervallo: 15, lastDone: 35.0, enabled: true },
+            { id: "pistone", nome: "Sostituzione Pistone", tipo: "hours", intervallo: 40, lastDone: 0.0, enabled: true },
+            { id: "biella", nome: "Ispezione/Cambio Biella", tipo: "hours", intervallo: 80, lastDone: 0.0, enabled: true },
+            { id: "candela", nome: "Sostituzione Candela", tipo: "hours", intervallo: 20, lastDone: 35.0, enabled: true },
+            { id: "forcelle", nome: "Revisione Olio Forcelle", tipo: "km", intervallo: 1000, lastDone: 0.0, enabled: true }
         ];
 
         let sessionStats = { maxSpeed: 0, maxRoll: 0, maxPitch: 0, maxRpm: 0, maxGAcc: 0, maxGFren: 0, telemetriaPunti: [] };
@@ -611,31 +514,15 @@
             document.getElementById('bikeName').value = nomeSalvato;
             document.getElementById('header-bike-display').innerText = nomeSalvato;
             cambiaBrandTema(localStorage.getItem('qs_brand_theme') || "ktm");
-            if(localStorage.getItem('qs_maint_data')) {
-                pianoManutenzione = JSON.parse(localStorage.getItem('qs_maint_data'));
-                // Migrazione: voci salvate da versioni precedenti non avevano il campo "attivo"
-                pianoManutenzione.forEach(item => { if(item.attivo === undefined) item.attivo = true; });
-            }
+            if(localStorage.getItem('qs_maint_data')) { pianoManutenzione = JSON.parse(localStorage.getItem('qs_maint_data')).map(it => ({ enabled: true, ...it })); }
             costruisciShiftLight();
             aggiornaGraficaOmetriSchermo();
             costruisciInterfacciaManutenzione();
-            disegnaMappaDinamicaSVG();
-            const dynSvg = document.getElementById('dynMapSvg');
-            dynSvg.addEventListener('pointermove', gestisciTrascinamentoMappaDinamica);
-            dynSvg.addEventListener('pointerup', terminaTrascinamentoMappaDinamica);
-            dynSvg.addEventListener('pointercancel', terminaTrascinamentoMappaDinamica);
-            dynSvg.addEventListener('pointerdown', gestisciPointerDownMappaDinamica);
 
             map = L.map('map-container', { zoomControl: false }).setView([39.3565, 16.2263], 16);
-            mapDarkLayer = L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap &copy; CARTO' }).addTo(map);
-            mapSatLayer = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', { attribution: 'Tiles &copy; Esri' });
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}.png', { attribution: '&copy; OpenStreetMap &copy; CARTO' }).addTo(map);
             trackPolyline = L.polyline([], {color: getComputedStyle(document.body).getPropertyValue('--accent') || '#ff6600', weight: 5}).addTo(map);
             userMarker = L.circleMarker(map.getCenter(), {radius: 7, color: '#ffffff', fillColor: '#005bf6', fillOpacity: 1}).addTo(map);
-            map.on('click', (e) => { if(modalitaCreazionePista) aggiungiPuntoCreazionePista(e.latlng); });
-            renderSegnaposti();
-
-            aggiornaSelettorePiste();
-            if(pistaAttivaId) caricaPista(pistaAttivaId);
         });
 
         /* ============================== UTILITY: TOAST ============================== */
@@ -675,41 +562,44 @@
             pianoManutenzione.forEach((item, index) => {
                 let unita = item.tipo === "hours" ? "h" : "Km";
                 let valoreAttualeRiferimento = item.tipo === "hours" ? centralinaDati.hours_total : centralinaDati.km_total;
-                let fatteDallUltimoIntervento = Math.max(0, valoreAttualeRiferimento - item.lastDone);
+                let fatteDallUltimoIntervento = valoreAttualeRiferimento - item.lastDone;
                 let percentualeLavoro = Math.max(0, Math.min((fatteDallUltimoIntervento / item.intervallo) * 100, 100));
-                let classeStatoBarra = ""; if (percentualeLavoro >= 90) { classeStatoBarra = "danger"; } else if (percentualeLavoro >= 75) { classeStatoBarra = "warn"; }
-                let div = document.createElement('div'); div.className = "maint-item" + (item.attivo ? "" : " maint-disattivo");
+                let classeStatoBarra = ""; if (item.enabled && percentualeLavoro >= 90) { classeStatoBarra = "danger"; } else if (item.enabled && percentualeLavoro >= 75) { classeStatoBarra = "warn"; }
+                let div = document.createElement('div'); div.className = "maint-item" + (item.enabled ? "" : " disabled");
                 div.innerHTML = `
                     <div class="maint-header-row">
                         <span class="maint-name">${item.nome}</span>
-                        <label class="switch" style="transform:scale(0.75); margin-left:8px;" title="Attiva/disattiva monitoraggio">
-                            <input type="checkbox" ${item.attivo ? "checked" : ""} onchange="toggleAttivoManutenzione(${index}, this.checked)">
-                            <span class="slider-switch"></span>
-                        </label>
-                        <span class="maint-deadline digital-num">${item.attivo ? (fatteDallUltimoIntervento.toFixed(1) + " / " + item.intervallo + unita) : "OFF"}</span>
+                        <div style="display:flex; align-items:center; gap:8px;">
+                            <span class="maint-deadline digital-num">${item.enabled ? (fatteDallUltimoIntervento.toFixed(1) + ' / ' + item.intervallo + unita) : 'OFF'}</span>
+                            <label class="switch mini"><input type="checkbox" ${item.enabled ? 'checked' : ''} onchange="toggleMonitoraggioManutenzione(${index}, this.checked)"><span class="slider-switch"></span></label>
+                        </div>
                     </div>
-                    <div class="maint-progress-bar"><div class="maint-progress-fill ${item.attivo ? classeStatoBarra : ''}" style="width: ${item.attivo ? percentualeLavoro : 0}%"></div></div>
-                    <div class="maint-footer-row" style="flex-wrap:wrap; gap:6px;">
+                    <div class="maint-progress-bar"><div class="maint-progress-fill ${classeStatoBarra}" style="width: ${item.enabled ? percentualeLavoro : 0}%"></div></div>
+                    <div class="maint-footer-row">
                         <span class="maint-label" style="font-size:9px;">Ogni: <input type="number" value="${item.intervallo}" style="width:45px; background:rgba(0,0,0,0.2); color:#fff; border:1px solid var(--panel-border); text-align:center; border-radius:4px;" onchange="modificaSogliaIntervalloManutenzione(${index}, this.value)"> ${unita}</span>
-                        <span class="maint-label" style="font-size:9px;">Già fatte: <input type="number" step="0.1" value="${fatteDallUltimoIntervento.toFixed(1)}" style="width:50px; background:rgba(0,0,0,0.2); color:#fff; border:1px solid var(--panel-border); text-align:center; border-radius:4px;" onchange="modificaOreFatteManutenzione(${index}, this.value)"> ${unita}</span>
                         <button class="btn-reset-maint" onclick="eseguiResetManutenzione(${index})">🔄 REGISTRA INTERVENTO</button>
+                    </div>
+                    <div class="maint-elapsed-row">
+                        <span style="font-size:9px; font-weight:800; color: var(--text-muted-on-panel);">Già fatte:</span>
+                        <input type="number" placeholder="es. 15" id="elapsed-input-${index}" style="width:55px; background:rgba(0,0,0,0.2); color:#fff; border:1px solid var(--panel-border); text-align:center; border-radius:4px; font-size:10px; padding:3px;">
+                        <span style="font-size:9px; color: var(--text-muted-on-panel);">${unita}</span>
+                        <button class="btn-reset-maint" style="background:var(--btn-bg); color:var(--text-on-panel); border:1px solid var(--panel-border);" onclick="impostaEseguiteManualmente(${index})">SET</button>
                     </div>`;
                 container.appendChild(div);
             });
         }
-        function toggleAttivoManutenzione(index, checked) { pianoManutenzione[index].attivo = checked; salvaStatoManutenzioneSuStorage(); costruisciInterfacciaManutenzione(); toast((checked ? "Monitoraggio attivato: " : "Monitoraggio disattivato: ") + pianoManutenzione[index].nome, checked ? "success" : "info"); }
         function modificaSogliaIntervalloManutenzione(index, nuovoValore) { let val = parseFloat(nuovoValore); if(isNaN(val) || val <= 0) return; pianoManutenzione[index].intervallo = val; salvaStatoManutenzioneSuStorage(); costruisciInterfacciaManutenzione(); }
-        // Permette di impostare direttamente quante ore/km ha GIA' fatto un singolo componente
-        // (es. un pistone montato 100h fa su una moto usata), senza dover passare per il reset.
-        function modificaOreFatteManutenzione(index, nuovoValore) {
-            let fatte = parseFloat(nuovoValore); if(isNaN(fatte) || fatte < 0) return;
-            let target = pianoManutenzione[index];
-            let valoreAttualeRiferimento = target.tipo === "hours" ? centralinaDati.hours_total : centralinaDati.km_total;
-            target.lastDone = valoreAttualeRiferimento - fatte;
-            salvaStatoManutenzioneSuStorage(); costruisciInterfacciaManutenzione();
-            toast(target.nome + ": ore/km già fatte aggiornate", "success");
-        }
         function eseguiResetManutenzione(index) { let target = pianoManutenzione[index]; target.lastDone = target.tipo === "hours" ? centralinaDati.hours_total : centralinaDati.km_total; salvaStatoManutenzioneSuStorage(); costruisciInterfacciaManutenzione(); toast(target.nome + " registrato ✅", "success"); }
+        function toggleMonitoraggioManutenzione(index, checked) { pianoManutenzione[index].enabled = checked; salvaStatoManutenzioneSuStorage(); costruisciInterfacciaManutenzione(); toast(pianoManutenzione[index].nome + (checked ? " riattivato" : " disattivato"), checked ? "success" : null); }
+        function impostaEseguiteManualmente(index) {
+            const input = document.getElementById('elapsed-input-' + index); const stringaValore = input.value; if(stringaValore === "") return;
+            const giaFatte = parseFloat(stringaValore); if(isNaN(giaFatte) || giaFatte < 0) return;
+            const item = pianoManutenzione[index];
+            const valoreAttualeRiferimento = item.tipo === "hours" ? centralinaDati.hours_total : centralinaDati.km_total;
+            item.lastDone = valoreAttualeRiferimento - giaFatte;
+            input.value = ""; salvaStatoManutenzioneSuStorage(); costruisciInterfacciaManutenzione();
+            toast(item.nome + ": impostate " + giaFatte + " " + (item.tipo === "hours" ? "h" : "Km") + " già fatte", "success");
+        }
         function salvaStatoManutenzioneSuStorage() { localStorage.setItem('qs_maint_data', JSON.stringify(pianoManutenzione)); }
         function aggiornaGraficaOmetriSchermo() { if(document.getElementById('odoTot')) { document.getElementById('odoTot').innerText = centralinaDati.km_total.toFixed(1); document.getElementById('odoParz').innerText = centralinaDati.km_trip.toFixed(1); document.getElementById('hoursTot').innerText = centralinaDati.hours_total.toFixed(1); document.getElementById('hoursParz').innerText = centralinaDati.hours_trip.toFixed(1); } }
 
@@ -761,22 +651,15 @@
                 document.getElementById('livePitchNum').innerText = json.pitch + "°";
                 aggiornaOrizzonteArtificiale(json.pitch, json.roll || 0);
             }
-            if(json.roll !== undefined) { ultimoRollRicevuto = json.roll; if(document.getElementById('liveRollNum')) document.getElementById('liveRollNum').innerText = "roll " + json.roll + "°"; }
-
-            // Tabella della mappa cut-off dinamica: arriva in un pacchetto BLE dedicato
-            // (dopo una modifica dall'app, o su richiesta esplicita dopo la connessione)
-            if(json.dynTbl !== undefined && Array.isArray(json.dynTbl) && json.dynTbl.length >= 2) {
-                mappaCutoffPunti = json.dynTbl.map(p => ({ r: p.r, c: p.c })).sort((a, b) => a.r - b.r);
-                localStorage.setItem('qs_dyn_map', JSON.stringify(mappaCutoffPunti));
-                disegnaMappaDinamicaSVG();
-            }
+            if(json.roll !== undefined && document.getElementById('liveRollNum')) document.getElementById('liveRollNum').innerText = "roll " + json.roll + "°";
 
             if(json.gX !== undefined && json.gY !== undefined) aggiornaGMeter(json.gX, json.gY);
 
-            if(json.imuOk !== undefined) aggiornaStatoImu(json.imuOk);
-
-            if(json.launchArmed !== undefined) aggiornaStatoLaunch(json.launchArmed, json.launchTarget);
-            if(json.launchReleased !== undefined && json.launchReleased) toast("Launch Control: partenza rilevata 🚀", "success");
+            if(json.imuOk !== undefined) {
+                const badge = document.getElementById('imuStatusBadge');
+                if(json.imuOk) { badge.innerText = "IMU: OK"; badge.classList.add('running'); }
+                else { badge.innerText = "IMU: NON RILEVATO"; badge.classList.remove('running'); badge.style.color = '#ff1e1e'; badge.style.borderColor = '#ff1e1e'; }
+            }
 
             if(json.maxRoll !== undefined && document.getElementById('trackMaxRoll')) { document.getElementById('trackMaxRoll').innerText = json.maxRoll + "°"; sessionStats.maxRoll = json.maxRoll; }
             if(json.maxSpeed !== undefined && document.getElementById('trackMaxSpeed')) { document.getElementById('trackMaxSpeed').innerText = json.maxSpeed; sessionStats.maxSpeed = json.maxSpeed; }
@@ -807,17 +690,18 @@
             if(json.awStatus !== undefined) document.getElementById('toggleAntiWheelieActive').checked = json.awStatus;
             if(json.almStatus !== undefined) document.getElementById('toggleEnableMoveAlarm').checked = json.almStatus;
             if(json.audGenStatus !== undefined) document.getElementById('toggleSoundBeepChange').checked = json.audGenStatus;
-            if(json.efiMode !== undefined) aggiornaVistaModalitaAlimentazione(json.efiMode);
             if(json.locked !== undefined) aggiornaVistaBloccoMoto(json.locked);
             if(json.dynMap !== undefined) aggiornaVistaMappaDinamica(json.dynMap);
-            if(json.popMode !== undefined) aggiornaVistaPopBang(!!json.popMode);
+            if(json.popMode !== undefined) aggiornaVistaPopBang(json.popMode);
             if(json.cutoffSet !== undefined) { document.getElementById('slider').value = json.cutoffSet; document.getElementById('liveVal').innerText = json.cutoffSet; }
             if(json.wheelieLimit !== undefined) { document.getElementById('wheelieSlider').value = json.wheelieLimit; document.getElementById('liveWheelieTarget').innerText = json.wheelieLimit; }
             if(json.popDelay1 !== undefined) { document.getElementById('sliderPopDelay').value = json.popDelay1; document.getElementById('livePopDelay').innerText = json.popDelay1; }
             if(json.popDelay2 !== undefined) { document.getElementById('sliderPopIntensity').value = json.popDelay2; document.getElementById('livePopIntensity').innerText = json.popDelay2; }
-            if(json.launchArmed !== undefined) { document.getElementById('toggleLaunchArm').checked = json.launchArmed; aggiornaStatoLaunch(json.launchArmed, json.launchTarget); }
-            if(json.launchTarget !== undefined) { document.getElementById('sliderLaunchRpm').value = json.launchTarget; document.getElementById('liveLaunchRpm').innerText = json.launchTarget; }
-            if(json.imuOk !== undefined) aggiornaStatoImu(json.imuOk);
+            if(json.minShiftGap !== undefined) { document.getElementById('sliderMinShiftGap').value = json.minShiftGap; document.getElementById('liveMinShiftGap').innerText = json.minShiftGap; }
+            if(json.qsEnabled !== undefined) {
+                document.getElementById('toggleQuickshifterEnabled').checked = json.qsEnabled;
+                document.getElementById('qsEnabledSubtitle').innerText = json.qsEnabled ? "Attivo: taglia il motore ad ogni cambiata" : "Disattivato: puoi guidare col cambio manuale normale";
+            }
         }
 
         /* ============================== ORIZZONTE ARTIFICIALE (WHEELIE) ============================== */
@@ -838,30 +722,6 @@
             const y = Math.max(-1.4, Math.min(1.4, -gx)) * scala;
             dot.style.left = `calc(50% + ${x}px)`;
             dot.style.top = `calc(50% + ${y}px)`;
-            if(document.getElementById('liveGLong')) document.getElementById('liveGLong').innerText = (gx >= 0 ? "+" : "") + gx.toFixed(2) + "g";
-            if(document.getElementById('liveGLat')) document.getElementById('liveGLat').innerText = Math.abs(gy).toFixed(2) + "g";
-        }
-
-        /* ============================== STATO SENSORE IMU ============================== */
-        function aggiornaStatoImu(ok) {
-            const pill = document.getElementById('imuStatusPill');
-            if(pill) { pill.innerText = ok ? "SENSORE IMU: OK" : "SENSORE IMU: NON RILEVATO"; pill.classList.toggle('state-danger', !ok); }
-            const mini = document.getElementById('imuStatusMini');
-            if(mini) mini.innerText = ok ? "OK" : "N/D";
-        }
-        function ruotaOrientamentoImu() { inviaPacchettoCentralina({type: "cicla_orientamento"}); toast("Orientamento assi ruotato di 90°", "success"); }
-
-        /* ============================== LAUNCH CONTROL ============================== */
-        function inviaToggleLaunchControl(attivo) { inviaPacchettoCentralina({type: "launch_arm", value: attivo}); }
-        function inviaTargetRpmLaunch(rpm) { inviaPacchettoCentralina({type: "launch_set_rpm", value: parseInt(rpm)}); }
-        function aggiornaStatoLaunch(armato, target) {
-            const pill = document.getElementById('launchStatusPill');
-            const toggle = document.getElementById('toggleLaunchArm');
-            if(toggle) toggle.checked = !!armato;
-            if(pill) {
-                pill.innerText = armato ? ("ARMATO — TARGET " + (target !== undefined ? target : document.getElementById('sliderLaunchRpm').value) + " RPM") : "DISARMATO";
-                pill.classList.toggle('state-ok', !!armato);
-            }
         }
 
         /* ============================== SHIFTER / CUTOFF ============================== */
@@ -869,135 +729,27 @@
 
         function aggiornaVistaMappaDinamica(attiva) {
             mappaDinamicaAttiva = attiva;
-            let btn = document.getElementById('btn-dyn-map'); let sliderContainer = document.getElementById('manual-slider-container'); let editorContainer = document.getElementById('dyn-map-editor-container');
-            btn.classList.remove('state-ok');
-            if (attiva) {
-                btn.innerText = "📈 MAPPA CUT-OFF DINAMICA (RPM): ATTIVA"; btn.classList.add('state-ok');
-                sliderContainer.style.opacity = "0.4"; sliderContainer.style.pointerEvents = "none";
-                editorContainer.style.opacity = "1"; editorContainer.style.pointerEvents = "auto";
-            } else {
-                btn.innerText = "📈 MAPPA CUT-OFF DINAMICA (RPM): DISATTIVATA";
-                sliderContainer.style.opacity = "1"; sliderContainer.style.pointerEvents = "auto";
-                editorContainer.style.opacity = "0.4"; editorContainer.style.pointerEvents = "none";
-            }
+            const chk = document.getElementById('toggleDynMap'); if(chk) chk.checked = attiva;
+            const sliderContainer = document.getElementById('manual-slider-container');
+            if (attiva) { sliderContainer.style.opacity = "0.4"; sliderContainer.style.pointerEvents = "none"; }
+            else { sliderContainer.style.opacity = "1"; sliderContainer.style.pointerEvents = "auto"; }
         }
-        function toggleMappaDinamicaGiri() { aggiornaVistaMappaDinamica(!mappaDinamicaAttiva); inviaPacchettoCentralina({type: "toggle_dyn_map", value: mappaDinamicaAttiva}); }
+        function inviaToggleDynMap(attiva) { aggiornaVistaMappaDinamica(attiva); inviaPacchettoCentralina({type: "toggle_dyn_map", value: attiva}); }
 
-        function aggiornaVistaPopBang(attivo) {
-            currentPopMode = !!attivo;
-            const btn = document.getElementById('btn-pop'); const groupSliders = document.getElementById('popbang-sliders-group');
-            btn.classList.remove('state-warn', 'state-danger');
-            if (currentPopMode) { btn.innerText = "💥 POP & BANG: ATTIVO"; btn.classList.add('state-danger'); groupSliders.style.display = "block"; }
-            else { btn.innerText = "💥 POP & BANG: DISATTIVATO"; groupSliders.style.display = "none"; }
-        }
-        function togglePopBangState() { const nuovoStato = !currentPopMode; aggiornaVistaPopBang(nuovoStato); inviaPacchettoCentralina({type: "scoppi", value: nuovoStato ? 1 : 0}); }
-        function inviaDatoPopSlider(tipoSld, val) { inviaPacchettoCentralina({type: tipoSld, value: parseInt(val)}); }
-
-        /* ============================== MAPPA CUT-OFF DINAMICA: EDITOR GRAFICO ============================== */
-        function dmRpmToX(rpm) { return DM_MARGIN_L + (Math.max(0, Math.min(DM_RPM_MAX, rpm)) / DM_RPM_MAX) * DM_PLOT_W; }
-        function dmXToRpm(x) { return Math.max(0, Math.min(DM_RPM_MAX, ((x - DM_MARGIN_L) / DM_PLOT_W) * DM_RPM_MAX)); }
-        function dmCutoffToY(c) { const t = (c - DM_CUTOFF_MIN) / (DM_CUTOFF_MAX - DM_CUTOFF_MIN); return DM_MARGIN_T + (1 - t) * DM_PLOT_H; }
-        function dmYToCutoff(y) { const t = 1 - ((y - DM_MARGIN_T) / DM_PLOT_H); return Math.max(DM_CUTOFF_MIN, Math.min(DM_CUTOFF_MAX, DM_CUTOFF_MIN + t * (DM_CUTOFF_MAX - DM_CUTOFF_MIN))); }
-
-        function disegnaMappaDinamicaSVG() {
-            const svg = document.getElementById('dynMapSvg'); if(!svg) return;
-            let html = "";
-            // Griglia verticale (RPM) ogni 2000
-            for (let r = 0; r <= DM_RPM_MAX; r += 2000) {
-                const x = dmRpmToX(r);
-                html += `<line class="dm-griglia" x1="${x}" y1="${DM_MARGIN_T}" x2="${x}" y2="${DM_MARGIN_T + DM_PLOT_H}"></line>`;
-                html += `<text class="dm-testo" x="${x}" y="${DM_VB_H - 6}" text-anchor="middle">${r/1000}k</text>`;
-            }
-            // Griglia orizzontale (ms) ogni 20
-            for (let c = DM_CUTOFF_MIN; c <= DM_CUTOFF_MAX; c += 20) {
-                const y = dmCutoffToY(c);
-                html += `<line class="dm-griglia" x1="${DM_MARGIN_L}" y1="${y}" x2="${DM_VB_W - DM_MARGIN_R}" y2="${y}"></line>`;
-                html += `<text class="dm-testo" x="4" y="${y + 2}">${c}</text>`;
-            }
-            // Linea che unisce i punti
-            const puntiPath = mappaCutoffPunti.map(p => dmRpmToX(p.r) + "," + dmCutoffToY(p.c)).join(" ");
-            html += `<polyline class="dm-linea" points="${puntiPath}"></polyline>`;
-            // Punti trascinabili + etichetta di eliminazione
-            mappaCutoffPunti.forEach((p, i) => {
-                const x = dmRpmToX(p.r), y = dmCutoffToY(p.c);
-                html += `<circle class="dm-punto" cx="${x}" cy="${y}" r="7" onpointerdown="avviaTrascinamentoPuntoMappa(${i}, event)"></circle>`;
-                if (mappaCutoffPunti.length > 2) {
-                    html += `<text class="dm-elimina" x="${x + 9}" y="${y - 7}" onpointerdown="event.stopPropagation(); rimuoviPuntoMappaDinamica(${i})">✖</text>`;
-                }
+        function aggiornaVistaPopBang(mode) {
+            currentPopMode = mode;
+            const bottoni = document.querySelectorAll('.popbang-btn'); const groupSliders = document.getElementById('popbang-sliders-group');
+            bottoni.forEach(btn => {
+                btn.classList.remove('state-warn', 'state-danger');
+                if (mode === 1) { btn.innerText = "SOFT"; btn.classList.add('state-warn'); }
+                else if (mode === 2) { btn.innerText = "HARD"; btn.classList.add('state-danger'); }
+                else { btn.innerText = "OFF"; }
             });
-            svg.innerHTML = html;
+            groupSliders.style.display = (mode > 0) ? "block" : "none";
         }
-
-        function avviaTrascinamentoPuntoMappa(idx, evt) {
-            evt.preventDefault();
-            puntoInTrascinamentoIndex = idx;
-            try { document.getElementById('dynMapSvg').setPointerCapture(evt.pointerId); } catch(e) {}
-        }
-        function dmCoordSvgDaEvento(evt) {
-            const svg = document.getElementById('dynMapSvg'); const rect = svg.getBoundingClientRect();
-            return { x: ((evt.clientX - rect.left) / rect.width) * DM_VB_W, y: ((evt.clientY - rect.top) / rect.height) * DM_VB_H };
-        }
-        function gestisciTrascinamentoMappaDinamica(evt) {
-            if (puntoInTrascinamentoIndex < 0) return;
-            const { x, y } = dmCoordSvgDaEvento(evt);
-            let nuovoRpm = dmXToRpm(x); const nuovoCutoff = Math.round(dmYToCutoff(y));
-            const MARGINE_RPM = 200;
-            if (puntoInTrascinamentoIndex > 0) nuovoRpm = Math.max(nuovoRpm, mappaCutoffPunti[puntoInTrascinamentoIndex - 1].r + MARGINE_RPM);
-            if (puntoInTrascinamentoIndex < mappaCutoffPunti.length - 1) nuovoRpm = Math.min(nuovoRpm, mappaCutoffPunti[puntoInTrascinamentoIndex + 1].r - MARGINE_RPM);
-            mappaCutoffPunti[puntoInTrascinamentoIndex].r = Math.round(nuovoRpm);
-            mappaCutoffPunti[puntoInTrascinamentoIndex].c = nuovoCutoff;
-            disegnaMappaDinamicaSVG();
-            document.getElementById('dynMapLiveReadout').innerText = Math.round(nuovoRpm) + " rpm · " + nuovoCutoff + " ms";
-        }
-        function terminaTrascinamentoMappaDinamica() {
-            if (puntoInTrascinamentoIndex < 0) return;
-            puntoInTrascinamentoIndex = -1;
-            document.getElementById('dynMapLiveReadout').innerText = "";
-            salvaEInviaMappaDinamica();
-        }
-        function aggiungiPuntoMappaDinamica(evt) {
-            if (mappaCutoffPunti.length >= 8) { toast("Massimo 8 punti sulla curva", "error"); return; }
-            const { x, y } = dmCoordSvgDaEvento(evt);
-            const rpm = Math.round(dmXToRpm(x)), cutoff = Math.round(dmYToCutoff(y));
-            mappaCutoffPunti.push({ r: rpm, c: cutoff });
-            mappaCutoffPunti.sort((a, b) => a.r - b.r);
-            disegnaMappaDinamicaSVG();
-            salvaEInviaMappaDinamica();
-            toast("Punto aggiunto alla curva", "success");
-        }
-        // Rilevamento manuale del doppio-tap (più affidabile del solo evento "dblclick" su mobile)
-        let ultimoTapMappaTs = 0, ultimoTapMappaPos = null;
-        function gestisciPointerDownMappaDinamica(evt) {
-            const tag = evt.target.tagName ? evt.target.tagName.toLowerCase() : '';
-            if (tag === 'circle' || tag === 'text') return; // gestito da avviaTrascinamentoPuntoMappa / eliminazione
-            const ora = Date.now();
-            const { x, y } = dmCoordSvgDaEvento(evt);
-            if (ultimoTapMappaPos && (ora - ultimoTapMappaTs) < 350 && Math.hypot(x - ultimoTapMappaPos.x, y - ultimoTapMappaPos.y) < 20) {
-                aggiungiPuntoMappaDinamica(evt);
-                ultimoTapMappaTs = 0; ultimoTapMappaPos = null;
-            } else {
-                ultimoTapMappaTs = ora; ultimoTapMappaPos = { x, y };
-            }
-        }
-        function rimuoviPuntoMappaDinamica(idx) {
-            if (mappaCutoffPunti.length <= 2) { toast("Servono almeno 2 punti sulla curva", "error"); return; }
-            mappaCutoffPunti.splice(idx, 1);
-            disegnaMappaDinamicaSVG();
-            salvaEInviaMappaDinamica();
-        }
-        function salvaEInviaMappaDinamica() {
-            localStorage.setItem('qs_dyn_map', JSON.stringify(mappaCutoffPunti));
-            clearTimeout(debounceInvioMappaDinamica);
-            debounceInvioMappaDinamica = setTimeout(() => {
-                inviaPacchettoCentralina({ type: "set_dyn_map_table", value: mappaCutoffPunti });
-            }, 300);
-        }
-        function resetMappaDinamicaDefault() {
-            mappaCutoffPunti = JSON.parse(JSON.stringify(MAPPA_DINAMICA_DEFAULT));
-            disegnaMappaDinamicaSVG();
-            salvaEInviaMappaDinamica();
-            toast("Curva ripristinata ai valori di default", "info");
-        }
+        function togglePopBangState() { const nuovoMode = (currentPopMode + 1) % 3; aggiornaVistaPopBang(nuovoMode); inviaPacchettoCentralina({type: "scoppi", value: nuovoMode}); }
+        function inviaDatoPopSlider(tipoSld, val) { inviaPacchettoCentralina({type: tipoSld, value: parseInt(val)}); }
+        function inviaMinDelayCambiate(val) { inviaPacchettoCentralina({type: "set_min_shift_delay", value: parseInt(val)}); }
 
         /* ============================== WHEELIE ASSIST ============================== */
         function impostaGradiRapidiAntiWheelie(gradi) { document.getElementById('wheelieSlider').value = gradi; document.getElementById('liveWheelieTarget').innerText = gradi; inviaLimiteImpennataCentralina(gradi); }
@@ -1014,136 +766,6 @@
             if(tipo === 'start') { if(startMarker) map.removeLayer(startMarker); startMarker = L.marker(punto, {draggable: true}).addTo(map).bindPopup("<b>🚩 LINEA DI PARTENZA</b>").openPopup(); lapState = 'idle'; aggiornaPillLap(); }
             else if(tipo === 'end' && !stessoPuntoPartenzaArrivo) { if(endMarker) map.removeLayer(endMarker); endMarker = L.marker(punto, {draggable: true}).addTo(map).bindPopup("<b>🏁 LINEA DI ARRIVO</b>").openPopup(); }
             toast("Traguardo impostato", "success");
-        }
-
-        /* ============================== VISTA SATELLITE ============================== */
-        function toggleVistaSatellite() {
-            vistaSatelliteAttiva = !vistaSatelliteAttiva;
-            if(vistaSatelliteAttiva) { map.removeLayer(mapDarkLayer); mapSatLayer.addTo(map); }
-            else { map.removeLayer(mapSatLayer); mapDarkLayer.addTo(map); }
-            const btn = document.getElementById('btn-satellite');
-            btn.innerText = vistaSatelliteAttiva ? "🛰️ VISTA SATELLITE: ON" : "🛰️ VISTA SATELLITE: OFF";
-            btn.classList.toggle('state-ok', vistaSatelliteAttiva);
-        }
-
-        /* ============================== CREAZIONE PISTA SU MAPPA ============================== */
-        function toggleModalitaCreazionePista() {
-            modalitaCreazionePista = !modalitaCreazionePista;
-            document.getElementById('crea-pista-box').style.display = modalitaCreazionePista ? "block" : "none";
-            document.getElementById('btn-crea-pista').classList.toggle('state-ok', modalitaCreazionePista);
-            if(modalitaCreazionePista) {
-                puntiPistaInCostruzione = []; markerCreazionePista.forEach(m => map.removeLayer(m)); markerCreazionePista = [];
-                renderListaCurveInCostruzione();
-                toast("Tocca la mappa: 1° tocco = partenza, i successivi = curve", "info");
-            } else {
-                annullaCreazionePista();
-            }
-        }
-        function aggiungiPuntoCreazionePista(latlng) {
-            const ruolo = puntiPistaInCostruzione.length === 0 ? 'start' : 'corner';
-            const label = ruolo === 'start' ? 'Partenza' : ('Curva ' + puntiPistaInCostruzione.length);
-            puntiPistaInCostruzione.push({ lat: latlng.lat, lng: latlng.lng, ruolo, label });
-            const colore = ruolo === 'start' ? '#00ff66' : '#ffb347';
-            const m = L.circleMarker(latlng, { radius: ruolo === 'start' ? 8 : 6, color: '#fff', weight: 2, fillColor: colore, fillOpacity: 1 }).addTo(map).bindTooltip(label, { permanent: true, direction: 'top' });
-            markerCreazionePista.push(m);
-            renderListaCurveInCostruzione();
-        }
-        function rimuoviPuntoCreazionePista(index) {
-            map.removeLayer(markerCreazionePista[index]);
-            markerCreazionePista.splice(index, 1);
-            puntiPistaInCostruzione.splice(index, 1);
-            renderListaCurveInCostruzione();
-        }
-        function renderListaCurveInCostruzione() {
-            const cont = document.getElementById('lista-curve-in-costruzione'); if(!cont) return;
-            cont.innerHTML = puntiPistaInCostruzione.map((p, i) => `<div class="corner-tag"><span>${p.label}</span><button onclick="rimuoviPuntoCreazionePista(${i})">✖</button></div>`).join('') || '<div style="font-size:10px; opacity:0.6;">Nessun punto ancora.</div>';
-        }
-        function annullaCreazionePista() {
-            markerCreazionePista.forEach(m => map.removeLayer(m)); markerCreazionePista = [];
-            puntiPistaInCostruzione = [];
-            modalitaCreazionePista = false;
-            document.getElementById('crea-pista-box').style.display = 'none';
-            document.getElementById('btn-crea-pista').classList.remove('state-ok');
-            renderListaCurveInCostruzione();
-        }
-        function salvaPistaCreata() {
-            if(puntiPistaInCostruzione.length === 0 || puntiPistaInCostruzione[0].ruolo !== 'start') { toast("Tocca prima la mappa per fissare la partenza", "error"); return; }
-            const nome = prompt("Nome della pista:", "Pista " + (pisteSalvate.length + 1));
-            if(!nome) return;
-            const nuovaPista = { id: 'pista_' + Date.now(), nome, punti: JSON.parse(JSON.stringify(puntiPistaInCostruzione)), storicoGiri: [] };
-            pisteSalvate.push(nuovaPista);
-            localStorage.setItem('qs_tracks', JSON.stringify(pisteSalvate));
-            markerCreazionePista.forEach(m => map.removeLayer(m)); markerCreazionePista = [];
-            puntiPistaInCostruzione = [];
-            modalitaCreazionePista = false;
-            document.getElementById('crea-pista-box').style.display = 'none';
-            document.getElementById('btn-crea-pista').classList.remove('state-ok');
-            aggiornaSelettorePiste();
-            caricaPista(nuovaPista.id);
-            toast("Pista \"" + nome + "\" salvata ✅", "success");
-        }
-
-        /* ============================== LIBRERIA PISTE / STORICO TEMPI ============================== */
-        function aggiornaSelettorePiste() {
-            const sel = document.getElementById('selectPista'); if(!sel) return;
-            sel.innerHTML = '<option value="">-- Nessuna pista caricata --</option>' + pisteSalvate.map(p => `<option value="${p.id}">${p.nome}</option>`).join('');
-            sel.value = pistaAttivaId || "";
-        }
-        function trovaPistaAttiva() { return pisteSalvate.find(p => p.id === pistaAttivaId) || null; }
-        function caricaPista(id) {
-            pistaAttivaId = id;
-            localStorage.setItem('qs_active_track', id || "");
-            if(startMarker) { map.removeLayer(startMarker); startMarker = null; }
-            if(endMarker) { map.removeLayer(endMarker); endMarker = null; }
-            cornerMarkers.forEach(m => map.removeLayer(m)); cornerMarkers = [];
-
-            const pista = trovaPistaAttiva();
-            if(pista && pista.punti && pista.punti.length) {
-                pista.punti.forEach((p) => {
-                    const latlng = [p.lat, p.lng];
-                    if(p.ruolo === 'start') { startMarker = L.marker(latlng, { draggable: true }).addTo(map).bindPopup("<b>🚩 " + pista.nome + " - PARTENZA</b>"); }
-                    else { const cm = L.circleMarker(latlng, { radius: 6, color: '#fff', weight: 2, fillColor: '#ffb347', fillOpacity: 1 }).addTo(map).bindTooltip(p.label); cornerMarkers.push(cm); }
-                });
-                map.setView([pista.punti[0].lat, pista.punti[0].lng], 16);
-                document.getElementById('checkSamePoint').checked = true;
-                toggleStessoPuntoPartenzaArrivo(true); // pista con un solo traguardo (partenza=arrivo)
-            }
-            aggiornaSelettorePiste();
-            lapState = 'idle'; aggiornaPillLap();
-            renderStoricoGiriPista();
-        }
-        function eliminaPistaAttiva() {
-            if(!pistaAttivaId) { toast("Nessuna pista selezionata", "error"); return; }
-            const pista = trovaPistaAttiva(); if(!pista) return;
-            if(!confirm("Eliminare la pista \"" + pista.nome + "\" e il relativo storico tempi?")) return;
-            pisteSalvate = pisteSalvate.filter(p => p.id !== pistaAttivaId);
-            localStorage.setItem('qs_tracks', JSON.stringify(pisteSalvate));
-            caricaPista("");
-            toast("Pista eliminata", "success");
-        }
-        function renderStoricoGiriPista() {
-            const cont = document.getElementById('lista-storico-giri'); if(!cont) return;
-            const pista = trovaPistaAttiva();
-            if(!pista) { cont.innerHTML = '<div style="font-size:11px; opacity:0.6; padding:8px;">Nessuna pista caricata.</div>'; return; }
-            if(!pista.storicoGiri || pista.storicoGiri.length === 0) { cont.innerHTML = '<div style="font-size:11px; opacity:0.6; padding:8px;">Nessun giro registrato per questa pista.</div>'; return; }
-            const best = Math.min(...pista.storicoGiri.map(g => g.ms));
-            const ultimi = pista.storicoGiri.slice(-10).reverse();
-            cont.innerHTML = ultimi.map(g => {
-                const dettCurve = (g.curve && g.curve.length) ? g.curve.map(c => c.label + ": " + Math.round(c.maxRoll) + "° / " + Math.round(c.maxSpeed) + "km/h").join(" · ") : "";
-                return `<div class="lap-history-item"><div><div>${new Date(g.ts).toLocaleString()}</div>${dettCurve ? '<div class="lap-history-corners">' + dettCurve + ' · Vmax ' + Math.round(g.velMax) + 'km/h</div>' : ''}</div><span class="lh-time ${g.ms === best ? 'lh-best' : ''}">${formattaTempoGiro(g.ms)}</span></div>`;
-            }).join('');
-        }
-        function controllaProssimitaCurve(latlng) {
-            const pista = trovaPistaAttiva(); if(!pista || lapState !== 'running') return;
-            pista.punti.forEach((p, idx) => {
-                if(p.ruolo !== 'corner') return;
-                const dist = map.distance(latlng, [p.lat, p.lng]);
-                if(dist <= CORNER_RADIUS_METRI) {
-                    if(!datiCurveGiroCorrente[idx]) datiCurveGiroCorrente[idx] = { label: p.label, maxRoll: 0, maxSpeed: 0 };
-                    datiCurveGiroCorrente[idx].maxRoll = Math.max(datiCurveGiroCorrente[idx].maxRoll, Math.abs(ultimoRollRicevuto));
-                    datiCurveGiroCorrente[idx].maxSpeed = Math.max(datiCurveGiroCorrente[idx].maxSpeed, ultimaVelocitaRicevuta);
-                }
-            });
         }
 
         function formattaTempoGiro(ms) {
@@ -1172,8 +794,6 @@
             }
             if(lapState === 'idle' && distStart < SOGLIA_LINEA_TRAGUARDO_METRI) {
                 lapState = 'running'; lapStartTs = Date.now(); vicinoTraguardoCooldown = true; aggiornaPillLap();
-                // Reset dati per l'analisi delle curve e la velocità massima del nuovo giro
-                datiCurveGiroCorrente = {}; velMaxGiroCorrente = 0;
             } else if(lapState === 'running' && distEnd !== null && distEnd < SOGLIA_LINEA_TRAGUARDO_METRI) {
                 const tempoGiro = Date.now() - lapStartTs;
                 lastLapMs = tempoGiro; if(bestLapMs === null || tempoGiro < bestLapMs) bestLapMs = tempoGiro;
@@ -1181,19 +801,7 @@
                 document.getElementById('bestLapTime').innerText = formattaTempoGiro(bestLapMs);
                 vicinoTraguardoCooldown = true;
                 toast("Giro completato: " + formattaTempoGiro(tempoGiro), "success");
-
-                // Registra il giro nello storico della pista attiva (tempo, Vmax, piega/velocità per curva)
-                const pista = trovaPistaAttiva();
-                if(pista) {
-                    const curveGiro = Object.values(datiCurveGiroCorrente);
-                    pista.storicoGiri = pista.storicoGiri || [];
-                    pista.storicoGiri.push({ ms: tempoGiro, ts: Date.now(), velMax: velMaxGiroCorrente, curve: curveGiro });
-                    if(pista.storicoGiri.length > 50) pista.storicoGiri.shift();
-                    localStorage.setItem('qs_tracks', JSON.stringify(pisteSalvate));
-                    renderStoricoGiriPista();
-                }
-
-                if(stessoPuntoPartenzaArrivo) { lapStartTs = Date.now(); datiCurveGiroCorrente = {}; velMaxGiroCorrente = 0; } else { lapState = 'idle'; }
+                if(stessoPuntoPartenzaArrivo) { lapStartTs = Date.now(); } else { lapState = 'idle'; }
                 aggiornaPillLap();
             }
         }
@@ -1204,8 +812,6 @@
             if(trackPolyline) trackPolyline.addLatLng(latlng);
             sessionStats.telemetriaPunti.push({ lat, lng, t: Date.now(), speed: ultimaVelocitaRicevuta, rpm: ultimoRpmRicevuto });
             controllaIncrocioTraguardo(latlng);
-            controllaProssimitaCurve(latlng);
-            if(lapState === 'running' && ultimaVelocitaRicevuta > velMaxGiroCorrente) velMaxGiroCorrente = ultimaVelocitaRicevuta;
         }
         function avviaTracciamentoGPS() {
             if(!navigator.geolocation) { toast("GPS non disponibile su questo browser", "error"); return; }
@@ -1219,84 +825,22 @@
         }
         function fermaTracciamentoGPS() { if(geoWatchId !== null) { navigator.geolocation.clearWatch(geoWatchId); geoWatchId = null; } if(lapTickInterval) { clearInterval(lapTickInterval); lapTickInterval = null; } }
 
-        /* ============================== RICENTRAMENTO MAPPA SU GPS ============================== */
-        function ricentraMappaSuGPS() {
-            if(!userMarker || (!bluetoothConnected && !isDemoMode)) { toast("Nessuna posizione GPS disponibile", "error"); return; }
-            map.setView(userMarker.getLatLng(), Math.max(map.getZoom(), 16), { animate: true });
-        }
-
-        /* ============================== SEGNAPOSTO PERSONALIZZATI ============================== */
-        function renderSegnaposti() {
-            segnapostiMarkers.forEach(m => map.removeLayer(m)); segnapostiMarkers = [];
-            segnapostiSalvati.forEach(p => {
-                const m = L.marker([p.lat, p.lng]).addTo(map)
-                    .bindPopup(`<b>📍 ${p.nome}</b><br><button onclick="rimuoviSegnaposto('${p.id}')" style="margin-top:6px; background:#ff1e1e; color:#fff; border:none; border-radius:6px; padding:6px 10px; font-size:11px; cursor:pointer;">Elimina</button>`);
-                segnapostiMarkers.push(m);
-            });
-        }
-        function aggiungiSegnapostoSuMappa() {
-            const punto = (userMarker && (bluetoothConnected || isDemoMode)) ? userMarker.getLatLng() : map.getCenter();
-            const nome = prompt("Nome del segnaposto:", "Punto " + (segnapostiSalvati.length + 1));
-            if(!nome) return;
-            segnapostiSalvati.push({ id: 'pin_' + Date.now(), nome, lat: punto.lat, lng: punto.lng });
-            localStorage.setItem('qs_pins', JSON.stringify(segnapostiSalvati));
-            renderSegnaposti();
-            toast("Segnaposto \"" + nome + "\" aggiunto 📍", "success");
-        }
-        function rimuoviSegnaposto(id) {
-            segnapostiSalvati = segnapostiSalvati.filter(p => p.id !== id);
-            localStorage.setItem('qs_pins', JSON.stringify(segnapostiSalvati));
-            renderSegnaposti();
-            toast("Segnaposto eliminato", "info");
-        }
-
-        /* ============================== RICERCA LUOGHI (geocoding OpenStreetMap/Nominatim) ============================== */
-        async function cercaLuogoSuMappa() {
-            const campo = document.getElementById('inputRicercaLuogo');
-            const query = campo.value.trim();
-            const box = document.getElementById('risultatiRicercaLuogo');
-            if(!query) return;
-            box.style.display = 'block';
-            box.innerHTML = '<div style="font-size:11px; opacity:0.6; padding:10px;">Ricerca in corso...</div>';
-            try {
-                const risposta = await fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=6&q=${encodeURIComponent(query)}`);
-                const dati = await risposta.json();
-                if(!dati.length) { box.innerHTML = '<div style="font-size:11px; opacity:0.6; padding:10px;">Nessun risultato trovato.</div>'; return; }
-                ultimiRisultatiRicerca = dati;
-                box.innerHTML = dati.map((r, i) => `<div class="search-result-item" onclick="selezionaRisultatoRicerca(${i})">${r.display_name}</div>`).join('');
-            } catch(e) {
-                box.innerHTML = '<div style="font-size:11px; opacity:0.6; padding:10px;">Ricerca non riuscita (serve connessione dati).</div>';
-            }
-        }
-        function selezionaRisultatoRicerca(indice) {
-            const r = ultimiRisultatiRicerca[indice]; if(!r) return;
-            const lat = parseFloat(r.lat), lng = parseFloat(r.lon);
-            map.setView([lat, lng], 16, { animate: true });
-            if(searchResultMarker) map.removeLayer(searchResultMarker);
-            searchResultMarker = L.marker([lat, lng]).addTo(map).bindPopup(r.display_name).openPopup();
-            document.getElementById('risultatiRicercaLuogo').style.display = 'none';
-            document.getElementById('inputRicercaLuogo').value = '';
-        }
-
         /* ============================== ECU LOCK / TOGGLES (protocollo corretto) ============================== */
         function aggiornaVistaBloccoMoto(stato) {
-            let lockBtn = document.getElementById('btn-lock-ecu'); let unlockBtn = document.getElementById('btn-unlock-ecu');
-            if(stato) { lockBtn.classList.add('active-locked'); unlockBtn.classList.remove('active'); }
-            else { lockBtn.classList.remove('active-locked'); unlockBtn.classList.add('active'); }
+            bloccoMotoAttivo = stato;
+            const btn = document.getElementById('btn-lock-toggle');
+            if(stato) { btn.textContent = "🔒 MOTO BLOCCATA — TOCCA PER SBLOCCARE"; btn.classList.remove('pill-ok'); btn.classList.add('pill-danger'); }
+            else { btn.textContent = "🔓 MOTO ATTIVA — TOCCA PER BLOCCARE"; btn.classList.remove('pill-danger'); btn.classList.add('pill-ok'); }
         }
+        function toggleBloccoMoto() { cambiaStatoBloccoMoto(!bloccoMotoAttivo); }
         function cambiaStatoBloccoMoto(stato) { aggiornaVistaBloccoMoto(stato); inviaPacchettoCentralina({type: "ecu_state", status: stato ? "LOCKED" : "UNLOCKED"}); }
-        function inviaModalitaAlimentazione(isEfi) {
-            inviaPacchettoCentralina({type: "set_power_mode", value: isEfi});
-            aggiornaVistaModalitaAlimentazione(isEfi);
-            toast(isEfi ? "Modalità INIEZIONE (EFI) attiva ⚡" : "Modalità CARBURATORE attiva 🔧", "success");
-        }
-        function aggiornaVistaModalitaAlimentazione(isEfi) {
-            document.getElementById('btn-mode-carb').classList.toggle('active', !isEfi);
-            document.getElementById('btn-mode-efi').classList.toggle('active', isEfi);
-        }
         function inviaToggleWheelieSystem(attivo) { inviaPacchettoCentralina({type: "toggle_wheelie_system", value: attivo}); }
         function inviaToggleAllarme(attivo) { inviaPacchettoCentralina({type: "toggle_alarm_system", value: attivo}); }
         function inviaToggleAudioGenerale(attivo) { inviaPacchettoCentralina({type: "toggle_general_audio", value: attivo}); }
+        function inviaToggleQuickshifter(attivo) {
+            document.getElementById('qsEnabledSubtitle').innerText = attivo ? "Attivo: taglia il motore ad ogni cambiata" : "Disattivato: puoi guidare col cambio manuale normale";
+            inviaPacchettoCentralina({type: "toggle_shifter_enabled", value: attivo});
+        }
 
         function salvaSessioneSuTelefono() { let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(sessionStats, null, 2)); let downloadAnchor = document.createElement('a'); downloadAnchor.setAttribute("href", dataStr); downloadAnchor.setAttribute("download", "Telemetry_Report.json"); document.body.appendChild(downloadAnchor); downloadAnchor.click(); downloadAnchor.remove(); toast("Report sessione salvato 💾", "success"); }
 
@@ -1322,8 +866,6 @@
                 aggiornaConnDots('ble');
                 avviaTracciamentoGPS();
                 toast("Dispositivo connesso ✅", "success");
-                // Richiede la tabella della mappa dinamica salvata sull'ECU, per riallineare il grafico
-                setTimeout(() => inviaPacchettoCentralina({ type: "get_dyn_map_table" }), 700);
             } catch(e) { toast("Errore connessione: " + e.message, "error"); }
         }
         async function inviaPacchettoCentralina(oggettoScrittura) { if(isDemoMode || !bluetoothConnected || !webBleRxCharacteristic) return; try { let encoder = new TextEncoder('utf-8'); await webBleRxCharacteristic.writeValue(encoder.encode(JSON.stringify(oggettoScrittura))); } catch(e){ toast("Errore invio comando", "error"); } }
@@ -1357,8 +899,8 @@
             document.getElementById('signal-strength').innerText = "VIRTUAL ROAD SIMULATION";
             aggiornaConnDots('demo');
             statoSincronizzatoDaECU = true; // in demo non serve attendere il device reale
-            aggiornaVistaBloccoMoto(false); aggiornaVistaMappaDinamica(false); aggiornaVistaPopBang(false);
-            aggiornaStatoImu(true); aggiornaStatoLaunch(false, 8000);
+            aggiornaVistaBloccoMoto(false); aggiornaVistaMappaDinamica(false); aggiornaVistaPopBang(0);
+            document.getElementById('toggleQuickshifterEnabled').checked = true;
             avviaTickCronometro();
             let a = 0; const centro = [39.3565, 16.2263];
             demoLoopInterval = setInterval(() => {
@@ -1371,7 +913,7 @@
                     hTot: centralinaDati.hours_total, hTrip: centralinaDati.hours_trip, contatore: 14, cutTime: 65 + Math.round(Math.random()*4-2),
                     pitch: Math.max(0, Math.floor(Math.sin(a)*20)), roll: Math.floor(Math.sin(a*0.7)*35),
                     gX: Math.sin(a)*0.8, gY: Math.sin(a*0.7)*1.1,
-                    maxRoll: 42, maxSpeed: 142, maxPitch: 22, maxRpm: 10400, maxGAcc: 0.65, maxGFren: 0.9
+                    maxRoll: 42, maxSpeed: 142, maxPitch: 22, maxRpm: 10400, maxGAcc: 0.65, maxGFren: 0.9, imuOk: true, qsEnabled: true
                 });
                 // Simula un percorso circolare per testare mappa e cronometro giri senza hardware
                 const raggio = 0.0016;
