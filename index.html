@@ -404,34 +404,30 @@ input[type=range]::-moz-range-thumb{
   flex-direction:column; padding:12px 28px calc(12px + env(safe-area-inset-right)) 28px;
 }
 @media (orientation:landscape) and (max-height:520px){
-  #app.active ~ #dashboard.active{display:flex;}
+  body.in-app #app.active{display:none;}
+  body.in-app #dashboard.active{display:flex;}
   body.in-app #gate{display:none !important;}
 }
 .dash-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;}
 .dash-brand{font-family:var(--font-display); font-weight:700; font-size:15px; letter-spacing:1px; color:var(--text-muted);}
 .dash-lock{font-size:10px; color:var(--text-faint);}
 .dash-lock.locked{color:var(--danger);}
-.dash-main{flex:1; display:flex; align-items:center; justify-content:space-between; gap:18px;}
-.dash-speed{flex:0 0 26%; text-align:left;}
+.dash-main{flex:1; display:flex; align-items:center; justify-content:space-between; gap:0;}
+.dash-speed{flex:0 0 25%; text-align:left; padding-right:18px;}
+.dash-horizon-wrap{border-left:1px solid var(--hairline); border-right:1px solid var(--hairline); padding:0 20px;}
+.dash-pitch{padding-left:18px;}
 .dash-speed b{font-family:var(--font-display); font-weight:800; font-size:min(16vw,96px); line-height:0.85; display:block;}
 .dash-speed span{font-size:12px; color:var(--text-muted); letter-spacing:1px;}
 
-.dash-horizon-wrap{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; position:relative;}
-.dash-horizon{
-  width:min(42vw,260px); height:min(42vw,260px); border-radius:50%; position:relative; overflow:hidden;
-  border:3px solid var(--hairline); background:var(--panel);
-}
-.dash-horizon-line{
-  position:absolute; left:-20%; right:-20%; top:50%; height:50%;
-  background:linear-gradient(0deg, var(--accent-dim), var(--accent));
-  transform-origin:50% 0%;
-}
-.dash-roll-val{font-family:var(--font-mono); font-size:22px; font-weight:600; margin-top:10px;}
+.dash-horizon-wrap{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; max-width:min(40vh,260px); margin:0 auto;}
+.dash-dial{width:100%; height:auto; aspect-ratio:1/1;}
+#dashLeanNeedle{transition:transform .12s ease-out; transform-origin:100px 100px;}
+.dash-roll-val{font-family:var(--font-mono); font-size:22px; font-weight:600; margin-top:8px;}
 .dash-roll-lbl{font-size:10px; color:var(--text-muted); letter-spacing:1px;}
 
-.dash-pitch{flex:0 0 22%; display:flex; flex-direction:column; align-items:center; gap:8px;}
-.dash-pitch-track{width:14px; height:min(30vh,180px); border-radius:7px; background:var(--panel); border:1px solid var(--hairline); position:relative; overflow:hidden;}
-.dash-pitch-fill{position:absolute; left:0; right:0; bottom:50%; height:4px; background:var(--data); transition:bottom .15s ease, height .15s ease;}
+.dash-pitch{flex:0 0 18%; display:flex; flex-direction:column; align-items:center; gap:8px; height:100%; justify-content:center;}
+.dash-pitch-svg{height:min(32vh,190px); width:auto;}
+#dashPitchBar{transition:y .12s ease-out, height .12s ease-out;}
 .dash-pitch b{font-family:var(--font-mono); font-size:18px;}
 .dash-pitch span{font-size:9.5px; color:var(--text-muted); letter-spacing:1px;}
 
@@ -743,12 +739,30 @@ input[type=range]::-moz-range-thumb{
       <span>KM/H</span>
     </div>
     <div class="dash-horizon-wrap">
-      <div class="dash-horizon" id="dashHorizon"><div class="dash-horizon-line"></div></div>
+      <svg viewBox="0 0 200 200" class="dash-dial">
+        <circle cx="100" cy="100" r="88" fill="var(--panel)" stroke="var(--hairline)" stroke-width="2"/>
+        <g stroke="var(--hairline)" stroke-width="2">
+          <line x1="100" y1="16" x2="100" y2="28"/>
+          <line x1="100" y1="16" x2="100" y2="28" transform="rotate(30 100 100)"/>
+          <line x1="100" y1="16" x2="100" y2="28" transform="rotate(60 100 100)"/>
+          <line x1="100" y1="16" x2="100" y2="28" transform="rotate(-30 100 100)"/>
+          <line x1="100" y1="16" x2="100" y2="28" transform="rotate(-60 100 100)"/>
+        </g>
+        <polygon points="100,6 94,18 106,18" fill="var(--text-faint)"/>
+        <g id="dashLeanNeedle">
+          <line x1="100" y1="100" x2="100" y2="24" stroke="var(--accent)" stroke-width="6" stroke-linecap="round"/>
+          <circle cx="100" cy="100" r="7" fill="var(--accent)"/>
+        </g>
+      </svg>
       <div class="dash-roll-val" id="dashRollVal">0°</div>
       <div class="dash-roll-lbl">PIEGA</div>
     </div>
     <div class="dash-pitch">
-      <div class="dash-pitch-track"><div class="dash-pitch-fill" id="dashPitchFill"></div></div>
+      <svg viewBox="0 0 60 180" class="dash-pitch-svg">
+        <rect x="22" y="6" width="16" height="168" rx="8" fill="var(--panel)" stroke="var(--hairline)" stroke-width="2"/>
+        <line x1="14" y1="130" x2="46" y2="130" stroke="var(--text-faint)" stroke-width="2"/>
+        <rect id="dashPitchBar" x="24" y="128" width="12" height="2" rx="4" fill="var(--data)"/>
+      </svg>
       <b id="dashPitchVal">0°</b>
       <span>IMPENNATA</span>
     </div>
@@ -1041,11 +1055,24 @@ function aggiornaTelemetriaImu(roll, pitch, rollMax, pitchMax){
   document.getElementById('dashPitchVal').textContent = pitchTxt;
   if(pitchMax!==undefined){ document.getElementById('homePitchMax').textContent = Math.abs(pitchMax)+'°'; }
 
-  document.getElementById('dashHorizon').style.transform = 'rotate('+(-roll)+'deg)';
-  const fill = document.getElementById('dashPitchFill');
-  const pct = Math.max(-45, Math.min(90, pitch)) / 90; // scala -45..+90
-  if(pct>=0){ fill.style.bottom='50%'; fill.style.height=(pct*50)+'%'; }
-  else{ fill.style.bottom=(50+pct*50*(45/90))+'%'; fill.style.height=(-pct*50*(45/90))+'%'; }
+  // Lancetta piega: ruota attorno al centro del quadrante, in senso orario per piega a destra.
+  const needle = document.getElementById('dashLeanNeedle');
+  if(needle) needle.setAttribute('transform', 'rotate('+roll+' 100 100)');
+
+  // Barra impennata: scala fissa da -45° (stoppie) a +90° (wheelie), con lo
+  // zero posizionato proporzionalmente (non al centro) cosi' la scala resta
+  // sempre corretta qualunque sia il segno.
+  const bar = document.getElementById('dashPitchBar');
+  if(bar){
+    const MIN_P=-45, MAX_P=90, RANGE=MAX_P-MIN_P;
+    const pitchClamp = Math.max(MIN_P, Math.min(MAX_P, pitch));
+    const trackTop=6, trackH=168; // coordinate del binario nell'SVG (viewBox 60x180)
+    const yZero = trackTop + trackH * (1 - (0-MIN_P)/RANGE);
+    const yVal  = trackTop + trackH * (1 - (pitchClamp-MIN_P)/RANGE);
+    const yTop = Math.min(yZero, yVal), h = Math.max(2, Math.abs(yVal-yZero));
+    bar.setAttribute('y', yTop);
+    bar.setAttribute('height', h);
+  }
 }
 function calibraImuInPiano(){
   if(richiedeCentralina()) return;
