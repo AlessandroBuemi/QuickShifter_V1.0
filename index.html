@@ -7,6 +7,7 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
 /* =========================================================================
    TOKENS
@@ -248,6 +249,72 @@ input[type=range]::-moz-range-thumb{
   text-align:center; padding:36px 20px; color:var(--text-muted); font-size:13px; line-height:1.6;
 }
 
+.map-card{
+  border:1px solid var(--hairline); border-radius:16px; overflow:hidden; margin-bottom:16px;
+  height:220px; background:var(--panel);
+}
+#liveMap{width:100%; height:100%;}
+
+#tripMapOverlay{
+  display:none; position:fixed; inset:0; z-index:600; background:var(--bg); flex-direction:column;
+}
+#tripMapOverlay.show{display:flex;}
+.trip-map-top{
+  display:flex; align-items:center; gap:12px; padding:14px 16px; padding-top:calc(14px + env(safe-area-inset-top));
+  background:var(--panel); border-bottom:1px solid var(--hairline); z-index:2;
+}
+.trip-map-stats{font-family:var(--font-mono); font-size:12.5px; color:var(--text-muted);}
+#tripMapFull{flex:1; width:100%;}
+
+/* Marker personalizzati (icone SVG inline, niente immagini esterne) */
+.qs-marker-start, .qs-marker-end{
+  width:16px; height:16px; border-radius:50%; border:3px solid var(--bg); box-shadow:0 0 0 1px var(--hairline);
+}
+.qs-marker-start{background:var(--ok);}
+.qs-marker-end{background:var(--danger);}
+
+/* ---- CSS essenziale di Leaflet, incorporato (niente foglio di stile esterno) ---- */
+.leaflet-pane,.leaflet-tile,.leaflet-marker-icon,.leaflet-marker-shadow,.leaflet-tile-container,.leaflet-pane>svg,.leaflet-pane>canvas,.leaflet-zoom-box,.leaflet-image-layer,.leaflet-layer{position:absolute;left:0;top:0;}
+.leaflet-container{overflow:hidden; background:var(--panel);}
+.leaflet-tile,.leaflet-marker-icon,.leaflet-marker-shadow{-webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-user-drag:none;}
+.leaflet-tile{filter:inherit;visibility:hidden;}
+.leaflet-tile-loaded{visibility:inherit;}
+.leaflet-zoom-box{width:0;height:0;-moz-box-sizing:border-box;box-sizing:border-box;z-index:800;}
+.leaflet-overlay-pane svg{-moz-user-select:none;}
+.leaflet-pane{z-index:400;}
+.leaflet-tile-pane{z-index:200;}
+.leaflet-overlay-pane{z-index:400;}
+.leaflet-shadow-pane{z-index:500;}
+.leaflet-marker-pane{z-index:600;}
+.leaflet-tooltip-pane{z-index:650;}
+.leaflet-popup-pane{z-index:700;}
+.leaflet-map-pane canvas{z-index:100;}
+.leaflet-map-pane svg{z-index:200;}
+.leaflet-control{position:relative;z-index:800;pointer-events:visiblePainted;pointer-events:auto;}
+.leaflet-top,.leaflet-bottom{position:absolute;z-index:1000;pointer-events:none;}
+.leaflet-top{top:0;}
+.leaflet-right{right:0;}
+.leaflet-bottom{bottom:0;}
+.leaflet-left{left:0;}
+.leaflet-control{float:left;clear:both;}
+.leaflet-right .leaflet-control{float:right;}
+.leaflet-top .leaflet-control{margin-top:10px;}
+.leaflet-bottom .leaflet-control{margin-bottom:10px;}
+.leaflet-left .leaflet-control{margin-left:10px;}
+.leaflet-right .leaflet-control{margin-right:10px;}
+.leaflet-fade-anim .leaflet-popup{opacity:0;transition:opacity .2s linear;}
+.leaflet-fade-anim .leaflet-map-pane .leaflet-popup{opacity:1;}
+.leaflet-zoom-animated{transform-origin:0 0;}
+.leaflet-container{-webkit-tap-highlight-color:transparent;}
+.leaflet-touch .leaflet-control-layers,.leaflet-touch .leaflet-bar{border:2px solid rgba(0,0,0,0.2);background-clip:padding-box;}
+.leaflet-bar{box-shadow:0 1px 5px rgba(0,0,0,0.65);border-radius:8px;overflow:hidden;}
+.leaflet-bar a{background-color:var(--panel);border-bottom:1px solid var(--hairline);width:30px;height:30px;line-height:30px;display:block;text-align:center;text-decoration:none;color:var(--text);font-weight:bold;}
+.leaflet-bar a:last-child{border-bottom:none;}
+.leaflet-control-zoom-in,.leaflet-control-zoom-out{font-size:18px;}
+.leaflet-control-attribution{background:rgba(28,33,38,.75); color:var(--text-faint); padding:1px 6px; font-size:9px; border-radius:6px 0 0 0;}
+.leaflet-control-attribution a{color:var(--text-muted);}
+.leaflet-div-icon{background:transparent; border:none;}
+
 /* =========================================================================
    MORE PAGE / COMING SOON
    ========================================================================= */
@@ -395,7 +462,8 @@ input[type=range]::-moz-range-thumb{
     </div>
     <div class="gate-actions">
       <button class="btn btn-primary" onclick="connetti()">Connetti centralina</button>
-      <button class="btn btn-ghost" onclick="avviaDemo()">Esplora la demo</button>
+      <button class="btn btn-ghost" onclick="avviaSoloGps()">Continua senza centralina</button>
+      <button class="btn btn-text" onclick="avviaDemo()">Esplora la demo</button>
     </div>
     <div class="gate-foot">Bluetooth Low Energy · ESP32</div>
   </div>
@@ -540,6 +608,11 @@ input[type=range]::-moz-range-thumb{
         <div><b id="tripMax">0</b><span>MAX KM/H</span></div>
       </div>
     </div>
+
+    <div class="map-card" id="liveMapCard">
+      <div id="liveMap"></div>
+    </div>
+
     <button class="rec-btn" id="recBtn" onclick="toggleRecording()">Avvia registrazione</button>
 
     <div class="section-label">Percorsi salvati</div>
@@ -686,6 +759,15 @@ input[type=range]::-moz-range-thumb{
   </div>
 </div>
 
+<!-- Visualizzatore percorso salvato, a schermo intero -->
+<div id="tripMapOverlay">
+  <div class="trip-map-top">
+    <button class="icon-btn" onclick="chiudiMappaPercorso()">✕</button>
+    <div class="trip-map-stats" id="tripMapStats"></div>
+  </div>
+  <div id="tripMapFull"></div>
+</div>
+
 <!-- Bottom sheet riusabile (OTA / conferme) -->
 <div class="sheet-overlay" id="sheetOverlay" onclick="chiudiSheet()"></div>
 <div class="sheet" id="sheet">
@@ -700,7 +782,7 @@ input[type=range]::-moz-range-thumb{
 /* ===========================================================================
    STATO GLOBALE
    =========================================================================== */
-const LATEST_FIRMWARE_VERSION = "1.0.1";
+const LATEST_FIRMWARE_VERSION = "1.0.0";
 const FIRMWARE_BIN_URL = "https://raw.githubusercontent.com/AlessandroBuemi/QuickShifter_V1.0/main/QuickShifter_LITE.ino.bin";
 
 const CENTRALINA_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
@@ -715,7 +797,7 @@ let ultimoContatoreCambiate=null;
 let otaInCorso=false;
 
 // Trip recording
-let recording=false, watchId=null, puntiPercorso=[], tripDistanceKm=0, tripMaxSpeed=0, tripStartTime=0, tripTimerInterval=null;
+let recording=false, puntiPercorso=[], tripDistanceKm=0, tripMaxSpeed=0, tripStartTime=0, tripTimerInterval=null;
 let demoTimer=null;
 
 /* ===========================================================================
@@ -748,6 +830,9 @@ function goPane(id){
   document.querySelectorAll('.pane').forEach(p=>p.classList.remove('active'));
   document.getElementById('pane-'+id).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.p===id));
+  if(id==='trip' && liveMap){
+    setTimeout(()=>liveMap.invalidateSize(), 80);
+  }
 }
 
 /* ===========================================================================
@@ -803,6 +888,7 @@ async function connetti(){
     connesso = true; statoSincronizzato = false; isDemo = false;
     entraInApp();
     aggiornaConnUI('ble');
+    avviaTracciamentoContinuo();
     toast('Centralina connessa', 'success');
 
     try{
@@ -850,7 +936,40 @@ function aggiornaConnUI(stato){
   dot.classList.remove('on','demo');
   if(stato==='ble'){ dot.classList.add('on'); lbl.textContent='online'; }
   else if(stato==='demo'){ dot.classList.add('demo'); lbl.textContent='demo'; }
+  else if(stato==='gps'){ dot.classList.add('demo'); lbl.textContent='solo GPS'; }
   else { lbl.textContent='offline'; }
+}
+
+// Modalita' "solo GPS": tutto quello che riguarda il telefono (velocita',
+// percorsi, mappa) funziona anche senza nessuna centralina collegata.
+// Le funzioni che richiedono il Bluetooth (cambio, lock, piega) restano
+// semplicemente inerti con un avviso, invece di bloccare il resto dell'app.
+function avviaSoloGps(){
+  entraInApp();
+  aggiornaConnUI('gps');
+  document.getElementById('fwVersion').textContent = 'non connesso';
+  avviaTracciamentoContinuo();
+  toast('Modalità solo GPS: connetti la centralina per cambio e piega','success');
+}
+
+// Richiede una centralina attiva (reale o demo) prima di eseguire un'azione
+// che altrimenti lascerebbe l'interfaccia disallineata dallo stato vero.
+function richiedeCentralina(){
+  if(!connesso && !isDemo){
+    toast('Connetti la centralina per usare questa funzione','error');
+    return true;
+  }
+  return false;
+}
+
+// Tracciamento posizione continuo: aggiorna sempre la velocità in home/dashboard,
+// indipendentemente dal fatto che si stia registrando un percorso o meno.
+let watchIdContinuo=null;
+function avviaTracciamentoContinuo(){
+  if(!navigator.geolocation || watchIdContinuo!==null) return;
+  watchIdContinuo = navigator.geolocation.watchPosition(onPosizioneGPS, (err)=>{
+    if(err.code===1) toast('Permesso GPS negato: attivalo nelle impostazioni del telefono','error');
+  }, {enableHighAccuracy:true, maximumAge:1000});
 }
 
 async function inviaComando(obj){
@@ -929,11 +1048,12 @@ function aggiornaTelemetriaImu(roll, pitch, rollMax, pitchMax){
   else{ fill.style.bottom=(50+pct*50*(45/90))+'%'; fill.style.height=(-pct*50*(45/90))+'%'; }
 }
 function calibraImuInPiano(){
-  if(isDemo){ toast('Non disponibile in modalità demo','error'); return; }
+  if(richiedeCentralina()) return;
   inviaComando({type:'imu_calibrate_flat'});
   toast('Calibrazione in corso, tieni la moto ferma…','success');
 }
 function aggiornaAssi(){
+  if(richiedeCentralina()) return;
   const payload = {
     type:'imu_set_axis',
     fwd:{ax:parseInt(document.getElementById('axisFwdSel').value), sign:parseInt(document.getElementById('axisFwdSign').value)},
@@ -945,6 +1065,7 @@ function aggiornaAssi(){
 }
 let antifurtoState=true;
 function toggleAntifurto(){
+  if(richiedeCentralina()) return;
   antifurtoState=!antifurtoState;
   aggiornaSwitch('antifurtoSwitch', antifurtoState);
   inviaComando({type:'toggle_antifurto_movimento', value: antifurtoState});
@@ -984,6 +1105,7 @@ function onPd2Commit(v){ inviaComando({type:'set_pop_intensity', value: parseInt
 
 let popState=false;
 function togglePop(){
+  if(richiedeCentralina()) return;
   popState=!popState;
   aggiornaVistaPop(popState);
   inviaComando({type:'scoppi', value: popState?1:0});
@@ -997,12 +1119,14 @@ function aggiornaVistaPop(on){
 
 let qsState=true;
 function toggleQs(){
+  if(richiedeCentralina()) return;
   qsState=!qsState;
   aggiornaSwitch('qsSwitch', qsState);
   inviaComando({type:'toggle_shifter_enabled', value: qsState});
 }
 let audState=true;
 function toggleAud(){
+  if(richiedeCentralina()) return;
   audState=!audState;
   aggiornaSwitch('audSwitch', audState);
   inviaComando({type:'toggle_general_audio', value: audState});
@@ -1019,6 +1143,7 @@ function aggiornaSwitch(id, on){
    =========================================================================== */
 let lockState=false;
 function toggleLock(){
+  if(richiedeCentralina()) return;
   cambiaLock(!lockState);
 }
 function cambiaLock(stato){
@@ -1043,23 +1168,49 @@ function haversineKm(lat1,lon1,lat2,lon2){
   const a=Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
   return R*2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 }
+/* ---- Mappa live (durante la registrazione) ---- */
+let liveMap=null, liveMapPolyline=null, liveMapMarker=null;
+function assicuraLiveMap(){
+  if(liveMap || isDemo) return; // in demo non ci sono coordinate reali da mostrare
+  const el = document.getElementById('liveMap');
+  if(!el || el.offsetHeight===0) return; // pannello non ancora visibile, riprovo dopo
+  liveMap = L.map('liveMap', {zoomControl:false, attributionControl:true}).setView([45.0, 9.0], 15);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution:'© OpenStreetMap', maxZoom:19
+  }).addTo(liveMap);
+  liveMapPolyline = L.polyline([], {color: getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#F2A33C', weight:4}).addTo(liveMap);
+}
+function iconaPunto(colore){
+  return L.divIcon({className:'', html:'<div style="width:14px;height:14px;border-radius:50%;background:'+colore+';border:3px solid var(--bg);box-shadow:0 0 0 1px var(--hairline);"></div>', iconSize:[14,14], iconAnchor:[7,7]});
+}
+
+function haversineKm(lat1,lon1,lat2,lon2){
+  const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+  const a=Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+  return R*2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
 function toggleRecording(){
   if(!recording) avviaRegistrazione(); else fermaRegistrazione();
 }
 function avviaRegistrazione(){
-  if(!navigator.geolocation){ toast('GPS non disponibile su questo browser','error'); return; }
+  if(!isDemo && !navigator.geolocation){ toast('GPS non disponibile su questo browser','error'); return; }
   recording=true; puntiPercorso=[]; tripDistanceKm=0; tripMaxSpeed=0; tripStartTime=Date.now();
   document.getElementById('recBtn').textContent='Ferma registrazione';
   document.getElementById('recBtn').classList.add('recording');
   tripTimerInterval = setInterval(aggiornaDurataTrip, 1000);
+
   if(!isDemo){
-    watchId = navigator.geolocation.watchPosition(onPosizioneGPS, (err)=>toast('Errore GPS: '+err.message,'error'), {enableHighAccuracy:true, maximumAge:1000});
+    avviaTracciamentoContinuo(); // nel caso non fosse gia' attivo (es. non si e' mai connessi)
+    setTimeout(()=>{
+      assicuraLiveMap();
+      if(liveMapPolyline) liveMapPolyline.setLatLngs([]);
+      if(liveMapMarker){ liveMap.removeLayer(liveMapMarker); liveMapMarker=null; }
+    }, 60);
   }
   toast('Registrazione avviata','success');
 }
 function fermaRegistrazione(){
   recording=false;
-  if(watchId!==null){ navigator.geolocation.clearWatch(watchId); watchId=null; }
   clearInterval(tripTimerInterval);
   document.getElementById('recBtn').textContent='Avvia registrazione';
   document.getElementById('recBtn').classList.remove('recording');
@@ -1070,6 +1221,9 @@ function onPosizioneGPS(pos){
   const {latitude, longitude, speed} = pos.coords;
   const speedKmh = speed!==null ? speed*3.6 : 0;
   aggiornaGauge(speedKmh);
+
+  if(!recording) return; // il tracciamento continuo aggiorna solo la velocita' se non si sta registrando
+
   if(speedKmh > tripMaxSpeed) tripMaxSpeed = speedKmh;
   document.getElementById('homeMaxSpeed').textContent = Math.round(tripMaxSpeed);
   document.getElementById('tripMax').textContent = Math.round(tripMaxSpeed);
@@ -1081,6 +1235,14 @@ function onPosizioneGPS(pos){
   }
   puntiPercorso.push({lat:latitude, lon:longitude, t:Date.now()});
   aggiornaDisplayTrip();
+
+  assicuraLiveMap();
+  if(liveMap){
+    liveMapPolyline.addLatLng([latitude, longitude]);
+    if(!liveMapMarker) liveMapMarker = L.marker([latitude, longitude], {icon: iconaPunto('var(--accent)')}).addTo(liveMap);
+    else liveMapMarker.setLatLng([latitude, longitude]);
+    liveMap.panTo([latitude, longitude]);
+  }
 }
 function accumulaPuntoVelocitaDemo(speedKmh){
   if(speedKmh > tripMaxSpeed) tripMaxSpeed = speedKmh;
@@ -1102,13 +1264,23 @@ function aggiornaDurataTrip(){
   const s = String(sec%60).padStart(2,'0');
   document.getElementById('tripDur').textContent = m+':'+s;
 }
+
+// Il tracciato completo puo' avere migliaia di punti su un percorso lungo:
+// per tenere lo spazio di salvataggio del telefono ragionevole, se superiamo
+// 400 punti ne teniamo uno ogni N, mantenendo comunque la forma del percorso.
+function decimaPercorso(punti, maxPunti=400){
+  if(punti.length<=maxPunti) return punti;
+  const passo = Math.ceil(punti.length/maxPunti);
+  return punti.filter((_,i)=> i%passo===0 || i===punti.length-1);
+}
 function salvaTrip(){
   const trips = JSON.parse(localStorage.getItem('qs_trips')||'[]');
   trips.unshift({
     data: new Date().toISOString(),
     km: tripDistanceKm,
     durataSec: Math.floor((Date.now()-tripStartTime)/1000),
-    maxSpeed: tripMaxSpeed
+    maxSpeed: tripMaxSpeed,
+    punti: decimaPercorso(puntiPercorso).map(p=>[p.lat, p.lon]) // array compatto, solo lat/lon
   });
   localStorage.setItem('qs_trips', JSON.stringify(trips.slice(0,50)));
   renderTripLog();
@@ -1120,14 +1292,44 @@ function renderTripLog(){
     host.innerHTML = '<div class="empty-state">Nessun percorso ancora registrato.<br>Avvia una registrazione per iniziare.</div>';
     return;
   }
-  host.innerHTML = trips.map(t=>{
+  host.innerHTML = trips.map((t,i)=>{
     const d = new Date(t.data);
     const dataStr = d.toLocaleDateString('it-IT', {day:'2-digit', month:'short'});
     const oraStr = d.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
     const m = Math.floor(t.durataSec/60);
-    return '<div class="trip-log-item"><div class="trip-log-date">'+dataStr+'<span>'+oraStr+' · '+m+' min</span></div>'+
+    return '<div class="trip-log-item" onclick="apriMappaPercorso('+i+')" style="cursor:pointer;"><div class="trip-log-date">'+dataStr+'<span>'+oraStr+' · '+m+' min</span></div>'+
            '<div class="trip-log-dist">'+t.km.toFixed(1)+' km<span>max '+Math.round(t.maxSpeed)+' km/h</span></div></div>';
   }).join('');
+}
+
+/* ---- Visualizzatore percorso salvato, a schermo intero ---- */
+let fullMap=null;
+function apriMappaPercorso(indice){
+  const trips = JSON.parse(localStorage.getItem('qs_trips')||'[]');
+  const trip = trips[indice];
+  if(!trip){ return; }
+  if(!trip.punti || trip.punti.length<2){
+    toast('Nessun tracciato GPS disponibile per questo percorso','error');
+    return;
+  }
+  const d = new Date(trip.data);
+  document.getElementById('tripMapStats').textContent =
+    d.toLocaleDateString('it-IT',{day:'2-digit',month:'short'})+' · '+trip.km.toFixed(1)+' km · max '+Math.round(trip.maxSpeed)+' km/h';
+  document.getElementById('tripMapOverlay').classList.add('show');
+
+  setTimeout(()=>{
+    if(fullMap){ fullMap.remove(); fullMap=null; }
+    fullMap = L.map('tripMapFull', {attributionControl:true}).setView(trip.punti[0], 14);
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap', maxZoom:19}).addTo(fullMap);
+    const linea = L.polyline(trip.punti, {color: getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#F2A33C', weight:4}).addTo(fullMap);
+    L.marker(trip.punti[0], {icon: iconaPunto('var(--ok)')}).addTo(fullMap);
+    L.marker(trip.punti[trip.punti.length-1], {icon: iconaPunto('var(--danger)')}).addTo(fullMap);
+    fullMap.fitBounds(linea.getBounds(), {padding:[30,30]});
+  }, 60);
+}
+function chiudiMappaPercorso(){
+  document.getElementById('tripMapOverlay').classList.remove('show');
+  if(fullMap){ fullMap.remove(); fullMap=null; }
 }
 
 /* ===========================================================================
