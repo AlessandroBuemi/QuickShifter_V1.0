@@ -1,3 +1,6 @@
+
+
+Quickshifter app · HTML
 <!DOCTYPE html>
 <html lang="it">
 <head>
@@ -50,9 +53,9 @@ body{
 button{font-family:inherit; cursor:pointer;}
 input[type=range]{-webkit-appearance:none; appearance:none; background:transparent;}
 ::selection{background:var(--accent); color:var(--accent-ink);}
-
+ 
 .shell{max-width:480px; margin:0 auto; min-height:100%; display:flex; flex-direction:column; position:relative;}
-
+ 
 /* =========================================================================
    GATE (onboarding)
    ========================================================================= */
@@ -83,13 +86,13 @@ input[type=range]{-webkit-appearance:none; appearance:none; background:transpare
 .btn-ghost{background:var(--panel); color:var(--text); border:1px solid var(--hairline);}
 .btn-text{background:transparent; color:var(--text-muted); font-weight:500; padding:10px;}
 .gate-foot{font-size:11px; color:var(--text-faint); text-align:center; margin-top:14px;}
-
+ 
 /* =========================================================================
    APP SHELL
    ========================================================================= */
 #app{display:none; flex-direction:column; min-height:100svh;}
 #app.active{display:flex;}
-
+ 
 .topbar{
   display:flex; align-items:center; justify-content:space-between;
   padding:16px 20px 12px; position:sticky; top:0; background:var(--bg); z-index:20;
@@ -110,10 +113,10 @@ input[type=range]{-webkit-appearance:none; appearance:none; background:transpare
   background:var(--panel); display:flex; align-items:center; justify-content:center;
   color:var(--text-muted);
 }
-
+ 
 .pane{display:none; padding:4px 20px 110px; flex:1;}
 .pane.active{display:block;}
-
+ 
 /* =========================================================================
    HOME — gauge + quick stats
    ========================================================================= */
@@ -134,7 +137,7 @@ input[type=range]{-webkit-appearance:none; appearance:none; background:transpare
 .gauge-sub-item{text-align:center; flex:1;}
 .gauge-sub-item b{display:block; font-family:var(--font-mono); font-size:16px; font-weight:600;}
 .gauge-sub-item span{font-size:10px; color:var(--text-muted);}
-
+ 
 .lock-row{
   display:flex; align-items:center; justify-content:space-between; gap:14px;
   background:var(--panel); border:1px solid var(--hairline); border-radius:16px;
@@ -153,7 +156,7 @@ input[type=range]{-webkit-appearance:none; appearance:none; background:transpare
 }
 .switch.on{background:var(--danger);}
 .switch.on::after{transform:translateX(20px); background:#fff;}
-
+ 
 .row-list{background:var(--panel); border:1px solid var(--hairline); border-radius:16px; overflow:hidden;}
 .row-item{
   display:flex; align-items:center; justify-content:space-between; padding:15px 18px;
@@ -162,9 +165,16 @@ input[type=range]{-webkit-appearance:none; appearance:none; background:transpare
 .row-item:last-child{border-bottom:none;}
 .row-item b{font-size:14px; font-weight:500;}
 .row-item .val{font-family:var(--font-mono); font-size:13px; color:var(--text-muted);}
-
+ 
 .section-label{font-size:12px; color:var(--text-muted); margin:22px 2px 10px; font-weight:500;}
-
+ 
+.lean-row{display:flex; align-items:center;}
+.lean-stat{flex:1; text-align:center;}
+.lean-stat .lean-lbl{display:block; font-size:10px; color:var(--text-muted); letter-spacing:0.5px; margin-bottom:6px;}
+.lean-stat b{display:block; font-family:var(--font-display); font-weight:700; font-size:32px; color:var(--data);}
+.lean-stat .lean-max{font-size:10.5px; color:var(--text-faint); font-family:var(--font-mono);}
+.lean-divider{width:1px; align-self:stretch; background:var(--hairline); margin:0 10px;}
+ 
 /* =========================================================================
    SHIFTER PAGE
    ========================================================================= */
@@ -175,13 +185,13 @@ input[type=range]{-webkit-appearance:none; appearance:none; background:transpare
 .panel-head{display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;}
 .panel-head h3{margin:0; font-size:15px; font-weight:600;}
 .panel-desc{font-size:12.5px; color:var(--text-muted); line-height:1.5; margin:4px 0 16px;}
-
+ 
 .slider-block{margin-bottom:4px;}
 .slider-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;}
 .slider-top label{font-size:13px; color:var(--text-muted);}
 .slider-top .live-val{font-family:var(--font-mono); font-size:20px; font-weight:600; color:var(--accent);}
 .slider-top .live-val small{font-size:11px; color:var(--text-muted); font-family:var(--font-body);}
-
+ 
 input[type=range]{width:100%; height:34px; margin:0;}
 input[type=range]::-webkit-slider-runnable-track{height:5px; background:var(--hairline); border-radius:3px;}
 input[type=range]::-webkit-slider-thumb{
@@ -192,20 +202,20 @@ input[type=range]::-moz-range-track{height:5px; background:var(--hairline); bord
 input[type=range]::-moz-range-thumb{
   width:22px; height:22px; border-radius:50%; background:var(--accent); border:3px solid var(--panel);
 }
-
+ 
 .toggle-row{display:flex; align-items:center; justify-content:space-between; padding:4px 0 16px;}
 .toggle-row b{font-size:14px; font-weight:500;}
 .toggle-row span{font-size:12px; color:var(--text-muted); display:block; margin-top:2px;}
 .subsliders{display:none; gap:16px; flex-direction:column; padding-top:4px; border-top:1px solid var(--hairline); margin-top:4px;}
 .subsliders.show{display:flex;}
-
+ 
 .shift-stats{display:flex; gap:10px;}
 .shift-stat{
   flex:1; background:var(--panel-raised); border-radius:12px; padding:14px; text-align:center;
 }
 .shift-stat b{display:block; font-family:var(--font-display); font-weight:700; font-size:26px;}
 .shift-stat span{font-size:10.5px; color:var(--text-muted);}
-
+ 
 /* =========================================================================
    TRIP PAGE
    ========================================================================= */
@@ -220,13 +230,13 @@ input[type=range]::-moz-range-thumb{
 .trip-mini div{flex:1; text-align:center;}
 .trip-mini b{display:block; font-family:var(--font-mono); font-size:17px; font-weight:600;}
 .trip-mini span{font-size:10px; color:var(--text-muted);}
-
+ 
 .rec-btn{
   width:100%; padding:17px; border-radius:14px; border:none; font-size:15px; font-weight:700;
   background:var(--accent); color:var(--accent-ink); margin-bottom:22px;
 }
 .rec-btn.recording{background:var(--danger); color:#fff;}
-
+ 
 .trip-log-item{
   display:flex; justify-content:space-between; align-items:center; padding:14px 18px;
   border-bottom:1px solid var(--hairline);
@@ -236,11 +246,11 @@ input[type=range]::-moz-range-thumb{
 .trip-log-date span{display:block; font-size:11px; color:var(--text-muted); margin-top:1px;}
 .trip-log-dist{font-family:var(--font-mono); font-size:15px; font-weight:600; text-align:right;}
 .trip-log-dist span{display:block; font-size:10px; color:var(--text-muted); font-weight:400; font-family:var(--font-body);}
-
+ 
 .empty-state{
   text-align:center; padding:36px 20px; color:var(--text-muted); font-size:13px; line-height:1.6;
 }
-
+ 
 /* =========================================================================
    MORE PAGE / COMING SOON
    ========================================================================= */
@@ -260,18 +270,25 @@ input[type=range]::-moz-range-thumb{
   position:absolute; bottom:12px; left:14px; font-size:9.5px; font-weight:600; color:var(--accent);
   font-family:var(--font-mono);
 }
-
+ 
+.axis-row{display:flex; align-items:center; gap:8px; margin-bottom:10px;}
+.axis-lbl{width:56px; font-size:12.5px; color:var(--text-muted); flex-shrink:0;}
+.axis-row select{
+  flex:1; background:var(--panel-raised); border:1px solid var(--hairline); color:var(--text);
+  border-radius:8px; padding:9px 8px; font-size:12.5px; font-family:inherit;
+}
+ 
 .fw-row{display:flex; align-items:center; justify-content:space-between; padding:15px 18px;}
 .fw-row b{font-size:14px;}
 .fw-row .fw-ver{font-family:var(--font-mono); font-size:12.5px; color:var(--text-muted);}
-
+ 
 .theme-switch{display:flex; gap:8px; padding:14px 18px;}
 .theme-opt{
   flex:1; padding:10px; border-radius:10px; border:1px solid var(--hairline); text-align:center;
   font-size:12px; background:var(--panel-raised);
 }
 .theme-opt.active{border-color:var(--accent); color:var(--accent);}
-
+ 
 /* =========================================================================
    BOTTOM NAV
    ========================================================================= */
@@ -288,7 +305,7 @@ input[type=range]::-moz-range-thumb{
 .nav-btn svg{width:21px; height:21px;}
 .nav-btn span{font-size:10px; font-weight:500;}
 .nav-btn.active{color:var(--accent);}
-
+ 
 /* =========================================================================
    MISC: toast, sheet, progress
    ========================================================================= */
@@ -301,7 +318,7 @@ input[type=range]::-moz-range-thumb{
 .toast.show{opacity:1; transform:translateY(0);}
 .toast.err{border-color:var(--danger); color:#ffb4b8;}
 .toast.ok{border-color:var(--ok);}
-
+ 
 .sheet-overlay{position:fixed; inset:0; background:rgba(0,0,0,.5); z-index:9990; display:none;}
 .sheet-overlay.show{display:block;}
 .sheet{
@@ -314,14 +331,59 @@ input[type=range]::-moz-range-thumb{
 .sheet p{font-size:13px; color:var(--text-muted); line-height:1.6; margin:0 0 18px;}
 .ota-progress-track{height:8px; background:var(--hairline); border-radius:4px; overflow:hidden; margin-bottom:18px; display:none;}
 .ota-progress-fill{height:100%; width:0%; background:var(--accent); transition:width .2s ease;}
-
+ 
+/* =========================================================================
+   DASHBOARD ORIZZONTALE (landscape, telefono in orizzontale)
+   ========================================================================= */
+#dashboard{
+  display:none; position:fixed; inset:0; z-index:500; background:var(--bg);
+  flex-direction:column; padding:12px 28px calc(12px + env(safe-area-inset-right)) 28px;
+}
+@media (orientation:landscape) and (max-height:520px){
+  #app.active ~ #dashboard.active{display:flex;}
+  body.in-app #gate{display:none !important;}
+}
+.dash-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;}
+.dash-brand{font-family:var(--font-display); font-weight:700; font-size:15px; letter-spacing:1px; color:var(--text-muted);}
+.dash-lock{font-size:10px; color:var(--text-faint);}
+.dash-lock.locked{color:var(--danger);}
+.dash-main{flex:1; display:flex; align-items:center; justify-content:space-between; gap:18px;}
+.dash-speed{flex:0 0 26%; text-align:left;}
+.dash-speed b{font-family:var(--font-display); font-weight:800; font-size:min(16vw,96px); line-height:0.85; display:block;}
+.dash-speed span{font-size:12px; color:var(--text-muted); letter-spacing:1px;}
+ 
+.dash-horizon-wrap{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; position:relative;}
+.dash-horizon{
+  width:min(42vw,260px); height:min(42vw,260px); border-radius:50%; position:relative; overflow:hidden;
+  border:3px solid var(--hairline); background:var(--panel);
+}
+.dash-horizon-line{
+  position:absolute; left:-20%; right:-20%; top:50%; height:50%;
+  background:linear-gradient(0deg, var(--accent-dim), var(--accent));
+  transform-origin:50% 0%;
+}
+.dash-roll-val{font-family:var(--font-mono); font-size:22px; font-weight:600; margin-top:10px;}
+.dash-roll-lbl{font-size:10px; color:var(--text-muted); letter-spacing:1px;}
+ 
+.dash-pitch{flex:0 0 22%; display:flex; flex-direction:column; align-items:center; gap:8px;}
+.dash-pitch-track{width:14px; height:min(30vh,180px); border-radius:7px; background:var(--panel); border:1px solid var(--hairline); position:relative; overflow:hidden;}
+.dash-pitch-fill{position:absolute; left:0; right:0; bottom:50%; height:4px; background:var(--data); transition:bottom .15s ease, height .15s ease;}
+.dash-pitch b{font-family:var(--font-mono); font-size:18px;}
+.dash-pitch span{font-size:9.5px; color:var(--text-muted); letter-spacing:1px;}
+ 
+.dash-bottom{display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11px; color:var(--text-muted); padding-top:4px;}
+ 
+@keyframes shake-alert{
+  0%,100%{transform:translateX(0);} 25%{transform:translateX(-4px);} 75%{transform:translateX(4px);}
+}
+ 
 ::-webkit-scrollbar{display:none;}
 </style>
 </head>
 <body>
-
+ 
 <div id="toastHost"></div>
-
+ 
 <!-- ============================= GATE ============================= -->
 <div id="gate">
   <div class="shell" style="flex:1; display:flex; flex-direction:column;">
@@ -330,8 +392,8 @@ input[type=range]::-moz-range-thumb{
       <button class="btn-text" style="padding:4px;" onclick="toggleTheme()">◐</button>
     </div>
     <div class="gate-hero">
-      <h1>Ogni<br>cambiata.<br>Perfetta.</h1>
-      <p>Cambio elettronico senza frizione, con pop &amp; bang regolabile. Connetti la centralina via Bluetooth e configura tutto dal telefono.</p>
+      <h1>Quick<br>Shifter.</h1>
+      <p>Cambio elettronico senza frizione, pop &amp; bang e telemetria di piega. Connetti la centralina via Bluetooth e configura tutto dal telefono.</p>
       <div class="gate-dial" id="gateDial"></div>
     </div>
     <div class="gate-actions">
@@ -341,11 +403,11 @@ input[type=range]::-moz-range-thumb{
     <div class="gate-foot">Bluetooth Low Energy · ESP32</div>
   </div>
 </div>
-
+ 
 <!-- ============================= APP ============================= -->
 <div id="app">
 <div class="shell">
-
+ 
   <div class="topbar">
     <div class="topbar-id">
       <b>QuickShifter</b>
@@ -355,7 +417,7 @@ input[type=range]::-moz-range-thumb{
       <button class="icon-btn" onclick="goPane('more')" aria-label="Impostazioni">⚙</button>
     </div>
   </div>
-
+ 
   <!-- -------- HOME -------- -->
   <div class="pane active" id="pane-home">
     <div class="gauge-card">
@@ -376,7 +438,7 @@ input[type=range]::-moz-range-thumb{
         <div class="gauge-sub-item"><b id="homeShifts">0</b><span>CAMBIATE</span></div>
       </div>
     </div>
-
+ 
     <div class="lock-row" id="lockRow" onclick="toggleLock()">
       <div class="lock-text">
         <b id="lockTitle">Moto attiva</b>
@@ -384,13 +446,30 @@ input[type=range]::-moz-range-thumb{
       </div>
       <div class="switch" id="lockSwitch"></div>
     </div>
-
+ 
     <div class="row-list">
       <div class="row-item"><b>Ultimo taglio</b><span class="val" id="homeLastCut">—</span></div>
       <div class="row-item"><b>Pop &amp; Bang</b><span class="val" id="homePopState">Off</span></div>
     </div>
+ 
+    <div class="section-label" id="imuSectionLabel" style="display:none;">Dinamica di guida</div>
+    <div class="panel" id="imuHomePanel" style="display:none;">
+      <div class="lean-row">
+        <div class="lean-stat">
+          <span class="lean-lbl">PIEGA</span>
+          <b id="homeRoll">0°</b>
+          <span class="lean-max">max <span id="homeRollMax">0°</span></span>
+        </div>
+        <div class="lean-divider"></div>
+        <div class="lean-stat">
+          <span class="lean-lbl">IMPENNATA</span>
+          <b id="homePitch">0°</b>
+          <span class="lean-max">max <span id="homePitchMax">0°</span></span>
+        </div>
+      </div>
+    </div>
   </div>
-
+ 
   <!-- -------- SHIFTER -------- -->
   <div class="pane" id="pane-shifter">
     <div class="section-label">Quickshifter</div>
@@ -402,7 +481,7 @@ input[type=range]::-moz-range-thumb{
         <input type="range" id="cutSlider" min="20" max="120" step="1" value="75" oninput="onCutInput(this.value)" onchange="onCutCommit(this.value)">
       </div>
     </div>
-
+ 
     <div class="panel">
       <div class="panel-head"><h3>Intervallo minimo</h3></div>
       <p class="panel-desc">Tempo minimo tra due cambiate consecutive, per ignorare vibrazioni o doppi contatti del sensore.</p>
@@ -411,7 +490,7 @@ input[type=range]::-moz-range-thumb{
         <input type="range" id="gapSlider" min="100" max="400" step="10" value="180" oninput="onGapInput(this.value)" onchange="onGapCommit(this.value)">
       </div>
     </div>
-
+ 
     <div class="section-label">Pop &amp; Bang</div>
     <div class="panel">
       <div class="toggle-row">
@@ -432,13 +511,13 @@ input[type=range]::-moz-range-thumb{
         </div>
       </div>
     </div>
-
+ 
     <div class="section-label">Sessione</div>
     <div class="shift-stats">
       <div class="shift-stat"><b id="statShifts">0</b><span>CAMBIATE</span></div>
       <div class="shift-stat"><b id="statLastCut">—</b><span>ULTIMO TAGLIO</span></div>
     </div>
-
+ 
     <div class="section-label">Generale</div>
     <div class="row-list">
       <div class="row-item">
@@ -451,7 +530,7 @@ input[type=range]::-moz-range-thumb{
       </div>
     </div>
   </div>
-
+ 
   <!-- -------- TRIP -------- -->
   <div class="pane" id="pane-trip">
     <div class="section-label">Percorso in corso</div>
@@ -465,13 +544,13 @@ input[type=range]::-moz-range-thumb{
       </div>
     </div>
     <button class="rec-btn" id="recBtn" onclick="toggleRecording()">Avvia registrazione</button>
-
+ 
     <div class="section-label">Percorsi salvati</div>
     <div class="row-list" id="tripLog">
       <div class="empty-state">Nessun percorso ancora registrato.<br>Avvia una registrazione per iniziare.</div>
     </div>
   </div>
-
+ 
   <!-- -------- MORE -------- -->
   <div class="pane" id="pane-more">
     <div class="section-label">Moduli in arrivo</div>
@@ -501,7 +580,38 @@ input[type=range]::-moz-range-thumb{
         <div class="badge">IN ARRIVO</div>
       </div>
     </div>
-
+ 
+    <div class="section-label" id="sensoriSectionLabel" style="display:none;">Sensori</div>
+    <div class="panel" id="sensoriPanel" style="display:none;">
+      <div class="panel-head"><h3>Calibrazione piega/impennata</h3></div>
+      <p class="panel-desc">Metti la moto dritta, su un fondo piano, a motore spento. Tocca calibra: azzera l'errore dovuto al montaggio del sensore, non serve che sia perfettamente allineato.</p>
+      <button class="btn btn-ghost" style="margin-bottom:18px;" onclick="calibraImuInPiano()">Calibra in piano</button>
+ 
+      <div class="panel-head"><h3>Orientamento sensore</h3></div>
+      <p class="panel-desc">Indica a quale asse del sensore corrisponde ciascuna direzione della moto. Se piega/impennata sembrano invertite o scambiate, cambia qui — non serve smontare nulla.</p>
+ 
+      <div class="axis-row">
+        <span class="axis-lbl">Avanti</span>
+        <select id="axisFwdSel" onchange="aggiornaAssi()"><option value="0">Asse X</option><option value="1">Asse Y</option><option value="2">Asse Z</option></select>
+        <select id="axisFwdSign" onchange="aggiornaAssi()"><option value="1">Normale</option><option value="-1">Invertito</option></select>
+      </div>
+      <div class="axis-row">
+        <span class="axis-lbl">Destra</span>
+        <select id="axisRightSel" onchange="aggiornaAssi()"><option value="0">Asse X</option><option value="1" selected>Asse Y</option><option value="2">Asse Z</option></select>
+        <select id="axisRightSign" onchange="aggiornaAssi()"><option value="1">Normale</option><option value="-1">Invertito</option></select>
+      </div>
+      <div class="axis-row">
+        <span class="axis-lbl">Alto</span>
+        <select id="axisUpSel" onchange="aggiornaAssi()"><option value="0">Asse X</option><option value="1">Asse Y</option><option value="2" selected>Asse Z</option></select>
+        <select id="axisUpSign" onchange="aggiornaAssi()"><option value="1">Normale</option><option value="-1">Invertito</option></select>
+      </div>
+ 
+      <div class="toggle-row" style="border-top:1px solid var(--hairline); margin-top:14px; padding-top:16px;">
+        <div><b>Antifurto a movimento</b><span>Allarme se la moto viene spostata da bloccata</span></div>
+        <div class="switch" id="antifurtoSwitch" onclick="toggleAntifurto()"></div>
+      </div>
+    </div>
+ 
     <div class="section-label">Dispositivo</div>
     <div class="row-list">
       <div class="fw-row">
@@ -509,7 +619,7 @@ input[type=range]::-moz-range-thumb{
         <span class="fw-ver" id="fwVersion">—</span>
       </div>
     </div>
-
+ 
     <div class="section-label">Aspetto</div>
     <div class="row-list">
       <div class="theme-switch">
@@ -518,16 +628,16 @@ input[type=range]::-moz-range-thumb{
         <div class="theme-opt" id="themeLight" onclick="setTheme('light')">Chiaro</div>
       </div>
     </div>
-
+ 
     <div class="section-label">Info</div>
     <div class="row-list">
       <div class="row-item"><b>Nome moto</b><input id="bikeNameInput" value="La mia moto" style="background:transparent; border:none; color:var(--text-muted); text-align:right; font-size:13px; font-family:inherit; width:140px;" onchange="salvaNomeMoto(this.value)"></div>
       <div class="row-item" onclick="scollega()" style="cursor:pointer;"><b style="color:var(--danger);">Disconnetti</b></div>
     </div>
   </div>
-
+ 
 </div>
-
+ 
 <div class="bottom-nav">
   <button class="nav-btn active" data-p="home" onclick="goPane('home')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><path d="M12 3 3 10v11h6v-6h6v6h6V10z"/></svg>
@@ -546,9 +656,39 @@ input[type=range]::-moz-range-thumb{
     <span>Altro</span>
   </button>
 </div>
-
+ 
 </div>
-
+ 
+<!-- ============================= DASHBOARD ORIZZONTALE ============================= -->
+<!-- Visibile solo in landscape su schermo stretto (telefono ruotato). Stessi dati
+     dell'app verticale, aggiornati in parallelo dalle stesse funzioni JS. -->
+<div id="dashboard">
+  <div class="dash-top">
+    <span class="dash-brand">QUICKSHIFTER</span>
+    <span class="dash-lock" id="dashLockPill">●</span>
+  </div>
+  <div class="dash-main">
+    <div class="dash-speed">
+      <b id="dashSpeed">0</b>
+      <span>KM/H</span>
+    </div>
+    <div class="dash-horizon-wrap">
+      <div class="dash-horizon" id="dashHorizon"><div class="dash-horizon-line"></div></div>
+      <div class="dash-roll-val" id="dashRollVal">0°</div>
+      <div class="dash-roll-lbl">PIEGA</div>
+    </div>
+    <div class="dash-pitch">
+      <div class="dash-pitch-track"><div class="dash-pitch-fill" id="dashPitchFill"></div></div>
+      <b id="dashPitchVal">0°</b>
+      <span>IMPENNATA</span>
+    </div>
+  </div>
+  <div class="dash-bottom">
+    <span id="dashTripKm">0.0 km trip</span>
+    <span id="dashShifts">0 cambiate</span>
+  </div>
+</div>
+ 
 <!-- Bottom sheet riusabile (OTA / conferme) -->
 <div class="sheet-overlay" id="sheetOverlay" onclick="chiudiSheet()"></div>
 <div class="sheet" id="sheet">
@@ -558,29 +698,29 @@ input[type=range]::-moz-range-thumb{
   <button class="btn btn-primary" id="sheetBtnPrimary">Ok</button>
   <button class="btn btn-text" id="sheetBtnSecondary" onclick="chiudiSheet()">Annulla</button>
 </div>
-
+ 
 <script>
 /* ===========================================================================
    STATO GLOBALE
    =========================================================================== */
 const LATEST_FIRMWARE_VERSION = "3.0.2";
 const FIRMWARE_BIN_URL = "https://raw.githubusercontent.com/AlessandroBuemi/QuickShifter_V1.0/main/QuickShifter_LITE.ino.bin";
-
+ 
 const CENTRALINA_SERVICE_UUID = "6e400001-b5a3-f393-e0a9-e50e24dcca9e";
 const CHAR_RX_UUID            = "6e400002-b5a3-f393-e0a9-e50e24dcca9e";
 const CHAR_TX_UUID            = "6e400003-b5a3-f393-e0a9-e50e24dcca9e";
 const CHAR_OTA_CTRL_UUID      = "6e400004-b5a3-f393-e0a9-e50e24dcca9e";
 const CHAR_OTA_DATA_UUID      = "6e400005-b5a3-f393-e0a9-e50e24dcca9e";
-
+ 
 let gattServer=null, rxChar=null, otaCtrlChar=null, otaDataChar=null;
 let connesso=false, isDemo=false, statoSincronizzato=false;
 let ultimoContatoreCambiate=null;
 let otaInCorso=false;
-
+ 
 // Trip recording
 let recording=false, watchId=null, puntiPercorso=[], tripDistanceKm=0, tripMaxSpeed=0, tripStartTime=0, tripTimerInterval=null;
 let demoTimer=null;
-
+ 
 /* ===========================================================================
    UTILI: toast / sheet / navigazione
    =========================================================================== */
@@ -612,7 +752,7 @@ function goPane(id){
   document.getElementById('pane-'+id).classList.add('active');
   document.querySelectorAll('.nav-btn').forEach(b=>b.classList.toggle('active', b.dataset.p===id));
 }
-
+ 
 /* ===========================================================================
    TEMA
    =========================================================================== */
@@ -631,7 +771,7 @@ function toggleTheme(){
   const saved=localStorage.getItem('qs_theme')||'auto';
   setTheme(saved);
 })();
-
+ 
 /* ===========================================================================
    GAUGE (SVG arco) e aggiornamento velocità
    =========================================================================== */
@@ -642,8 +782,9 @@ function aggiornaGauge(speedKmh){
   const offset = GAUGE_ARC_LEN * (1 - pct);
   document.getElementById('gaugeArc').style.strokeDashoffset = offset;
   document.getElementById('speedNum').textContent = Math.round(speedKmh);
+  document.getElementById('dashSpeed').textContent = Math.round(speedKmh);
 }
-
+ 
 /* ===========================================================================
    CONNESSIONE BLE
    =========================================================================== */
@@ -659,21 +800,21 @@ async function connetti(){
     const txChar = await servizio.getCharacteristic(CHAR_TX_UUID);
     await txChar.startNotifications();
     txChar.addEventListener('characteristicvaluechanged', e => gestisciPacchetto(e.target.value));
-
+ 
     device.addEventListener('gattserverdisconnected', onDisconnected);
-
+ 
     connesso = true; statoSincronizzato = false; isDemo = false;
     entraInApp();
     aggiornaConnUI('ble');
     toast('Centralina connessa', 'success');
-
+ 
     try{
       otaCtrlChar = await servizio.getCharacteristic(CHAR_OTA_CTRL_UUID);
       otaDataChar = await servizio.getCharacteristic(CHAR_OTA_DATA_UUID);
       await otaCtrlChar.startNotifications();
       otaCtrlChar.addEventListener('characteristicvaluechanged', e => gestisciStatoOta(e.target.value));
     }catch(e){ otaCtrlChar=null; otaDataChar=null; }
-
+ 
     setTimeout(()=>{ if(!statoSincronizzato) toast('Nessun dato dalla centralina: verifica il firmware', 'error'); }, 5000);
   }catch(e){
     toast('Connessione non riuscita: '+e.message, 'error');
@@ -685,7 +826,7 @@ function onDisconnected(){
   toast('Connessione persa', 'error');
 }
 function scollega(){ location.reload(); }
-
+ 
 function avviaDemo(){
   isDemo=true; connesso=false;
   entraInApp();
@@ -700,10 +841,12 @@ function avviaDemo(){
   }, 250);
   toast('Modalità demo attiva','success');
 }
-
+ 
 function entraInApp(){
   document.getElementById('gate').style.display='none';
   document.getElementById('app').classList.add('active');
+  document.getElementById('dashboard').classList.add('active');
+  document.body.classList.add('in-app');
 }
 function aggiornaConnUI(stato){
   const dot=document.getElementById('connDot'), lbl=document.getElementById('connLabel');
@@ -712,7 +855,7 @@ function aggiornaConnUI(stato){
   else if(stato==='demo'){ dot.classList.add('demo'); lbl.textContent='demo'; }
   else { lbl.textContent='offline'; }
 }
-
+ 
 async function inviaComando(obj){
   if(isDemo){ return; }
   if(!connesso || !rxChar) { toast('Centralina non connessa','error'); return; }
@@ -721,7 +864,7 @@ async function inviaComando(obj){
     await rxChar.writeValue(enc.encode(JSON.stringify(obj)));
   }catch(e){ toast('Errore invio comando','error'); }
 }
-
+ 
 /* ===========================================================================
    RICEZIONE PACCHETTI DALLA CENTRALINA
    =========================================================================== */
@@ -734,6 +877,7 @@ function smistaPacchetto(json){
   if(json.contatore !== undefined){
     document.getElementById('homeShifts').textContent = json.contatore;
     document.getElementById('statShifts').textContent = json.contatore;
+    document.getElementById('dashShifts').textContent = json.contatore+' cambiate';
     if(ultimoContatoreCambiate!==null && json.contatore>ultimoContatoreCambiate && json.cutTime!==undefined){
       document.getElementById('homeLastCut').textContent = json.cutTime+' ms';
       document.getElementById('statLastCut').textContent = json.cutTime+' ms';
@@ -749,6 +893,70 @@ function smistaPacchetto(json){
     statoSincronizzato = true;
     toast('Impostazioni sincronizzate','success');
   }
+  if(json.imu !== undefined){
+    const presente = !!json.imu;
+    document.getElementById('imuSectionLabel').style.display = presente ? 'block':'none';
+    document.getElementById('imuHomePanel').style.display = presente ? 'block':'none';
+    document.getElementById('sensoriSectionLabel').style.display = presente ? 'block':'none';
+    document.getElementById('sensoriPanel').style.display = presente ? 'block':'none';
+  }
+  if(json.antifurtoMov !== undefined){
+    aggiornaSwitch('antifurtoSwitch', json.antifurtoMov);
+  }
+  if(json.roll !== undefined && json.pitch !== undefined){
+    aggiornaTelemetriaImu(json.roll, json.pitch, json.rollMax, json.pitchMax);
+  }
+  if(json.alm === true){
+    gestisciAllarmeAntifurto();
+  }
+}
+ 
+/* ===========================================================================
+   IMU: piega, impennata, calibrazione, rimappatura assi, antifurto
+   =========================================================================== */
+function aggiornaTelemetriaImu(roll, pitch, rollMax, pitchMax){
+  const rollTxt = Math.abs(roll)+'°'+(roll!==0?(roll>0?' DX':' SX'):'');
+  document.getElementById('homeRoll').textContent = rollTxt;
+  document.getElementById('dashRollVal').textContent = rollTxt;
+  if(rollMax!==undefined){ document.getElementById('homeRollMax').textContent = Math.abs(rollMax)+'°'; }
+ 
+  const pitchTxt = pitch+'°';
+  document.getElementById('homePitch').textContent = pitchTxt;
+  document.getElementById('dashPitchVal').textContent = pitchTxt;
+  if(pitchMax!==undefined){ document.getElementById('homePitchMax').textContent = Math.abs(pitchMax)+'°'; }
+ 
+  document.getElementById('dashHorizon').style.transform = 'rotate('+(-roll)+'deg)';
+  const fill = document.getElementById('dashPitchFill');
+  const pct = Math.max(-45, Math.min(90, pitch)) / 90; // scala -45..+90
+  if(pct>=0){ fill.style.bottom='50%'; fill.style.height=(pct*50)+'%'; }
+  else{ fill.style.bottom=(50+pct*50*(45/90))+'%'; fill.style.height=(-pct*50*(45/90))+'%'; }
+}
+function calibraImuInPiano(){
+  if(isDemo){ toast('Non disponibile in modalità demo','error'); return; }
+  inviaComando({type:'imu_calibrate_flat'});
+  toast('Calibrazione in corso, tieni la moto ferma…','success');
+}
+function aggiornaAssi(){
+  const payload = {
+    type:'imu_set_axis',
+    fwd:{ax:parseInt(document.getElementById('axisFwdSel').value), sign:parseInt(document.getElementById('axisFwdSign').value)},
+    right:{ax:parseInt(document.getElementById('axisRightSel').value), sign:parseInt(document.getElementById('axisRightSign').value)},
+    up:{ax:parseInt(document.getElementById('axisUpSel').value), sign:parseInt(document.getElementById('axisUpSign').value)}
+  };
+  inviaComando(payload);
+  toast('Orientamento sensore aggiornato','success');
+}
+let antifurtoState=true;
+function toggleAntifurto(){
+  antifurtoState=!antifurtoState;
+  aggiornaSwitch('antifurtoSwitch', antifurtoState);
+  inviaComando({type:'toggle_antifurto_movimento', value: antifurtoState});
+}
+function gestisciAllarmeAntifurto(){
+  toast('⚠️ Movimento rilevato: la moto è bloccata ma si sta muovendo!','error');
+  if(navigator.vibrate) navigator.vibrate([200,100,200,100,200]);
+  document.getElementById('lockRow').style.animation='shake-alert .4s ease 3';
+  setTimeout(()=>{ document.getElementById('lockRow').style.animation=''; }, 1300);
 }
 function sincronizzaControlli(json){
   if(json.lock !== undefined) aggiornaVistaLock(json.lock);
@@ -764,7 +972,7 @@ function impostaSliderDaRemoto(idSlider, idVal, valore){
   document.getElementById(idSlider).value = valore;
   document.getElementById(idVal).textContent = valore;
 }
-
+ 
 /* ===========================================================================
    SHIFTER: slider e toggle
    =========================================================================== */
@@ -776,7 +984,7 @@ function onPd1Input(v){ document.getElementById('pd1Val').textContent=v; }
 function onPd1Commit(v){ inviaComando({type:'set_pop_delay', value: parseInt(v)}); }
 function onPd2Input(v){ document.getElementById('pd2Val').textContent=v; }
 function onPd2Commit(v){ inviaComando({type:'set_pop_intensity', value: parseInt(v)}); }
-
+ 
 let popState=false;
 function togglePop(){
   popState=!popState;
@@ -789,7 +997,7 @@ function aggiornaVistaPop(on){
   document.getElementById('popSliders').classList.toggle('show', on);
   document.getElementById('homePopState').textContent = on? 'Attivo':'Off';
 }
-
+ 
 let qsState=true;
 function toggleQs(){
   qsState=!qsState;
@@ -806,8 +1014,9 @@ function aggiornaSwitch(id, on){
   document.getElementById(id).classList.toggle('on', on);
   if(id==='qsSwitch') qsState=on;
   if(id==='audSwitch') audState=on;
+  if(id==='antifurtoSwitch') antifurtoState=on;
 }
-
+ 
 /* ===========================================================================
    LOCK / IMMOBILIZER
    =========================================================================== */
@@ -826,8 +1035,9 @@ function aggiornaVistaLock(stato){
   sw.classList.toggle('on', stato);
   document.getElementById('lockTitle').textContent = stato? 'Moto bloccata':'Moto attiva';
   document.getElementById('lockSub').textContent = stato? 'Tocca per sbloccare':'Tocca per bloccare l\'accensione';
+  document.getElementById('dashLockPill').classList.toggle('locked', stato);
 }
-
+ 
 /* ===========================================================================
    TRIP: tracciamento GPS, distanza, log percorsi
    =========================================================================== */
@@ -866,7 +1076,7 @@ function onPosizioneGPS(pos){
   if(speedKmh > tripMaxSpeed) tripMaxSpeed = speedKmh;
   document.getElementById('homeMaxSpeed').textContent = Math.round(tripMaxSpeed);
   document.getElementById('tripMax').textContent = Math.round(tripMaxSpeed);
-
+ 
   if(puntiPercorso.length>0){
     const ultimo = puntiPercorso[puntiPercorso.length-1];
     const d = haversineKm(ultimo.lat, ultimo.lon, latitude, longitude);
@@ -884,6 +1094,7 @@ function accumulaPuntoVelocitaDemo(speedKmh){
 function aggiornaDisplayTrip(){
   document.getElementById('tripDist').innerHTML = tripDistanceKm.toFixed(1)+'<small>km</small>';
   document.getElementById('homeTripKm').textContent = tripDistanceKm.toFixed(1);
+  document.getElementById('dashTripKm').textContent = tripDistanceKm.toFixed(1)+' km trip';
   const durataMin = (Date.now()-tripStartTime)/60000;
   const media = durataMin>0 ? (tripDistanceKm/(durataMin/60)) : 0;
   document.getElementById('tripAvg').textContent = Math.round(media);
@@ -921,7 +1132,7 @@ function renderTripLog(){
            '<div class="trip-log-dist">'+t.km.toFixed(1)+' km<span>max '+Math.round(t.maxSpeed)+' km/h</span></div></div>';
   }).join('');
 }
-
+ 
 /* ===========================================================================
    NOME MOTO
    =========================================================================== */
@@ -930,7 +1141,7 @@ function salvaNomeMoto(nome){ localStorage.setItem('qs_bike_name', nome); toast(
   const saved = localStorage.getItem('qs_bike_name');
   if(saved) document.getElementById('bikeNameInput').value = saved;
 })();
-
+ 
 /* ===========================================================================
    OTA: aggiornamento firmware
    =========================================================================== */
@@ -994,6 +1205,10 @@ async function avviaOTA(){
 function gestisciStatoOta(dataValue){
   let json;
   try{ json=JSON.parse(new TextDecoder('utf-8').decode(dataValue)); }catch(e){ return; }
+  if(json.otaState==='imu_calibrated'){
+    toast('Calibrazione completata','success');
+    return;
+  }
   if(json.otaState==='ok'){
     otaInCorso=false;
     document.getElementById('otaFill').style.width='100%';
@@ -1006,7 +1221,7 @@ function gestisciStatoOta(dataValue){
     chiudiSheet();
   }
 }
-
+ 
 /* ===========================================================================
    INIZIALIZZAZIONE
    =========================================================================== */
@@ -1015,3 +1230,7 @@ aggiornaGauge(0);
 </script>
 </body>
 </html>
+ 
+
+
+
