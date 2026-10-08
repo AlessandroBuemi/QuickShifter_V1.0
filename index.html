@@ -397,41 +397,76 @@ input[type=range]::-moz-range-thumb{
 .ota-progress-fill{height:100%; width:0%; background:var(--accent); transition:width .2s ease;}
 
 /* =========================================================================
-   DASHBOARD ORIZZONTALE (landscape, telefono in orizzontale)
+   DASHBOARD ORIZZONTALE (landscape, telefono in orizzontale) — stile cruscotto moto
    ========================================================================= */
 #dashboard{
   display:none; position:fixed; inset:0; z-index:500; background:var(--bg);
-  flex-direction:column; padding:12px 28px calc(12px + env(safe-area-inset-right)) 28px;
+  flex-direction:column; padding:10px 22px calc(10px + env(safe-area-inset-right)) 22px;
+  overflow:hidden;
 }
 @media (orientation:landscape) and (max-height:520px){
   body.in-app #app.active{display:none;}
   body.in-app #dashboard.active{display:flex;}
   body.in-app #gate{display:none !important;}
 }
-.dash-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:4px;}
-.dash-brand{font-family:var(--font-display); font-weight:700; font-size:15px; letter-spacing:1px; color:var(--text-muted);}
-.dash-lock{font-size:10px; color:var(--text-faint);}
+
+/* -- barra superiore: orologio, marchio, mappa, stato blocco -- */
+.dash-top{display:flex; justify-content:space-between; align-items:center; margin-bottom:2px; flex-shrink:0;}
+.dash-top-left, .dash-top-right{flex:1; display:flex; align-items:center; gap:10px;}
+.dash-top-right{justify-content:flex-end;}
+.dash-clock{font-family:var(--font-mono); font-size:14px; font-weight:600; letter-spacing:0.5px; color:var(--text-muted); font-variant-numeric:tabular-nums;}
+.dash-brand{font-family:var(--font-display); font-weight:700; font-size:13px; letter-spacing:2px; color:var(--text-faint); text-align:center; flex:0 0 auto;}
+.dash-map-toggle{
+  width:28px; height:28px; border-radius:8px; border:1px solid var(--hairline); background:var(--panel);
+  color:var(--text-muted); display:flex; align-items:center; justify-content:center; font-size:13px; padding:0;
+}
+.dash-map-toggle.active{border-color:var(--accent); color:var(--accent); background:rgba(242,163,60,.1);}
+.dash-lock{font-size:10px; color:var(--text-faint); letter-spacing:0.5px;}
 .dash-lock.locked{color:var(--danger);}
-.dash-main{flex:1; display:flex; align-items:center; justify-content:space-between; gap:0;}
-.dash-speed{flex:0 0 25%; text-align:left; padding-right:18px;}
-.dash-horizon-wrap{border-left:1px solid var(--hairline); border-right:1px solid var(--hairline); padding:0 20px;}
-.dash-pitch{padding-left:18px;}
-.dash-speed b{font-family:var(--font-display); font-weight:800; font-size:min(16vw,96px); line-height:0.85; display:block;}
-.dash-speed span{font-size:12px; color:var(--text-muted); letter-spacing:1px;}
 
-.dash-horizon-wrap{flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; height:100%; max-width:min(40vh,260px); margin:0 auto;}
-.dash-dial{width:100%; height:auto; aspect-ratio:1/1;}
+/* -- corpo: colonna piega/impennata | quadrante velocità centrale | mappa/trip -- */
+.dash-main{flex:1; display:flex; align-items:stretch; justify-content:center; gap:0; min-height:0;}
+
+.dash-side{flex:0 0 19%; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:14px; min-width:70px;}
+.dash-side-left{border-right:1px solid var(--hairline); padding-right:14px;}
+
+.dash-mini-gauge{display:flex; flex-direction:column; align-items:center;}
+.dash-dial-mini{width:min(11vh,62px); height:auto; aspect-ratio:1/1;}
 #dashLeanNeedle{transition:transform .12s ease-out; transform-origin:100px 100px;}
-.dash-roll-val{font-family:var(--font-mono); font-size:22px; font-weight:600; margin-top:8px;}
-.dash-roll-lbl{font-size:10px; color:var(--text-muted); letter-spacing:1px;}
+.dash-roll-val{font-family:var(--font-mono); font-size:16px; font-weight:600; margin-top:4px;}
+.dash-roll-lbl{font-size:8.5px; color:var(--text-muted); letter-spacing:1px;}
 
-.dash-pitch{flex:0 0 18%; display:flex; flex-direction:column; align-items:center; gap:8px; height:100%; justify-content:center;}
-.dash-pitch-svg{height:min(32vh,190px); width:auto;}
+.dash-mini-pitch{display:flex; flex-direction:column; align-items:center;}
+.dash-pitch-svg{height:min(13vh,74px); width:auto;}
 #dashPitchBar{transition:y .12s ease-out, height .12s ease-out;}
-.dash-pitch b{font-family:var(--font-mono); font-size:18px;}
-.dash-pitch span{font-size:9.5px; color:var(--text-muted); letter-spacing:1px;}
+.dash-mini-pitch b{font-family:var(--font-mono); font-size:16px; margin-top:4px;}
+.dash-mini-pitch span{font-size:8.5px; color:var(--text-muted); letter-spacing:1px;}
 
-.dash-bottom{display:flex; justify-content:space-between; font-family:var(--font-mono); font-size:11px; color:var(--text-muted); padding-top:4px;}
+.dash-center{flex:1 1 auto; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:0 10px;}
+.dash-speed-big{text-align:center;}
+.dash-speed-big b{
+  font-family:var(--font-display); font-weight:800; font-size:min(20vw,128px); line-height:0.82; display:block;
+  font-variant-numeric:tabular-nums; letter-spacing:-1px;
+}
+.dash-speed-big span{font-size:12px; color:var(--text-muted); letter-spacing:3px;}
+.dash-center-row{display:flex; gap:0; margin-top:10px; padding-top:10px; border-top:1px solid var(--hairline); width:100%; max-width:360px;}
+.dash-stat{flex:1; text-align:center;}
+.dash-stat b{display:block; font-family:var(--font-mono); font-size:16px; font-weight:600; font-variant-numeric:tabular-nums;}
+.dash-stat span{font-size:8.5px; color:var(--text-muted); letter-spacing:1px;}
+
+.dash-side-right{position:relative;}
+.dash-shifts-ic{display:block; font-family:var(--font-mono); font-size:22px; font-weight:700; color:var(--accent);}
+.dash-shifts-lbl{font-size:8.5px; color:var(--text-muted); letter-spacing:1px; margin-top:2px;}
+
+/* -- pannello mappa a scomparsa, tipo Android Auto, sul lato destro -- */
+.dash-map-panel{
+  position:fixed; top:0; bottom:0; right:0; width:46%; z-index:501;
+  background:var(--panel); border-left:1px solid var(--hairline);
+  transform:translateX(100%); transition:transform .22s ease;
+}
+.dash-map-panel.show{transform:translateX(0);}
+#dashMap{position:absolute; inset:0;}
+.dash-map-panel .leaflet-control-attribution{font-size:8px;}
 
 @keyframes shake-alert{
   0%,100%{transform:translateX(0);} 25%{transform:translateX(-4px);} 75%{transform:translateX(4px);}
@@ -698,6 +733,7 @@ input[type=range]::-moz-range-thumb{
     <div class="section-label">Info</div>
     <div class="row-list">
       <div class="row-item"><b>Nome moto</b><input id="bikeNameInput" value="La mia moto" style="background:transparent; border:none; color:var(--text-muted); text-align:right; font-size:13px; font-family:inherit; width:140px;" onchange="salvaNomeMoto(this.value)"></div>
+      <div class="row-item"><b>Km totali</b><input id="kmTotaliInput" type="number" inputmode="decimal" step="0.1" min="0" value="0.0" style="background:transparent; border:none; color:var(--text-muted); text-align:right; font-size:13px; font-family:var(--font-mono); width:100px;" onchange="salvaKmTotaliManuale(this.value)"></div>
       <div class="row-item" onclick="scollega()" style="cursor:pointer;"><b style="color:var(--danger);">Disconnetti</b></div>
     </div>
   </div>
@@ -726,51 +762,76 @@ input[type=range]::-moz-range-thumb{
 </div>
 
 <!-- ============================= DASHBOARD ORIZZONTALE ============================= -->
-<!-- Visibile solo in landscape su schermo stretto (telefono ruotato). Stessi dati
+<!-- Visibile solo in landscape su schermo stretto (telefono ruotato). Stile cruscotto
+     moto: velocità al centro, orologio e stato in alto, piega/impennata a sinistra,
+     trip/totali a destra (sostituiti dalla mappa quando attivata). Stessi dati
      dell'app verticale, aggiornati in parallelo dalle stesse funzioni JS. -->
 <div id="dashboard">
   <div class="dash-top">
+    <div class="dash-top-left">
+      <span class="dash-clock" id="dashClock">--:--</span>
+    </div>
     <span class="dash-brand">QUICKSHIFTER</span>
-    <span class="dash-lock" id="dashLockPill">●</span>
+    <div class="dash-top-right">
+      <button class="dash-map-toggle" id="dashMapToggleBtn" onclick="toggleDashMap()" aria-label="Mappa">🗺</button>
+      <span class="dash-lock" id="dashLockPill">●</span>
+    </div>
   </div>
   <div class="dash-main">
-    <div class="dash-speed">
-      <b id="dashSpeed">0</b>
-      <span>KM/H</span>
+    <div class="dash-side dash-side-left">
+      <div class="dash-mini-gauge">
+        <svg viewBox="0 0 200 200" class="dash-dial-mini">
+          <circle cx="100" cy="100" r="88" fill="var(--panel)" stroke="var(--hairline)" stroke-width="2"/>
+          <g stroke="var(--hairline)" stroke-width="2">
+            <line x1="100" y1="16" x2="100" y2="28"/>
+            <line x1="100" y1="16" x2="100" y2="28" transform="rotate(30 100 100)"/>
+            <line x1="100" y1="16" x2="100" y2="28" transform="rotate(60 100 100)"/>
+            <line x1="100" y1="16" x2="100" y2="28" transform="rotate(-30 100 100)"/>
+            <line x1="100" y1="16" x2="100" y2="28" transform="rotate(-60 100 100)"/>
+          </g>
+          <polygon points="100,6 94,18 106,18" fill="var(--text-faint)"/>
+          <g id="dashLeanNeedle">
+            <line x1="100" y1="100" x2="100" y2="24" stroke="var(--accent)" stroke-width="6" stroke-linecap="round"/>
+            <circle cx="100" cy="100" r="7" fill="var(--accent)"/>
+          </g>
+        </svg>
+        <div class="dash-roll-val" id="dashRollVal">0°</div>
+        <div class="dash-roll-lbl">PIEGA</div>
+      </div>
+      <div class="dash-mini-pitch">
+        <svg viewBox="0 0 60 180" class="dash-pitch-svg">
+          <rect x="22" y="6" width="16" height="168" rx="8" fill="var(--panel)" stroke="var(--hairline)" stroke-width="2"/>
+          <line x1="14" y1="130" x2="46" y2="130" stroke="var(--text-faint)" stroke-width="2"/>
+          <rect id="dashPitchBar" x="24" y="128" width="12" height="2" rx="4" fill="var(--data)"/>
+        </svg>
+        <b id="dashPitchVal">0°</b>
+        <span>IMPENNATA</span>
+      </div>
     </div>
-    <div class="dash-horizon-wrap">
-      <svg viewBox="0 0 200 200" class="dash-dial">
-        <circle cx="100" cy="100" r="88" fill="var(--panel)" stroke="var(--hairline)" stroke-width="2"/>
-        <g stroke="var(--hairline)" stroke-width="2">
-          <line x1="100" y1="16" x2="100" y2="28"/>
-          <line x1="100" y1="16" x2="100" y2="28" transform="rotate(30 100 100)"/>
-          <line x1="100" y1="16" x2="100" y2="28" transform="rotate(60 100 100)"/>
-          <line x1="100" y1="16" x2="100" y2="28" transform="rotate(-30 100 100)"/>
-          <line x1="100" y1="16" x2="100" y2="28" transform="rotate(-60 100 100)"/>
-        </g>
-        <polygon points="100,6 94,18 106,18" fill="var(--text-faint)"/>
-        <g id="dashLeanNeedle">
-          <line x1="100" y1="100" x2="100" y2="24" stroke="var(--accent)" stroke-width="6" stroke-linecap="round"/>
-          <circle cx="100" cy="100" r="7" fill="var(--accent)"/>
-        </g>
-      </svg>
-      <div class="dash-roll-val" id="dashRollVal">0°</div>
-      <div class="dash-roll-lbl">PIEGA</div>
+
+    <div class="dash-center">
+      <div class="dash-speed-big">
+        <b id="dashSpeed">0</b>
+        <span>KM/H</span>
+      </div>
+      <div class="dash-center-row">
+        <div class="dash-stat"><b id="dashTripKm">0.0</b><span>TRIP KM</span></div>
+        <div class="dash-stat"><b id="dashKmTot">0</b><span>TOTALI KM</span></div>
+      </div>
     </div>
-    <div class="dash-pitch">
-      <svg viewBox="0 0 60 180" class="dash-pitch-svg">
-        <rect x="22" y="6" width="16" height="168" rx="8" fill="var(--panel)" stroke="var(--hairline)" stroke-width="2"/>
-        <line x1="14" y1="130" x2="46" y2="130" stroke="var(--text-faint)" stroke-width="2"/>
-        <rect id="dashPitchBar" x="24" y="128" width="12" height="2" rx="4" fill="var(--data)"/>
-      </svg>
-      <b id="dashPitchVal">0°</b>
-      <span>IMPENNATA</span>
+
+    <div class="dash-side dash-side-right">
+      <div class="dash-mini-gauge">
+        <span class="dash-shifts-ic" id="dashShiftsNum">0</span>
+        <span class="dash-shifts-lbl">CAMBIATE</span>
+      </div>
     </div>
   </div>
-  <div class="dash-bottom">
-    <span id="dashTripKm">0.0 km trip</span>
-    <span id="dashShifts">0 cambiate</span>
-  </div>
+</div>
+
+<!-- Pannello mappa a scomparsa in landscape, tipo Android Auto -->
+<div class="dash-map-panel" id="dashMapPanel">
+  <div id="dashMap"></div>
 </div>
 
 <!-- Visualizzatore percorso salvato, a schermo intero -->
@@ -813,6 +874,12 @@ let otaInCorso=false;
 // Trip recording
 let recording=false, puntiPercorso=[], tripDistanceKm=0, tripMaxSpeed=0, tripStartTime=0, tripTimerInterval=null;
 let demoTimer=null;
+
+// Km totali (contachilometri moto) — persistiti e modificabili a mano dalle impostazioni
+let kmTotali = parseFloat(localStorage.getItem('qs_km_totali')||'0') || 0;
+
+// Mappa a scomparsa nel cruscotto orizzontale
+let dashMap=null, dashMapMarker=null, dashMapOpen=false;
 
 /* ===========================================================================
    UTILI: toast / sheet / navigazione
@@ -882,6 +949,56 @@ function aggiornaGauge(speedKmh){
 }
 
 /* ===========================================================================
+   OROLOGIO cruscotto orizzontale
+   =========================================================================== */
+function aggiornaOrologio(){
+  const d = new Date();
+  const el = document.getElementById('dashClock');
+  if(el) el.textContent = String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');
+}
+setInterval(aggiornaOrologio, 1000);
+
+/* ===========================================================================
+   KM TOTALI (contachilometri) — si somma da sola ad ogni percorso salvato,
+   ma resta modificabile a mano dalle impostazioni (es. per allinearla al
+   contachilometri reale della moto).
+   =========================================================================== */
+function aggiornaKmTotaliDisplay(){
+  const dashEl = document.getElementById('dashKmTot');
+  if(dashEl) dashEl.textContent = Math.round(kmTotali);
+  const input = document.getElementById('kmTotaliInput');
+  if(input && document.activeElement!==input) input.value = kmTotali.toFixed(1);
+}
+function salvaKmTotaliManuale(v){
+  const val = parseFloat(String(v).replace(',','.'));
+  if(isNaN(val) || val<0){ toast('Valore non valido','error'); aggiornaKmTotaliDisplay(); return; }
+  kmTotali = val;
+  localStorage.setItem('qs_km_totali', kmTotali);
+  aggiornaKmTotaliDisplay();
+  toast('Km totali aggiornati','success');
+}
+
+/* ===========================================================================
+   MAPPA A SCOMPARSA nel cruscotto orizzontale (stile Android Auto)
+   =========================================================================== */
+function toggleDashMap(){
+  if(isDemo){ toast('Mappa non disponibile in demo','error'); return; }
+  dashMapOpen = !dashMapOpen;
+  document.getElementById('dashMapPanel').classList.toggle('show', dashMapOpen);
+  document.getElementById('dashMapToggleBtn').classList.toggle('active', dashMapOpen);
+  if(dashMapOpen){
+    setTimeout(()=>{ assicuraDashMap(); if(dashMap) dashMap.invalidateSize(); }, 230);
+  }
+}
+function assicuraDashMap(){
+  if(dashMap || isDemo) return;
+  const el = document.getElementById('dashMap');
+  if(!el || el.offsetHeight===0) return;
+  dashMap = L.map('dashMap', {zoomControl:false, attributionControl:true}).setView([45.0, 9.0], 15);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap', maxZoom:19}).addTo(dashMap);
+}
+
+/* ===========================================================================
    CONNESSIONE BLE
    =========================================================================== */
 async function connetti(){
@@ -929,6 +1046,7 @@ function avviaDemo(){
   entraInApp();
   aggiornaConnUI('demo');
   document.getElementById('fwVersion').textContent = 'v'+LATEST_FIRMWARE_VERSION+' (demo)';
+  document.getElementById('dashMapToggleBtn').style.display='none'; // niente coordinate reali in demo
   let t=0;
   demoTimer=setInterval(()=>{
     t+=0.05;
@@ -1007,7 +1125,7 @@ function smistaPacchetto(json){
   if(json.contatore !== undefined){
     document.getElementById('homeShifts').textContent = json.contatore;
     document.getElementById('statShifts').textContent = json.contatore;
-    document.getElementById('dashShifts').textContent = json.contatore+' cambiate';
+    document.getElementById('dashShiftsNum').textContent = json.contatore;
     if(ultimoContatoreCambiate!==null && json.contatore>ultimoContatoreCambiate && json.cutTime!==undefined){
       document.getElementById('homeLastCut').textContent = json.cutTime+' ms';
       document.getElementById('statLastCut').textContent = json.cutTime+' ms';
@@ -1248,6 +1366,7 @@ function onPosizioneGPS(pos){
   const {latitude, longitude, speed} = pos.coords;
   const speedKmh = speed!==null ? speed*3.6 : 0;
   aggiornaGauge(speedKmh);
+  aggiornaDashMap(latitude, longitude);
 
   if(!recording) return; // il tracciamento continuo aggiorna solo la velocita' se non si sta registrando
 
@@ -1271,6 +1390,18 @@ function onPosizioneGPS(pos){
     liveMap.panTo([latitude, longitude]);
   }
 }
+
+// Alimenta la mini-mappa del cruscotto orizzontale, indipendentemente dal
+// fatto che si stia registrando un percorso: in landscape deve sempre
+// mostrare la posizione corrente, come la mappa di Android Auto.
+function aggiornaDashMap(latitude, longitude){
+  if(!dashMapOpen || isDemo) return;
+  assicuraDashMap();
+  if(!dashMap) return;
+  if(!dashMapMarker) dashMapMarker = L.marker([latitude, longitude], {icon: iconaPunto('var(--accent)')}).addTo(dashMap);
+  else dashMapMarker.setLatLng([latitude, longitude]);
+  dashMap.panTo([latitude, longitude]);
+}
 function accumulaPuntoVelocitaDemo(speedKmh){
   if(speedKmh > tripMaxSpeed) tripMaxSpeed = speedKmh;
   document.getElementById('tripMax').textContent = Math.round(tripMaxSpeed);
@@ -1280,7 +1411,7 @@ function accumulaPuntoVelocitaDemo(speedKmh){
 function aggiornaDisplayTrip(){
   document.getElementById('tripDist').innerHTML = tripDistanceKm.toFixed(1)+'<small>km</small>';
   document.getElementById('homeTripKm').textContent = tripDistanceKm.toFixed(1);
-  document.getElementById('dashTripKm').textContent = tripDistanceKm.toFixed(1)+' km trip';
+  document.getElementById('dashTripKm').textContent = tripDistanceKm.toFixed(1);
   const durataMin = (Date.now()-tripStartTime)/60000;
   const media = durataMin>0 ? (tripDistanceKm/(durataMin/60)) : 0;
   document.getElementById('tripAvg').textContent = Math.round(media);
@@ -1311,6 +1442,11 @@ function salvaTrip(){
   });
   localStorage.setItem('qs_trips', JSON.stringify(trips.slice(0,50)));
   renderTripLog();
+
+  // Il percorso appena concluso si somma al contachilometri totale della moto
+  kmTotali += tripDistanceKm;
+  localStorage.setItem('qs_km_totali', kmTotali);
+  aggiornaKmTotaliDisplay();
 }
 function renderTripLog(){
   const trips = JSON.parse(localStorage.getItem('qs_trips')||'[]');
@@ -1453,6 +1589,8 @@ function gestisciStatoOta(dataValue){
    =========================================================================== */
 renderTripLog();
 aggiornaGauge(0);
+aggiornaOrologio();
+aggiornaKmTotaliDisplay();
 </script>
 </body>
 </html>
