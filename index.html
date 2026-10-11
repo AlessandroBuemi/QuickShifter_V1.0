@@ -4,13 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>QuickShifter</title>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#14171B">
-<link rel="icon" href="icon-192.png">
-<link rel="apple-touch-icon" href="icon-192.png">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="QuickShifter">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Big+Shoulders+Display:wght@600;700;800&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600&display=swap" rel="stylesheet">
@@ -236,6 +229,18 @@ input[type=range]::-moz-range-thumb{
 .trip-mini b{display:block; font-family:var(--font-mono); font-size:17px; font-weight:600;}
 .trip-mini span{font-size:10px; color:var(--text-muted);}
 
+.track-toggle-row{
+  display:flex; align-items:center; justify-content:space-between; gap:14px;
+  background:var(--panel); border:1px solid var(--hairline); border-radius:14px;
+  padding:14px 16px; margin-bottom:10px;
+}
+.track-toggle-row b{display:block; font-size:13.5px; margin-bottom:2px;}
+.track-toggle-row span{font-size:11.5px; color:var(--text-muted);}
+.track-name-input{
+  width:100%; background:var(--panel); border:1px solid var(--hairline); color:var(--text);
+  border-radius:12px; padding:13px 14px; font-size:13px; font-family:inherit; margin-bottom:14px;
+}
+
 .rec-btn{
   width:100%; padding:17px; border-radius:14px; border:none; font-size:15px; font-weight:700;
   background:var(--accent); color:var(--accent-ink); margin-bottom:22px;
@@ -272,6 +277,27 @@ input[type=range]::-moz-range-thumb{
 }
 .trip-map-stats{font-family:var(--font-mono); font-size:12.5px; color:var(--text-muted);}
 #tripMapFull{flex:1; width:100%;}
+#tripMapCurveStrip{
+  display:flex; gap:8px; overflow-x:auto; padding:10px 14px; background:var(--panel);
+  border-bottom:1px solid var(--hairline); z-index:2;
+}
+.curva-chip{
+  flex:0 0 auto; display:flex; flex-direction:column; align-items:center; gap:2px;
+  background:var(--panel-raised); border:1px solid var(--hairline); border-radius:10px;
+  padding:7px 12px; min-width:58px; font-family:var(--font-mono);
+}
+.curva-chip .num{font-size:10px; color:var(--text-muted);}
+.curva-chip .delta{font-size:13px; font-weight:600; display:flex; align-items:center; gap:2px;}
+.curva-chip.guadagnato .delta{color:var(--ok);}
+.curva-chip.perso .delta{color:var(--danger);}
+.curva-chip.uguale .delta{color:var(--text-muted);}
+.curva-chip.record{border-color:#B07CF2;}
+.curva-chip.record .num{color:#B07CF2;}
+.trip-map-total{
+  flex:0 0 auto; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:7px 14px; font-family:var(--font-mono); font-weight:700; font-size:14px;
+  border-right:1px solid var(--hairline); margin-right:4px;
+}
 
 /* Marker personalizzati (icone SVG inline, niente immagini esterne) */
 .qs-marker-start, .qs-marker-end{
@@ -644,6 +670,16 @@ input[type=range]::-moz-range-thumb{
       <div id="liveMap"></div>
     </div>
 
+    <div class="track-toggle-row" id="trackToggleRow">
+      <div>
+        <b>Modalità tracciato</b>
+        <span>Confronta i tuoi tempi sul tracciato, curva per curva</span>
+      </div>
+      <div class="switch" id="trackModeSwitch" onclick="toggleTrackMode()"></div>
+    </div>
+    <input type="text" id="trackNameInput" class="track-name-input" placeholder="Nome del tracciato (es. Pista di Franciacorta)" list="trackNameList" style="display:none;">
+    <datalist id="trackNameList"></datalist>
+
     <button class="rec-btn" id="recBtn" onclick="toggleRecording()">Avvia registrazione</button>
 
     <div class="section-label">Percorsi salvati</div>
@@ -841,6 +877,7 @@ input[type=range]::-moz-range-thumb{
     <button class="icon-btn" onclick="chiudiMappaPercorso()">✕</button>
     <div class="trip-map-stats" id="tripMapStats"></div>
   </div>
+  <div id="tripMapCurveStrip" style="display:none;"></div>
   <div id="tripMapFull"></div>
 </div>
 
@@ -874,6 +911,7 @@ let otaInCorso=false;
 
 // Trip recording
 let recording=false, puntiPercorso=[], tripDistanceKm=0, tripMaxSpeed=0, tripStartTime=0, tripTimerInterval=null;
+let trackModeAttivo=false, nomeCircuitoCorrente='';
 let demoTimer=null;
 
 /* ===========================================================================
@@ -969,6 +1007,7 @@ async function connetti(){
     entraInApp();
     aggiornaConnUI('ble');
     avviaTracciamentoContinuo();
+    setTimeout(controllaRipresaRegistrazione, 400);
     toast('Centralina connessa', 'success');
 
     try{
@@ -1029,6 +1068,7 @@ function avviaSoloGps(){
   aggiornaConnUI('gps');
   document.getElementById('fwVersion').textContent = 'non connesso';
   avviaTracciamentoContinuo();
+  setTimeout(controllaRipresaRegistrazione, 400);
   toast('Modalità solo GPS: connetti la centralina per cambio e piega','success');
 }
 
@@ -1263,20 +1303,85 @@ function iconaPunto(colore){
   return L.divIcon({className:'', html:'<div style="width:14px;height:14px;border-radius:50%;background:'+colore+';border:3px solid var(--bg);box-shadow:0 0 0 1px var(--hairline);"></div>', iconSize:[14,14], iconAnchor:[7,7]});
 }
 
-function haversineKm(lat1,lon1,lat2,lon2){
-  const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
-  const a=Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
-  return R*2*Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+function toggleTrackMode(){
+  if(recording){ toast('Ferma la registrazione prima di cambiare modalità','error'); return; }
+  trackModeAttivo = !trackModeAttivo;
+  document.getElementById('trackModeSwitch').classList.toggle('on', trackModeAttivo);
+  document.getElementById('trackNameInput').style.display = trackModeAttivo ? 'block':'none';
+  if(trackModeAttivo){
+    const el = document.getElementById('trackNameList');
+    if(el) el.innerHTML = Object.keys(leggiCircuiti()).map(n=>'<option value="'+n.replace(/"/g,'')+'">').join('');
+  }
 }
+document.addEventListener('input', (e)=>{
+  if(e.target && e.target.id==='trackNameInput') nomeCircuitoCorrente = e.target.value.trim();
+});
+
 function toggleRecording(){
   if(!recording) avviaRegistrazione(); else fermaRegistrazione();
 }
+/* ---- Wake Lock: tiene lo schermo acceso durante la registrazione.
+   NOTA IMPORTANTE: questo NON fa funzionare il tracciamento se chiudi
+   l'app o spegni tu lo schermo col tasto — serve solo a evitare che sia
+   il TELEFONO a spegnerlo da solo per risparmio energetico. Un sito web
+   non può proseguire la registrazione mentre è in background: è una
+   restrizione di Android/Chrome, non aggirabile da qui. Per quello serve
+   l'app nativa che faremo in futuro. ---- */
+let wakeLockAttivo=null;
+async function richiediWakeLock(){
+  if(!('wakeLock' in navigator)) return;
+  try{ wakeLockAttivo = await navigator.wakeLock.request('screen'); }catch(e){ /* permesso negato o non supportato, pazienza */ }
+}
+document.addEventListener('visibilitychange', ()=>{
+  if(recording && document.visibilityState==='visible') richiediWakeLock();
+});
+
+/* ---- Salvataggio di sicurezza: se la pagina si ricarica per sbaglio
+   mentre si registra, non si perde tutto. ---- */
+let autosalvataggioInterval=null;
+function autosalvaProgressoTrip(){
+  if(!recording) return;
+  localStorage.setItem('qs_trip_wip', JSON.stringify({
+    punti: puntiPercorso, km: tripDistanceKm, maxSpeed: tripMaxSpeed, inizio: tripStartTime,
+    trackMode: trackModeAttivo, circuito: nomeCircuitoCorrente
+  }));
+}
+function controllaRipresaRegistrazione(){
+  const wip = localStorage.getItem('qs_trip_wip');
+  if(!wip) return;
+  try{
+    const dati = JSON.parse(wip);
+    if(!dati.punti || dati.punti.length<2) { localStorage.removeItem('qs_trip_wip'); return; }
+    if(confirm('È stata trovata una registrazione interrotta ('+dati.km.toFixed(1)+' km). Vuoi riprenderla?')){
+      puntiPercorso = dati.punti; tripDistanceKm = dati.km; tripMaxSpeed = dati.maxSpeed; tripStartTime = dati.inizio;
+      trackModeAttivo = !!dati.trackMode; nomeCircuitoCorrente = dati.circuito || '';
+      recording=true;
+      document.getElementById('recBtn').textContent='Ferma registrazione';
+      document.getElementById('recBtn').classList.add('recording');
+      tripTimerInterval = setInterval(aggiornaDurataTrip, 1000);
+      autosalvataggioInterval = setInterval(autosalvaProgressoTrip, 8000);
+      avviaTracciamentoContinuo();
+      richiediWakeLock();
+      aggiornaDisplayTrip();
+      setTimeout(()=>{
+        assicuraLiveMap();
+        if(liveMapPolyline) liveMapPolyline.setLatLngs(puntiPercorso.map(p=>[p.lat,p.lon]));
+      }, 200);
+      toast('Registrazione ripresa','success');
+    } else {
+      localStorage.removeItem('qs_trip_wip');
+    }
+  }catch(e){ localStorage.removeItem('qs_trip_wip'); }
+}
+
 function avviaRegistrazione(){
   if(!isDemo && !navigator.geolocation){ toast('GPS non disponibile su questo browser','error'); return; }
   recording=true; puntiPercorso=[]; tripDistanceKm=0; tripMaxSpeed=0; tripStartTime=Date.now();
   document.getElementById('recBtn').textContent='Ferma registrazione';
   document.getElementById('recBtn').classList.add('recording');
   tripTimerInterval = setInterval(aggiornaDurataTrip, 1000);
+  autosalvataggioInterval = setInterval(autosalvaProgressoTrip, 8000);
+  richiediWakeLock();
 
   if(!isDemo){
     avviaTracciamentoContinuo(); // nel caso non fosse gia' attivo (es. non si e' mai connessi)
@@ -1288,11 +1393,14 @@ function avviaRegistrazione(){
       if(dashMapMarker && dashMap){ dashMap.removeLayer(dashMapMarker); dashMapMarker=null; }
     }, 60);
   }
-  toast('Registrazione avviata','success');
+  toast('Registrazione avviata'+(trackModeAttivo?' · modalità tracciato':''),'success');
 }
 function fermaRegistrazione(){
   recording=false;
   clearInterval(tripTimerInterval);
+  clearInterval(autosalvataggioInterval);
+  localStorage.removeItem('qs_trip_wip');
+  if(wakeLockAttivo){ wakeLockAttivo.release().catch(()=>{}); wakeLockAttivo=null; }
   document.getElementById('recBtn').textContent='Avvia registrazione';
   document.getElementById('recBtn').classList.remove('recording');
   if(tripDistanceKm > 0.02) salvaTrip();
@@ -1314,7 +1422,7 @@ function onPosizioneGPS(pos){
     const d = haversineKm(ultimo.lat, ultimo.lon, latitude, longitude);
     if(d < 0.3) tripDistanceKm += d; // filtro base anti-salto GPS
   }
-  puntiPercorso.push({lat:latitude, lon:longitude, t:Date.now()});
+  puntiPercorso.push({lat:latitude, lon:longitude, t:Date.now(), v:speedKmh});
   aggiornaDisplayTrip();
 
   assicuraLiveMap();
@@ -1361,17 +1469,40 @@ function decimaPercorso(punti, maxPunti=400){
   return punti.filter((_,i)=> i%passo===0 || i===punti.length-1);
 }
 function salvaTrip(){
+  const puntiSalvati = decimaPercorso(puntiPercorso, 600).map(p=>[p.lat, p.lon, Math.round(p.v*10)/10]); // lat, lon, km/h
+  const durataSec = Math.floor((Date.now()-tripStartTime)/1000);
+
   const trips = JSON.parse(localStorage.getItem('qs_trips')||'[]');
   trips.unshift({
     data: new Date().toISOString(),
     km: tripDistanceKm,
-    durataSec: Math.floor((Date.now()-tripStartTime)/1000),
+    durataSec: durataSec,
     maxSpeed: tripMaxSpeed,
-    punti: decimaPercorso(puntiPercorso).map(p=>[p.lat, p.lon]) // array compatto, solo lat/lon
+    punti: puntiSalvati,
+    circuito: trackModeAttivo ? nomeCircuitoCorrente : null
   });
   localStorage.setItem('qs_trips', JSON.stringify(trips.slice(0,50)));
   renderTripLog();
   aggiungiKmAOdometro(tripDistanceKm);
+
+  if(trackModeAttivo && nomeCircuitoCorrente && puntiSalvati.length>10){
+    salvaGiroNelCircuito(nomeCircuitoCorrente, {
+      data: new Date().toISOString(), durataSec, km: tripDistanceKm, punti: puntiSalvati
+    });
+  }
+}
+
+/* ---- Gestione circuiti: ogni circuito e' un elenco di giri, ciascuno con
+   il proprio tracciato punto-per-punto e velocita'. Servono per il confronto
+   settore-per-settore stile F1. ---- */
+function leggiCircuiti(){ return JSON.parse(localStorage.getItem('qs_circuiti')||'{}'); }
+function salvaCircuiti(c){ localStorage.setItem('qs_circuiti', JSON.stringify(c)); }
+function salvaGiroNelCircuito(nome, giro){
+  const circuiti = leggiCircuiti();
+  if(!circuiti[nome]) circuiti[nome] = {giri:[]};
+  circuiti[nome].giri.unshift(giro);
+  circuiti[nome].giri = circuiti[nome].giri.slice(0,20); // tiene gli ultimi 20 giri per circuito
+  salvaCircuiti(circuiti);
 }
 function renderTripLog(){
   const trips = JSON.parse(localStorage.getItem('qs_trips')||'[]');
@@ -1385,9 +1516,187 @@ function renderTripLog(){
     const dataStr = d.toLocaleDateString('it-IT', {day:'2-digit', month:'short'});
     const oraStr = d.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
     const m = Math.floor(t.durataSec/60);
-    return '<div class="trip-log-item" onclick="apriMappaPercorso('+i+')" style="cursor:pointer;"><div class="trip-log-date">'+dataStr+'<span>'+oraStr+' · '+m+' min</span></div>'+
+    const etichettaCircuito = t.circuito ? ' 🏁 '+t.circuito : '';
+    return '<div class="trip-log-item" onclick="apriMappaPercorso('+i+')" style="cursor:pointer;"><div class="trip-log-date">'+dataStr+'<span>'+oraStr+' · '+m+' min'+etichettaCircuito+'</span></div>'+
            '<div class="trip-log-dist">'+t.km.toFixed(1)+' km<span>max '+Math.round(t.maxSpeed)+' km/h</span></div></div>';
   }).join('');
+}
+
+/* ===========================================================================
+   MODALITÀ TRACCIATO: confronto settori stile F1
+   Il principio: non confrontiamo i due giri per TEMPO (il primo secondo del
+   giro A con il primo secondo del giro B), ma per POSIZIONE lungo il
+   tracciato — altrimenti un secondo di ritardo all'inizio sfaserebbe tutto
+   il confronto del resto del giro. Ogni punto del giro nuovo viene quindi
+   proiettato sul punto più vicino del giro di riferimento, e il paragone
+   di velocità avviene a parità di posizione sul tracciato.
+   Approssimazione onesta: il GPS di un telefono ha una precisione di
+   qualche metro, non è un sistema di cronometraggio da pista vera — i
+   delta di tempo qui sono stime, non millesimi di gara.
+   =========================================================================== */
+
+function distanzaCumulativa(punti){
+  const cum=[0];
+  for(let i=1;i<punti.length;i++){
+    cum.push(cum[i-1] + haversineKm(punti[i-1][0],punti[i-1][1], punti[i][0],punti[i][1]));
+  }
+  return cum;
+}
+
+// Ricerca il punto del giro di riferimento più vicino a (lat,lon), cercando
+// in una finestra attorno all'ultimo indice trovato: molto più veloce di una
+// ricerca completa, e soprattutto evita di agganciarsi per sbaglio a un punto
+// di un'altra parte del tracciato che passa geograficamente vicino (es. un
+// tornante stretto).
+function trovaIndiceVicino(puntiRif, ultimoIndice, lat, lon){
+  let inizio=0, fine=puntiRif.length-1;
+  if(ultimoIndice>=0){
+    inizio = Math.max(0, ultimoIndice-15);
+    fine = Math.min(puntiRif.length-1, ultimoIndice+50);
+  }
+  let migliorIdx=inizio, migliorDist=Infinity;
+  for(let i=inizio;i<=fine;i++){
+    const d = haversineKm(puntiRif[i][0],puntiRif[i][1], lat,lon);
+    if(d<migliorDist){ migliorDist=d; migliorIdx=i; }
+  }
+  // Se la ricerca localizzata non trova nulla di vicino (es. primo punto,
+  // o il percorso devia parecchio), riprova su tutto il tracciato una volta.
+  if(migliorDist>0.08 && ultimoIndice>=0){
+    for(let i=0;i<puntiRif.length;i++){
+      const d = haversineKm(puntiRif[i][0],puntiRif[i][1], lat,lon);
+      if(d<migliorDist){ migliorDist=d; migliorIdx=i; }
+    }
+  }
+  return migliorIdx;
+}
+
+// Confronta un giro "nuovo" con un giro di riferimento, punto per punto,
+// allineando per posizione lungo il tracciato (non per tempo trascorso).
+function confrontaGiri(giroRif, giroNuovo){
+  const cumDistRif = distanzaCumulativa(giroRif.punti);
+  const risultato=[];
+  let ultimoIdx=-1;
+  for(const p of giroNuovo.punti){
+    const idx = trovaIndiceVicino(giroRif.punti, ultimoIdx, p[0], p[1]);
+    ultimoIdx = idx;
+    risultato.push({
+      lat:p[0], lon:p[1], idxRif:idx,
+      distRif: cumDistRif[idx],
+      vRif: giroRif.punti[idx][2]||0,
+      vNuovo: p[2]||0
+    });
+  }
+  return {punti:risultato, cumDistRif};
+}
+
+// Rileva le curve analizzando come cambia la direzione di marcia lungo il
+// tracciato di riferimento: dove la direzione ruota parecchio in poco spazio,
+// c'è una curva. Numerate nell'ordine in cui si incontrano lungo il giro.
+function rilevaCurve(puntiRif){
+  const STEP=3; // confronta punti distanziati, per non farsi ingannare dal rumore GPS punto-per-punto
+  const SOGLIA_CURVA_DEG=50;   // rotazione totale minima per contare come curva
+  const n=puntiRif.length;
+  if(n<STEP*4) return [];
+  const cumDist = distanzaCumulativa(puntiRif);
+
+  function bearing(a,b){
+    const toRad=d=>d*Math.PI/180, toDeg=r=>r*180/Math.PI;
+    const y=Math.sin(toRad(b[1]-a[1]))*Math.cos(toRad(b[0]));
+    const x=Math.cos(toRad(a[0]))*Math.sin(toRad(b[0])) - Math.sin(toRad(a[0]))*Math.cos(toRad(b[0]))*Math.cos(toRad(b[1]-a[1]));
+    return (toDeg(Math.atan2(y,x))+360)%360;
+  }
+  function diffAngolo(a,b){ let d=b-a; while(d>180)d-=360; while(d<-180)d+=360; return d; }
+
+  const turn=new Array(n).fill(0);
+  for(let i=STEP; i<n-STEP; i++){
+    const b1=bearing(puntiRif[i-STEP], puntiRif[i]);
+    const b2=bearing(puntiRif[i], puntiRif[i+STEP]);
+    turn[i]=diffAngolo(b1,b2);
+  }
+
+  // Accumula la rotazione in una finestra scorrevole di circa 40 metri
+  const curve=[];
+  let inCurva=false, inizioIdx=0, accumulo=0;
+  for(let i=STEP;i<n-STEP;i++){
+    const finestraInizio = Math.max(0, i-6);
+    let somma=0; for(let k=finestraInizio;k<=i;k++) somma+=turn[k];
+    if(Math.abs(somma)>22 && !inCurva){ inCurva=true; inizioIdx=finestraInizio; accumulo=0; }
+    if(inCurva) accumulo += Math.abs(turn[i]);
+    if(inCurva && Math.abs(somma)<8){
+      inCurva=false;
+      if(accumulo>SOGLIA_CURVA_DEG && (cumDist[i]-cumDist[inizioIdx])>0.015){
+        curve.push({distInizio:cumDist[inizioIdx], distFine:cumDist[i], idxCentro: Math.floor((inizioIdx+i)/2)});
+      }
+    }
+  }
+  // Numera e unisce curve troppo vicine tra loro (probabile stessa curva spezzata dal rumore)
+  const unite=[];
+  for(const c of curve){
+    const ultima = unite[unite.length-1];
+    if(ultima && (c.distInizio - ultima.distFine) < 0.02){
+      ultima.distFine = c.distFine;
+      ultima.idxCentro = Math.floor((ultima.idxCentro + c.idxCentro)/2);
+    } else {
+      unite.push({...c});
+    }
+  }
+  unite.forEach((c,i)=> c.numero=i+1);
+  return unite;
+}
+
+// Per ogni punto del giro di riferimento, trova la velocità più alta mai
+// registrata li' da QUALSIASI giro salvato su questo circuito — e' il
+// "viola": il meglio di sempre in quel punto esatto del tracciato.
+function calcolaMigliorStoricoPerPunto(circuito, puntiRif){
+  const migliore = new Array(puntiRif.length).fill(0);
+  circuito.giri.forEach(giro=>{
+    let ultimoIdx=-1;
+    for(const p of giro.punti){
+      const idx = trovaIndiceVicino(puntiRif, ultimoIdx, p[0], p[1]);
+      ultimoIdx=idx;
+      const v=p[2]||0;
+      if(v>migliore[idx]) migliore[idx]=v;
+    }
+  });
+  return migliore;
+}
+
+// Stima il delta di tempo totale sul giro, sommando contributo per contributo
+// lungo ogni tratto (lunghezza del tratto diviso velocità media li').
+function stimaDeltaTotale(confronto){
+  let deltaSec=0;
+  for(let i=1;i<confronto.length;i++){
+    const segKm = confronto[i].distRif - confronto[i-1].distRif;
+    if(segKm<=0 || segKm>0.05) continue; // salta sfasamenti/rumore
+    const vRif = Math.max(5, (confronto[i].vRif+confronto[i-1].vRif)/2);
+    const vNuovo = Math.max(5, (confronto[i].vNuovo+confronto[i-1].vNuovo)/2);
+    deltaSec += segKm/vNuovo*3600 - segKm/vRif*3600;
+  }
+  return deltaSec;
+}
+
+function generaResocontoCurve(curve, confronto){
+  return curve.map(c=>{
+    const puntiCurva = confronto.filter(p=>p.distRif>=c.distInizio && p.distRif<=c.distFine);
+    if(puntiCurva.length===0) return {numero:c.numero, deltaSec:0, classificazione:'uguale', idxCentro:c.idxCentro};
+    const vMediaRif = puntiCurva.reduce((s,p)=>s+p.vRif,0)/puntiCurva.length;
+    const vMediaNuovo = puntiCurva.reduce((s,p)=>s+p.vNuovo,0)/puntiCurva.length;
+    const lunghezza = c.distFine-c.distInizio;
+    const tRif = lunghezza/Math.max(5,vMediaRif)*3600;
+    const tNuovo = lunghezza/Math.max(5,vMediaNuovo)*3600;
+    const deltaSec = tNuovo-tRif;
+    const classificazione = deltaSec<-0.08 ? 'guadagnato' : (deltaSec>0.08 ? 'perso' : 'uguale');
+    return {numero:c.numero, deltaSec, classificazione, idxCentro:c.idxCentro};
+  });
+}
+
+function trovaMiglioreGiroPerConfronto(nomeCircuito, escludiData){
+  const circuiti = leggiCircuiti();
+  const circuito = circuiti[nomeCircuito];
+  if(!circuito || circuito.giri.length<1) return null;
+  const candidati = circuito.giri.filter(g=>g.data!==escludiData);
+  if(candidati.length===0) return null;
+  return candidati.reduce((migliore,g)=> (g.durataSec<migliore.durataSec ? g : migliore), candidati[0]);
 }
 
 /* ---- Visualizzatore percorso salvato, a schermo intero ---- */
@@ -1405,15 +1714,82 @@ function apriMappaPercorso(indice){
     d.toLocaleDateString('it-IT',{day:'2-digit',month:'short'})+' · '+trip.km.toFixed(1)+' km · max '+Math.round(trip.maxSpeed)+' km/h';
   document.getElementById('tripMapOverlay').classList.add('show');
 
+  const stripEl = document.getElementById('tripMapCurveStrip');
+  stripEl.style.display='none'; stripEl.innerHTML='';
+
   setTimeout(()=>{
     if(fullMap){ fullMap.remove(); fullMap=null; }
     fullMap = L.map('tripMapFull', {attributionControl:true}).setView(trip.punti[0], 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap', maxZoom:19}).addTo(fullMap);
-    const linea = L.polyline(trip.punti, {color: getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#F2A33C', weight:4}).addTo(fullMap);
-    L.marker(trip.punti[0], {icon: iconaPunto('var(--ok)')}).addTo(fullMap);
-    L.marker(trip.punti[trip.punti.length-1], {icon: iconaPunto('var(--danger)')}).addTo(fullMap);
-    fullMap.fitBounds(linea.getBounds(), {padding:[30,30]});
+
+    const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#F2A33C';
+    const okColor = getComputedStyle(document.documentElement).getPropertyValue('--ok').trim() || '#4CC38A';
+    const dangerColor = getComputedStyle(document.documentElement).getPropertyValue('--danger').trim() || '#E0545C';
+    const vigliaColor = '#B07CF2';
+
+    const giroRiferimento = trip.circuito ? trovaMiglioreGiroPerConfronto(trip.circuito, trip.data) : null;
+
+    if(giroRiferimento){
+      // --- Percorso colorato per confronto settori ---
+      const {punti:confronto} = confrontaGiri(giroRiferimento, trip);
+      const curve = rilevaCurve(giroRiferimento.punti);
+      const resoconto = generaResocontoCurve(curve, confronto);
+      const circuiti = leggiCircuiti();
+      const storico = calcolaMigliorStoricoPerPunto(circuiti[trip.circuito], giroRiferimento.punti);
+      const totale = stimaDeltaTotale(confronto);
+
+      for(let i=1;i<confronto.length;i++){
+        const p0=confronto[i-1], p1=confronto[i];
+        const delta = p1.vNuovo - p1.vRif;
+        const vMax = storico[p1.idxRif]||0;
+        let colore = accentColor;
+        if(vMax>8 && p1.vNuovo >= vMax*0.98) colore = vigliaColor;
+        else if(delta > 2) colore = okColor;
+        else if(delta < -2) colore = dangerColor;
+
+        const seg = L.polyline([[p0.lat,p0.lon],[p1.lat,p1.lon]], {color:colore, weight:5});
+        seg.on('click', (e)=>{
+          L.popup().setLatLng(e.latlng)
+            .setContent('<b>'+Math.round(p1.vNuovo)+' km/h</b> tu · <span style="opacity:.7">'+Math.round(p1.vRif)+' km/h</span> riferimento')
+            .openOn(fullMap);
+        });
+        seg.addTo(fullMap);
+      }
+      L.marker([trip.punti[0][0],trip.punti[0][1]], {icon: iconaPunto(okColor)}).addTo(fullMap);
+      L.marker([trip.punti[trip.punti.length-1][0],trip.punti[trip.punti.length-1][1]], {icon: iconaPunto(dangerColor)}).addTo(fullMap);
+      fullMap.fitBounds(L.polyline(trip.punti.map(p=>[p[0],p[1]])).getBounds(), {padding:[30,30]});
+
+      // --- Striscia riepilogo: totale + ogni curva ---
+      let html = '<div class="trip-map-total" style="color:'+(totale<=0?okColor:dangerColor)+'">'+
+                 (totale<=0?'▲ ':'▼ ')+Math.abs(totale).toFixed(2)+'s<div style="font-size:9px;color:var(--text-muted);font-weight:400;">TOTALE</div></div>';
+      resoconto.forEach(r=>{
+        const freccia = r.classificazione==='guadagnato' ? '▲' : (r.classificazione==='perso' ? '▼' : '—');
+        html += '<div class="curva-chip '+r.classificazione+'" onclick="vaiACurva('+r.idxCentro+')">'+
+                '<span class="num">C'+r.numero+'</span>'+
+                '<span class="delta">'+freccia+' '+Math.abs(r.deltaSec).toFixed(2)+'s</span></div>';
+      });
+      stripEl.innerHTML = html;
+      stripEl.style.display='flex';
+
+      window._curvePuntiRiferimento = giroRiferimento.punti; // usato da vaiACurva()
+    } else {
+      // --- Percorso normale, nessun confronto disponibile ---
+      const linea = L.polyline(trip.punti.map(p=>[p[0],p[1]]), {color:accentColor, weight:4}).addTo(fullMap);
+      L.marker([trip.punti[0][0],trip.punti[0][1]], {icon: iconaPunto(okColor)}).addTo(fullMap);
+      L.marker([trip.punti[trip.punti.length-1][0],trip.punti[trip.punti.length-1][1]], {icon: iconaPunto(dangerColor)}).addTo(fullMap);
+      fullMap.fitBounds(linea.getBounds(), {padding:[30,30]});
+      if(trip.circuito){
+        stripEl.innerHTML = '<div style="padding:4px 8px; font-size:12px; color:var(--text-muted);">Primo giro registrato su questo tracciato: registra un altro giro per vedere il confronto.</div>';
+        stripEl.style.display='flex';
+      }
+    }
   }, 60);
+}
+function vaiACurva(idx){
+  if(!fullMap || !window._curvePuntiRiferimento) return;
+  const p = window._curvePuntiRiferimento[idx];
+  if(!p) return;
+  fullMap.setView([p[0],p[1]], 17);
 }
 function chiudiMappaPercorso(){
   document.getElementById('tripMapOverlay').classList.remove('show');
@@ -1575,13 +1951,6 @@ aggiornaGauge(0);
 aggiornaOrologioDashboard();
 aggiornaOdometroUI();
 
-// Registra il service worker: senza questo Chrome Android offre solo la
-// scorciatoia (che apre comunque dentro il browser), non l'installazione vera.
-if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('sw.js').catch(()=>{});
-  });
-}
 </script>
 </body>
 </html>
