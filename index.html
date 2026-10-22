@@ -293,6 +293,30 @@ input[type=range]::-moz-range-thumb{
 .curva-chip.uguale .delta{color:var(--text-muted);}
 .curva-chip.record{border-color:#B07CF2;}
 .curva-chip.record .num{color:#B07CF2;}
+.map-mode-switch{
+  display:flex; gap:2px; background:var(--panel-raised); border:1px solid var(--hairline);
+  border-radius:10px; padding:2px; margin-left:auto;
+}
+.map-mode-switch button{
+  border:none; background:transparent; color:var(--text-muted); font-size:12px; font-weight:600;
+  padding:6px 10px; border-radius:8px; font-family:inherit; cursor:pointer;
+}
+.map-mode-switch button.active{ background:var(--accent); color:#111; }
+#tripPointDetail{
+  position:absolute; left:12px; right:12px; bottom:calc(14px + env(safe-area-inset-bottom));
+  background:var(--panel); border:1px solid var(--hairline); border-radius:14px;
+  padding:14px 16px; z-index:650; display:none; box-shadow:0 4px 20px rgba(0,0,0,.25);
+}
+#tripPointDetail.show{display:block;}
+#tripPointDetail .pd-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:10px;}
+#tripPointDetail .pd-head b{font-size:13px;}
+#tripPointDetail .pd-close{background:none; border:none; color:var(--text-muted); font-size:16px; cursor:pointer; padding:2px 6px;}
+.pd-grid{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+.pd-stat{display:flex; flex-direction:column; gap:2px;}
+.pd-stat .pd-lbl{font-size:10px; color:var(--text-muted); letter-spacing:.4px;}
+.pd-stat .pd-val{font-family:var(--font-mono); font-size:15px; font-weight:700;}
+.pd-val.accel-pos{color:var(--ok);}
+.pd-val.accel-neg{color:var(--danger);}
 .trip-map-total{
   flex:0 0 auto; display:flex; flex-direction:column; align-items:center; justify-content:center;
   padding:7px 14px; font-family:var(--font-mono); font-weight:700; font-size:14px;
@@ -876,9 +900,26 @@ input[type=range]::-moz-range-thumb{
   <div class="trip-map-top">
     <button class="icon-btn" onclick="chiudiMappaPercorso()">✕</button>
     <div class="trip-map-stats" id="tripMapStats"></div>
+    <div class="map-mode-switch" id="mapModeSwitch" style="display:none;">
+      <button id="modeBtnConfronto" onclick="impostaModalitaMappa('confronto')">Confronto</button>
+      <button id="modeBtnAccel" onclick="impostaModalitaMappa('accel')">Accel/Frenata</button>
+    </div>
   </div>
   <div id="tripMapCurveStrip" style="display:none;"></div>
-  <div id="tripMapFull"></div>
+  <div style="position:relative; flex:1;">
+    <div id="tripMapFull" style="position:absolute; inset:0;"></div>
+    <div id="tripPointDetail">
+      <div class="pd-head"><b id="pdTitle">Punto del tracciato</b><button class="pd-close" onclick="chiudiDettaglioPunto()">✕</button></div>
+      <div class="pd-grid">
+        <div class="pd-stat"><span class="pd-lbl">VELOCITÀ</span><span class="pd-val" id="pdSpeed">—</span></div>
+        <div class="pd-stat"><span class="pd-lbl">ACCELERAZIONE</span><span class="pd-val" id="pdAccel">—</span></div>
+        <div class="pd-stat"><span class="pd-lbl">G LATERALE (stima)</span><span class="pd-val" id="pdGLat">—</span></div>
+        <div class="pd-stat"><span class="pd-lbl">G LONGITUDINALE</span><span class="pd-val" id="pdGLong">—</span></div>
+        <div class="pd-stat"><span class="pd-lbl">PIEGA</span><span class="pd-val" id="pdRoll">—</span></div>
+        <div class="pd-stat"><span class="pd-lbl">IMPENNATA</span><span class="pd-val" id="pdPitch">—</span></div>
+      </div>
+    </div>
+  </div>
 </div>
 
 <!-- Bottom sheet riusabile (OTA / conferme) -->
@@ -1150,7 +1191,13 @@ function smistaPacchetto(json){
 /* ===========================================================================
    IMU: piega, impennata, calibrazione, rimappatura assi, antifurto
    =========================================================================== */
+// Ultimo valore di piega/impennata ricevuto dalla centralina: usato per
+// "fotografare" l'inclinazione nel momento esatto in cui si registra un
+// punto GPS (vedi onPosizioneGPS), cosi' ogni punto del tracciato porta
+// con se' anche il dato IMU, non solo posizione e velocita'.
+let imuLive = {roll:0, pitch:0};
 function aggiornaTelemetriaImu(roll, pitch, rollMax, pitchMax){
+  imuLive.roll = roll; imuLive.pitch = pitch;
   const rollTxt = Math.abs(roll)+'°'+(roll!==0?(roll>0?' DX':' SX'):'');
   document.getElementById('homeRoll').textContent = rollTxt;
   document.getElementById('dashRollVal').textContent = rollTxt;
@@ -1204,6 +1251,7 @@ function sincronizzaControlli(json){
   if(json.pd1 !== undefined) impostaSliderDaRemoto('pd1Slider','pd1Val', json.pd1);
   if(json.pd2 !== undefined) impostaSliderDaRemoto('pd2Slider','pd2Val', json.pd2);
   if(json.gap !== undefined) impostaSliderDaRemoto('gapSlider','gapVal', json.gap);
+  if(json.antifurtoMov !== undefined) aggiornaSwitch('antifurtoSwitch', !!json.antifurtoMov);
 }
 function impostaSliderDaRemoto(idSlider, idVal, valore){
   document.getElementById(idSlider).value = valore;
@@ -1417,12 +1465,22 @@ function onPosizioneGPS(pos){
   document.getElementById('homeMaxSpeed').textContent = Math.round(tripMaxSpeed);
   document.getElementById('tripMax').textContent = Math.round(tripMaxSpeed);
 
+  // Accelerazione longitudinale istantanea: derivata della velocita' nel
+  // tempo trascorso dall'ultimo punto, in m/s^2 (positiva = accelerazione,
+  // negativa = frenata). Scartata se il punto precedente e' troppo vicino
+  // nel tempo (rumore GPS su dt piccolissimi darebbe valori assurdi).
+  let accelMs2 = 0;
   if(puntiPercorso.length>0){
     const ultimo = puntiPercorso[puntiPercorso.length-1];
     const d = haversineKm(ultimo.lat, ultimo.lon, latitude, longitude);
     if(d < 0.3) tripDistanceKm += d; // filtro base anti-salto GPS
+    const dtSec = (Date.now()-ultimo.t)/1000;
+    if(dtSec > 0.2) accelMs2 = ((speedKmh-ultimo.v)/3.6)/dtSec;
   }
-  puntiPercorso.push({lat:latitude, lon:longitude, t:Date.now(), v:speedKmh});
+  puntiPercorso.push({
+    lat:latitude, lon:longitude, t:Date.now(), v:speedKmh,
+    accel:accelMs2, roll:imuLive.roll, pitch:imuLive.pitch
+  });
   aggiornaDisplayTrip();
 
   assicuraLiveMap();
@@ -1468,9 +1526,19 @@ function decimaPercorso(punti, maxPunti=400){
   const passo = Math.ceil(punti.length/maxPunti);
   return punti.filter((_,i)=> i%passo===0 || i===punti.length-1);
 }
+// Formato di ogni punto salvato: [lat, lon, v km/h, accel m/s^2, piega°, impennata°].
+// Accel/piega/impennata sono in coda apposta: un percorso vecchio (pre-aggiornamento)
+// ha semplicemente questi campi assenti, e tutto il codice che li legge usa
+// "||0" come fallback, quindi resta compatibile senza bisogno di migrazione dati.
 function salvaTrip(){
-  const puntiSalvati = decimaPercorso(puntiPercorso, 600).map(p=>[p.lat, p.lon, Math.round(p.v*10)/10]); // lat, lon, km/h
+  const puntiSalvati = decimaPercorso(puntiPercorso, 600).map(p=>[
+    p.lat, p.lon, Math.round(p.v*10)/10,
+    Math.round((p.accel||0)*100)/100,
+    Math.round(p.roll||0),
+    Math.round(p.pitch||0)
+  ]);
   const durataSec = Math.floor((Date.now()-tripStartTime)/1000);
+  const {leanMax, leanAvg} = calcolaStatistichePiega(puntiSalvati);
 
   const trips = JSON.parse(localStorage.getItem('qs_trips')||'[]');
   trips.unshift({
@@ -1478,6 +1546,7 @@ function salvaTrip(){
     km: tripDistanceKm,
     durataSec: durataSec,
     maxSpeed: tripMaxSpeed,
+    leanMax, leanAvg,
     punti: puntiSalvati,
     circuito: trackModeAttivo ? nomeCircuitoCorrente : null
   });
@@ -1487,9 +1556,19 @@ function salvaTrip(){
 
   if(trackModeAttivo && nomeCircuitoCorrente && puntiSalvati.length>10){
     salvaGiroNelCircuito(nomeCircuitoCorrente, {
-      data: new Date().toISOString(), durataSec, km: tripDistanceKm, punti: puntiSalvati
+      data: new Date().toISOString(), durataSec, km: tripDistanceKm, leanMax, leanAvg, punti: puntiSalvati
     });
   }
+}
+// Piega massima e piega media (in valore assoluto, indipendente dal lato)
+// su tutti i punti di un percorso/giro: usate nelle statistiche e nello
+// header della mappa a schermo intero.
+function calcolaStatistichePiega(punti){
+  if(!punti || punti.length===0) return {leanMax:0, leanAvg:0};
+  const assoluti = punti.map(p=>Math.abs(p[4]||0));
+  const leanMax = Math.max(...assoluti);
+  const leanAvg = assoluti.reduce((s,v)=>s+v,0)/assoluti.length;
+  return {leanMax, leanAvg};
 }
 
 /* ---- Gestione circuiti: ogni circuito e' un elenco di giri, ciascuno con
@@ -1517,8 +1596,9 @@ function renderTripLog(){
     const oraStr = d.toLocaleTimeString('it-IT', {hour:'2-digit', minute:'2-digit'});
     const m = Math.floor(t.durataSec/60);
     const etichettaCircuito = t.circuito ? ' 🏁 '+t.circuito : '';
+    const etichettaPiega = (t.leanMax && t.leanMax>1) ? ' · piega max '+Math.round(t.leanMax)+'°' : '';
     return '<div class="trip-log-item" onclick="apriMappaPercorso('+i+')" style="cursor:pointer;"><div class="trip-log-date">'+dataStr+'<span>'+oraStr+' · '+m+' min'+etichettaCircuito+'</span></div>'+
-           '<div class="trip-log-dist">'+t.km.toFixed(1)+' km<span>max '+Math.round(t.maxSpeed)+' km/h</span></div></div>';
+           '<div class="trip-log-dist">'+t.km.toFixed(1)+' km<span>max '+Math.round(t.maxSpeed)+' km/h'+etichettaPiega+'</span></div></div>';
   }).join('');
 }
 
@@ -1583,7 +1663,10 @@ function confrontaGiri(giroRif, giroNuovo){
       lat:p[0], lon:p[1], idxRif:idx,
       distRif: cumDistRif[idx],
       vRif: giroRif.punti[idx][2]||0,
-      vNuovo: p[2]||0
+      vNuovo: p[2]||0,
+      accel: p[3]||0,
+      roll: p[4]||0,
+      pitch: p[5]||0
     });
   }
   return {punti:risultato, cumDistRif};
@@ -1699,8 +1782,25 @@ function trovaMiglioreGiroPerConfronto(nomeCircuito, escludiData){
   return candidati.reduce((migliore,g)=> (g.durataSec<migliore.durataSec ? g : migliore), candidati[0]);
 }
 
-/* ---- Visualizzatore percorso salvato, a schermo intero ---- */
+/* ---- Visualizzatore percorso salvato, a schermo intero ----
+   Due modalita' di colorazione del tracciato, selezionabili dall'alto:
+   - 'confronto': rispetto al miglior giro storico sullo stesso circuito
+     (richiede un giro di riferimento, come prima)
+   - 'accel': verde dove si accelera, rosso dove si frena, in base
+     all'accelerazione longitudinale calcolata punto per punto — disponibile
+     SEMPRE, anche su un percorso normale senza circuito/confronto.
+   In entrambe le modalita', toccando un punto del tracciato si apre il
+   pannello in basso con velocita', accelerazione, g stimate, piega e
+   impennata esattamente in quel punto. ---- */
 let fullMap=null;
+let mappaTripCorrente=null, mappaConfrontoCorrente=null, mappaModalitaCorrente='accel';
+
+function coloreSegmentoAccel(accel, accentColor, okColor, dangerColor){
+  if(accel > 0.6) return okColor;      // sta accelerando
+  if(accel < -0.6) return dangerColor; // sta frenando
+  return accentColor;                   // velocita' pressoche' costante
+}
+
 function apriMappaPercorso(indice){
   const trips = JSON.parse(localStorage.getItem('qs_trips')||'[]');
   const trip = trips[indice];
@@ -1709,82 +1809,151 @@ function apriMappaPercorso(indice){
     toast('Nessun tracciato GPS disponibile per questo percorso','error');
     return;
   }
+  mappaTripCorrente = trip;
+  const {leanMax, leanAvg} = (trip.leanMax!==undefined) ? trip : calcolaStatistichePiega(trip.punti);
   const d = new Date(trip.data);
-  document.getElementById('tripMapStats').textContent =
-    d.toLocaleDateString('it-IT',{day:'2-digit',month:'short'})+' · '+trip.km.toFixed(1)+' km · max '+Math.round(trip.maxSpeed)+' km/h';
+  let statsTxt = d.toLocaleDateString('it-IT',{day:'2-digit',month:'short'})+' · '+trip.km.toFixed(1)+' km · max '+Math.round(trip.maxSpeed)+' km/h';
+  if(leanMax>1) statsTxt += ' · piega max '+Math.round(leanMax)+'° (media '+Math.round(leanAvg)+'°)';
+  document.getElementById('tripMapStats').textContent = statsTxt;
   document.getElementById('tripMapOverlay').classList.add('show');
+  chiudiDettaglioPunto();
 
   const stripEl = document.getElementById('tripMapCurveStrip');
   stripEl.style.display='none'; stripEl.innerHTML='';
+
+  const giroRiferimento = trip.circuito ? trovaMiglioreGiroPerConfronto(trip.circuito, trip.data) : null;
+  mappaConfrontoCorrente = giroRiferimento;
+
+  const switchEl = document.getElementById('mapModeSwitch');
+  if(giroRiferimento){
+    switchEl.style.display='flex';
+    mappaModalitaCorrente = 'confronto';
+  } else {
+    switchEl.style.display='none';
+    mappaModalitaCorrente = 'accel';
+  }
 
   setTimeout(()=>{
     if(fullMap){ fullMap.remove(); fullMap=null; }
     fullMap = L.map('tripMapFull', {attributionControl:true}).setView(trip.punti[0], 14);
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution:'© OpenStreetMap', maxZoom:19}).addTo(fullMap);
-
-    const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#F2A33C';
-    const okColor = getComputedStyle(document.documentElement).getPropertyValue('--ok').trim() || '#4CC38A';
-    const dangerColor = getComputedStyle(document.documentElement).getPropertyValue('--danger').trim() || '#E0545C';
-    const vigliaColor = '#B07CF2';
-
-    const giroRiferimento = trip.circuito ? trovaMiglioreGiroPerConfronto(trip.circuito, trip.data) : null;
-
-    if(giroRiferimento){
-      // --- Percorso colorato per confronto settori ---
-      const {punti:confronto} = confrontaGiri(giroRiferimento, trip);
-      const curve = rilevaCurve(giroRiferimento.punti);
-      const resoconto = generaResocontoCurve(curve, confronto);
-      const circuiti = leggiCircuiti();
-      const storico = calcolaMigliorStoricoPerPunto(circuiti[trip.circuito], giroRiferimento.punti);
-      const totale = stimaDeltaTotale(confronto);
-
-      for(let i=1;i<confronto.length;i++){
-        const p0=confronto[i-1], p1=confronto[i];
-        const delta = p1.vNuovo - p1.vRif;
-        const vMax = storico[p1.idxRif]||0;
-        let colore = accentColor;
-        if(vMax>8 && p1.vNuovo >= vMax*0.98) colore = vigliaColor;
-        else if(delta > 2) colore = okColor;
-        else if(delta < -2) colore = dangerColor;
-
-        const seg = L.polyline([[p0.lat,p0.lon],[p1.lat,p1.lon]], {color:colore, weight:5});
-        seg.on('click', (e)=>{
-          L.popup().setLatLng(e.latlng)
-            .setContent('<b>'+Math.round(p1.vNuovo)+' km/h</b> tu · <span style="opacity:.7">'+Math.round(p1.vRif)+' km/h</span> riferimento')
-            .openOn(fullMap);
-        });
-        seg.addTo(fullMap);
-      }
-      L.marker([trip.punti[0][0],trip.punti[0][1]], {icon: iconaPunto(okColor)}).addTo(fullMap);
-      L.marker([trip.punti[trip.punti.length-1][0],trip.punti[trip.punti.length-1][1]], {icon: iconaPunto(dangerColor)}).addTo(fullMap);
-      fullMap.fitBounds(L.polyline(trip.punti.map(p=>[p[0],p[1]])).getBounds(), {padding:[30,30]});
-
-      // --- Striscia riepilogo: totale + ogni curva ---
-      let html = '<div class="trip-map-total" style="color:'+(totale<=0?okColor:dangerColor)+'">'+
-                 (totale<=0?'▲ ':'▼ ')+Math.abs(totale).toFixed(2)+'s<div style="font-size:9px;color:var(--text-muted);font-weight:400;">TOTALE</div></div>';
-      resoconto.forEach(r=>{
-        const freccia = r.classificazione==='guadagnato' ? '▲' : (r.classificazione==='perso' ? '▼' : '—');
-        html += '<div class="curva-chip '+r.classificazione+'" onclick="vaiACurva('+r.idxCentro+')">'+
-                '<span class="num">C'+r.numero+'</span>'+
-                '<span class="delta">'+freccia+' '+Math.abs(r.deltaSec).toFixed(2)+'s</span></div>';
-      });
-      stripEl.innerHTML = html;
-      stripEl.style.display='flex';
-
-      window._curvePuntiRiferimento = giroRiferimento.punti; // usato da vaiACurva()
-    } else {
-      // --- Percorso normale, nessun confronto disponibile ---
-      const linea = L.polyline(trip.punti.map(p=>[p[0],p[1]]), {color:accentColor, weight:4}).addTo(fullMap);
-      L.marker([trip.punti[0][0],trip.punti[0][1]], {icon: iconaPunto(okColor)}).addTo(fullMap);
-      L.marker([trip.punti[trip.punti.length-1][0],trip.punti[trip.punti.length-1][1]], {icon: iconaPunto(dangerColor)}).addTo(fullMap);
-      fullMap.fitBounds(linea.getBounds(), {padding:[30,30]});
-      if(trip.circuito){
-        stripEl.innerHTML = '<div style="padding:4px 8px; font-size:12px; color:var(--text-muted);">Primo giro registrato su questo tracciato: registra un altro giro per vedere il confronto.</div>';
-        stripEl.style.display='flex';
-      }
-    }
+    disegnaTracciatoMappa();
   }, 60);
 }
+
+// Ridisegna il tracciato nella modalita' di colorazione corrente, senza
+// ricreare la mappa (chiamata sia all'apertura sia quando si cambia modalita').
+function disegnaTracciatoMappa(){
+  if(!fullMap || !mappaTripCorrente) return;
+  fullMap.eachLayer(l=>{ if(l instanceof L.Polyline || l instanceof L.Marker) fullMap.removeLayer(l); });
+
+  const trip = mappaTripCorrente;
+  const giroRiferimento = mappaConfrontoCorrente;
+  const accentColor = getComputedStyle(document.documentElement).getPropertyValue('--accent').trim() || '#F2A33C';
+  const okColor = getComputedStyle(document.documentElement).getPropertyValue('--ok').trim() || '#4CC38A';
+  const dangerColor = getComputedStyle(document.documentElement).getPropertyValue('--danger').trim() || '#E0545C';
+  const vigliaColor = '#B07CF2';
+  const stripEl = document.getElementById('tripMapCurveStrip');
+
+  document.getElementById('modeBtnConfronto').classList.toggle('active', mappaModalitaCorrente==='confronto');
+  document.getElementById('modeBtnAccel').classList.toggle('active', mappaModalitaCorrente==='accel');
+
+  if(mappaModalitaCorrente==='confronto' && giroRiferimento){
+    // --- Percorso colorato per confronto settori (velocita' vs riferimento) ---
+    const {punti:confronto} = confrontaGiri(giroRiferimento, trip);
+    const curve = rilevaCurve(giroRiferimento.punti);
+    const resoconto = generaResocontoCurve(curve, confronto);
+    const circuiti = leggiCircuiti();
+    const storico = calcolaMigliorStoricoPerPunto(circuiti[trip.circuito], giroRiferimento.punti);
+    const totale = stimaDeltaTotale(confronto);
+
+    for(let i=1;i<confronto.length;i++){
+      const p0=confronto[i-1], p1=confronto[i];
+      const delta = p1.vNuovo - p1.vRif;
+      const vMax = storico[p1.idxRif]||0;
+      let colore = accentColor;
+      if(vMax>8 && p1.vNuovo >= vMax*0.98) colore = vigliaColor;
+      else if(delta > 2) colore = okColor;
+      else if(delta < -2) colore = dangerColor;
+
+      const seg = L.polyline([[p0.lat,p0.lon],[p1.lat,p1.lon]], {color:colore, weight:5});
+      seg.on('click', ()=> mostraDettaglioPunto(p1, p1.vRif));
+      seg.addTo(fullMap);
+    }
+    L.marker([trip.punti[0][0],trip.punti[0][1]], {icon: iconaPunto(okColor)}).addTo(fullMap);
+    L.marker([trip.punti[trip.punti.length-1][0],trip.punti[trip.punti.length-1][1]], {icon: iconaPunto(dangerColor)}).addTo(fullMap);
+    fullMap.fitBounds(L.polyline(trip.punti.map(p=>[p[0],p[1]])).getBounds(), {padding:[30,30]});
+
+    let html = '<div class="trip-map-total" style="color:'+(totale<=0?okColor:dangerColor)+'">'+
+               (totale<=0?'▲ ':'▼ ')+Math.abs(totale).toFixed(2)+'s<div style="font-size:9px;color:var(--text-muted);font-weight:400;">TOTALE</div></div>';
+    resoconto.forEach(r=>{
+      const freccia = r.classificazione==='guadagnato' ? '▲' : (r.classificazione==='perso' ? '▼' : '—');
+      html += '<div class="curva-chip '+r.classificazione+'" onclick="vaiACurva('+r.idxCentro+')">'+
+              '<span class="num">C'+r.numero+'</span>'+
+              '<span class="delta">'+freccia+' '+Math.abs(r.deltaSec).toFixed(2)+'s</span></div>';
+    });
+    stripEl.innerHTML = html;
+    stripEl.style.display='flex';
+    window._curvePuntiRiferimento = giroRiferimento.punti; // usato da vaiACurva()
+  } else {
+    // --- Modalita' accelerazione/frenata: disponibile su qualsiasi percorso ---
+    stripEl.style.display='none'; stripEl.innerHTML='';
+    const punti = trip.punti;
+    for(let i=1;i<punti.length;i++){
+      const p0=punti[i-1], p1=punti[i];
+      const accel = p1[3]||0;
+      const colore = coloreSegmentoAccel(accel, accentColor, okColor, dangerColor);
+      const seg = L.polyline([[p0[0],p0[1]],[p1[0],p1[1]]], {color:colore, weight:5});
+      seg.on('click', ()=> mostraDettaglioPunto({lat:p1[0], lon:p1[1], vNuovo:p1[2]||0, accel:p1[3]||0, roll:p1[4]||0, pitch:p1[5]||0}, null));
+      seg.addTo(fullMap);
+    }
+    L.marker([punti[0][0],punti[0][1]], {icon: iconaPunto(okColor)}).addTo(fullMap);
+    L.marker([punti[punti.length-1][0],punti[punti.length-1][1]], {icon: iconaPunto(dangerColor)}).addTo(fullMap);
+    fullMap.fitBounds(L.polyline(punti.map(p=>[p[0],p[1]])).getBounds(), {padding:[30,30]});
+    if(trip.circuito && mappaModalitaCorrente==='confronto'){
+      stripEl.innerHTML = '<div style="padding:4px 8px; font-size:12px; color:var(--text-muted);">Primo giro registrato su questo tracciato: registra un altro giro per vedere il confronto.</div>';
+      stripEl.style.display='flex';
+    }
+  }
+}
+
+function impostaModalitaMappa(modo){
+  mappaModalitaCorrente = modo;
+  chiudiDettaglioPunto();
+  disegnaTracciatoMappa();
+}
+
+// Pannello dettaglio: velocita', accelerazione, g stimate, piega e impennata
+// nell'esatto punto del tracciato toccato dall'utente.
+function mostraDettaglioPunto(p, vRif){
+  const accel = p.accel||0;               // m/s^2
+  const gLong = accel/9.81;                // g longitudinale, dalla stessa accelerazione
+  const gLat = Math.tan((p.roll||0)*Math.PI/180); // g laterale stimata dall'angolo di piega (ipotesi curva in equilibrio: tan(piega) = g_laterale/g)
+
+  document.getElementById('pdTitle').textContent = vRif!==null && vRif!==undefined
+    ? Math.round(p.vNuovo)+' km/h (rif. '+Math.round(vRif)+' km/h)'
+    : Math.round(p.vNuovo)+' km/h';
+  document.getElementById('pdSpeed').textContent = Math.round(p.vNuovo)+' km/h';
+
+  const elAccel = document.getElementById('pdAccel');
+  elAccel.textContent = (accel>=0?'+':'')+accel.toFixed(2)+' m/s²';
+  elAccel.className = 'pd-val '+(accel>0.3?'accel-pos':(accel<-0.3?'accel-neg':''));
+
+  document.getElementById('pdGLat').textContent = Math.abs(gLat).toFixed(2)+' g';
+  const elGLong = document.getElementById('pdGLong');
+  elGLong.textContent = (gLong>=0?'+':'')+gLong.toFixed(2)+' g';
+  elGLong.className = 'pd-val '+(gLong>0.03?'accel-pos':(gLong<-0.03?'accel-neg':''));
+
+  document.getElementById('pdRoll').textContent = Math.abs(Math.round(p.roll||0))+'°'+((p.roll||0)!==0?((p.roll||0)>0?' DX':' SX'):'');
+  document.getElementById('pdPitch').textContent = Math.round(p.pitch||0)+'°';
+
+  document.getElementById('tripPointDetail').classList.add('show');
+}
+function chiudiDettaglioPunto(){
+  const el = document.getElementById('tripPointDetail');
+  if(el) el.classList.remove('show');
+}
+
 function vaiACurva(idx){
   if(!fullMap || !window._curvePuntiRiferimento) return;
   const p = window._curvePuntiRiferimento[idx];
@@ -1793,6 +1962,7 @@ function vaiACurva(idx){
 }
 function chiudiMappaPercorso(){
   document.getElementById('tripMapOverlay').classList.remove('show');
+  chiudiDettaglioPunto();
   if(fullMap){ fullMap.remove(); fullMap=null; }
 }
 
